@@ -11,6 +11,7 @@ import {
   CORE_LIBRARY,
   MUSCLEWIKI_LICENSE_URL,
   DEFAULT_PROFILE,
+  LIFESTYLE_AND_WARMUP,
   NUTRITION_PROTOCOL,
   PROGRESSION_MODEL,
   SCIENTIFIC_SOURCES,
@@ -693,6 +694,51 @@ function createCoreCardHtml(core, initialVariantIndex = 0) {
   `;
 }
 
+// Antrenman öncesi ısınma protokolü kutusunu üretir
+function createWarmupBannerHtml() {
+  const { warmupProtocol } = LIFESTYLE_AND_WARMUP;
+  return `
+    <div class="warmup-banner">
+      <div class="warmup-banner-head">
+        <strong>🔥 ${escapeHtml(warmupProtocol.title)}:</strong>
+        <span>${escapeHtml(warmupProtocol.summary)}</span>
+      </div>
+      <ul class="warmup-steps-list">
+        ${warmupProtocol.steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}
+      </ul>
+    </div>
+  `;
+}
+
+// Günlük adım hedefi, uyku ve ısınma kartlarını üretir
+function createLifestyleGridHtml() {
+  const { dailySteps, sleep, warmupProtocol } = LIFESTYLE_AND_WARMUP;
+  return `
+    <div class="three-col-grid lifestyle-grid">
+      <article class="info-panel">
+        <span class="meal-time-badge">👣 Günlük Aktivite</span>
+        <h3>${escapeHtml(dailySteps.title)}</h3>
+        <div class="lifestyle-target">${escapeHtml(dailySteps.target)}</div>
+        <p class="muted-text">${escapeHtml(dailySteps.description)}</p>
+      </article>
+      <article class="info-panel">
+        <span class="meal-time-badge">😴 Toparlanma</span>
+        <h3>${escapeHtml(sleep.title)}</h3>
+        <div class="lifestyle-target">${escapeHtml(sleep.target)}</div>
+        <p class="muted-text">${escapeHtml(sleep.description)}</p>
+      </article>
+      <article class="info-panel">
+        <span class="meal-time-badge">🔥 Seans Başlangıcı</span>
+        <h3>${escapeHtml(warmupProtocol.title)}</h3>
+        <div class="lifestyle-target">${escapeHtml(warmupProtocol.summary)}</div>
+        <ul class="table-bullets">
+          ${warmupProtocol.steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}
+        </ul>
+      </article>
+    </div>
+  `;
+}
+
 // Çift ilerleme + deload ve 3 günlük alternatif şablon panelini oluşturur
 function createProgressionAndTemplatesHtml() {
   const templatesHtml = THREE_DAY_TEMPLATES.templates
@@ -972,6 +1018,7 @@ function renderWorkoutDay(day) {
         <span class="meta-pill">📅 ${escapeHtml(day.scheduleNote)}</span>
       </div>
     </div>
+    ${createWarmupBannerHtml()}
     ${viewModeBarHtml}
     ${tableHtml}
     ${cardsSectionHtml}
@@ -1358,6 +1405,13 @@ function renderFullSummaryTab() {
         </div>
       </section>
 
+      <section class="summary-section-block">
+        <div class="summary-section-title-row">
+          <h3>5. Günlük Adım Hedefi, Uyku ve Isınma Protokolü</h3>
+        </div>
+        ${createLifestyleGridHtml()}
+      </section>
+
       ${renderSourcesSectionHtml()}
     </div>
   `;
@@ -1528,6 +1582,8 @@ function renderNutritionProtocol() {
           )
           .join("")}
       </div>
+
+      ${createLifestyleGridHtml()}
 
       ${renderSourcesSectionHtml()}
     </div>

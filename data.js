@@ -841,6 +841,31 @@ export const CARDIO_FINISHER = {
   ],
 };
 
+// Yaşam tarzı bileşenleri (adım, uyku) ve antrenman öncesi ısınma protokolü (genel öneri)
+export const LIFESTYLE_AND_WARMUP = {
+  dailySteps: {
+    title: "Günlük Adım Hedefi (Genel Öneri)",
+    target: "8.000 – 10.000 adım / gün",
+    description:
+      "Başlangıç düzeyine göre 6.000-7.000 adımdan kademeli artırılabilir; salon dışındaki enerji harcamasını destekler (genel öneri).",
+  },
+  sleep: {
+    title: "Uyku & Toparlanma (Genel Öneri)",
+    target: "7 – 9 saat / gece",
+    description:
+      "Düzenli 7-9 saat uyku kas toparlanmasını, antrenman performansını ve günlük iştah yönetimini destekler (genel öneri).",
+  },
+  warmupProtocol: {
+    title: "Antrenman Öncesi Isınma Protokolü (Genel Öneri)",
+    summary: "5 dk genel ısınma + dinamik eklem mobilitesi + harekete özel 1. ısınma seti",
+    steps: [
+      "5 dakika genel ısınma: koşu bandı hafif tempolu yürüyüş veya sabit bisiklet",
+      "2-3 dakika dinamik mobilite: omuz rotasyonları, band pull-apart ve kalça esnetme",
+      "Harekete özel ısınma: her ana hareketin '1. Set (Isınma Seti)' basamağıyla hafif kiloda teknik prova",
+    ],
+  },
+};
+
 // Çift ilerleme ve deload kuralı (genel öneri)
 export const PROGRESSION_MODEL = {
   title: "Çift İlerleme Kuralı & 4-6 Haftalık Deload (Genel Öneri)",
