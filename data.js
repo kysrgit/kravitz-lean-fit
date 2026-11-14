@@ -241,10 +241,10 @@ export const SYSTEM_PILLARS = [
       "Kravitz'ten Esinlenilmiş Uyarlama: Basında (Men's Health AU; Fitbook, 2026) 50-35-21-14-10 / 50-25-12-5 ve haftada 5-6 gün aktarılsa da burada sürdürülebilir 4 günlük 30-15-10-5 uyarlaması uygulanır.",
   },
   {
-    badge: "02 · AKTİF DİNLENME",
-    title: "Set Arası 21× Core",
+    badge: "02 · DİNLENME VE CORE PENCERESİ",
+    title: "21× Core + Tam Toparlanma",
     description:
-      "Set aralarında oturup telefona bakmak yok. Hemen 21 tekrar karın hareketi yap, 30-45 sn nefeslen ve ağır sete geç. Nabız 130-145 BPM'de yağ yakar.",
+      "Bileşik hareketlerde 2-3 dk (150 sn), izolasyonlarda 60-90 sn (75 sn) dinlenme penceresinin başında 21 core yap, kalan sürede dinlenip ağır sete toparlanmış gir (Schoenfeld B.J. ve ark., J Strength Cond Res 2016;30(7):1805-12, DOI: 10.1519/JSC.0000000000001272).",
   },
   {
     badge: "03 · KOT PANTOLON TESTİ",
@@ -779,6 +779,7 @@ export const WORKOUT_DAYS = [
     exercises: [
       {
         id: "incline-db-press",
+        restSeconds: 150,
         order: 1,
         name: "Incline Dumbbell Press",
         turkishName: "Eğimli Sehpada Dambıl Göğüs İtiş",
@@ -788,7 +789,7 @@ export const WORKOUT_DAYS = [
         videoKey: "incline_db_press",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-incline-bench-press",
         pyramidSets: [
-          { set: 1, reps: "30 Tekrar", load: "Çok Hafif (Isınma & Kan Pompalama)" },
+          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Çok Hafif (Isınma & Kan Pompalama)" },
           { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
           { set: 3, reps: "10 Tekrar", load: "Zorlayıcı Ağırlık" },
           { set: 4, reps: "5 Tekrar", load: "Ağır / Kusursuz Form" },
@@ -831,6 +832,7 @@ export const WORKOUT_DAYS = [
       },
       {
         id: "seated-db-shoulder-press",
+        restSeconds: 150,
         order: 2,
         name: "Seated Dumbbell Shoulder Press",
         turkishName: "Oturarak Dambıl Omuz Press",
@@ -840,7 +842,7 @@ export const WORKOUT_DAYS = [
         videoKey: "seated_db_shoulder_press",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-seated-overhead-press",
         pyramidSets: [
-          { set: 1, reps: "30 Tekrar", load: "Hafif Ağırlık" },
+          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif Ağırlık" },
           { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
           { set: 3, reps: "10 Tekrar", load: "Orta-Ağır" },
           { set: 4, reps: "5 Tekrar", load: "Ağır Kilogram" },
@@ -882,6 +884,7 @@ export const WORKOUT_DAYS = [
       },
       {
         id: "dumbbell-lateral-raise",
+        restSeconds: 75,
         order: 3,
         name: "Dumbbell Lateral Raise",
         turkishName: "Dambıl Yana Açış (V-Taper Anahtarı)",
@@ -891,7 +894,7 @@ export const WORKOUT_DAYS = [
         videoKey: "dumbbell_lateral_raise",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-lateral-raise",
         pyramidSets: [
-          { set: 1, reps: "35 Tekrar", load: "Çok Hafif (2.5 - 4 kg)" },
+          { set: 1, isWarmup: true, reps: "35 Tekrar", load: "Çok Hafif (2.5 - 4 kg)" },
           { set: 2, reps: "20 Tekrar", load: "Hafif-Orta" },
           { set: 3, reps: "15 Tekrar", load: "Orta Ağırlık" },
           { set: 4, reps: "10 Tekrar", load: "Kontrollü Ağır (Omuz güvenliği için min 10)" },
@@ -933,6 +936,7 @@ export const WORKOUT_DAYS = [
       },
       {
         id: "cable-crossover",
+        restSeconds: 75,
         order: 4,
         name: "Cable Crossover / Fly",
         turkishName: "Kablo İle Göğüs Sıkıştırma",
@@ -942,7 +946,7 @@ export const WORKOUT_DAYS = [
         videoKey: "cable_crossover",
         sourceUrl: "https://musclewiki.com/exercise/cable-pec-fly",
         pyramidSets: [
-          { set: 1, reps: "30 Tekrar", load: "Hafif" },
+          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
           { set: 3, reps: "10 Tekrar", load: "Zorlayıcı" },
         ],
@@ -983,6 +987,7 @@ export const WORKOUT_DAYS = [
       },
       {
         id: "rope-triceps-pushdown",
+        restSeconds: 75,
         order: 5,
         name: "Cable Triceps Pushdown",
         turkishName: "Kablo İle Arka Kol İtiş",
@@ -992,7 +997,7 @@ export const WORKOUT_DAYS = [
         videoKey: "rope_triceps_pushdown",
         sourceUrl: "https://musclewiki.com/exercise/cable-cross-pushdown",
         pyramidSets: [
-          { set: 1, reps: "35 Tekrar", load: "Hafif" },
+          { set: 1, isWarmup: true, reps: "35 Tekrar", load: "Hafif" },
           { set: 2, reps: "20 Tekrar", load: "Orta" },
           { set: 3, reps: "12 Tekrar", load: "Orta-Ağır" },
           { set: 4, reps: "6 Tekrar", load: "Ağır" },
@@ -1046,6 +1051,7 @@ export const WORKOUT_DAYS = [
     exercises: [
       {
         id: "leg-press",
+        restSeconds: 150,
         order: 1,
         name: "Leg Press",
         turkishName: "Leg Press (Bacak İtiş)",
@@ -1055,7 +1061,7 @@ export const WORKOUT_DAYS = [
         videoKey: "leg_press",
         sourceUrl: "https://musclewiki.com/exercise/leg-press",
         pyramidSets: [
-          { set: 1, reps: "30 Tekrar", load: "Hafif (Diz & Kalça Isındırma)" },
+          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif (Diz & Kalça Isındırma)" },
           { set: 2, reps: "15 Tekrar", load: "Orta Plaka" },
           { set: 3, reps: "10 Tekrar", load: "Yüksek Plaka" },
           { set: 4, reps: "5 Tekrar", load: "Ağır & Kontrollü İniş" },
@@ -1097,6 +1103,7 @@ export const WORKOUT_DAYS = [
       },
       {
         id: "romanian-deadlift",
+        restSeconds: 150,
         order: 2,
         name: "Barbell Romanian Deadlift (RDL)",
         turkishName: "Bar İle Romen Deadlift (Arka Bacak & Kalça)",
@@ -1106,7 +1113,7 @@ export const WORKOUT_DAYS = [
         videoKey: "romanian_deadlift",
         sourceUrl: "https://musclewiki.com/exercise/barbell-romanian-deadlift",
         pyramidSets: [
-          { set: 1, reps: "25 Tekrar", load: "Hafif (Form Provası)" },
+          { set: 1, isWarmup: true, reps: "25 Tekrar", load: "Hafif (Form Provası)" },
           { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
           { set: 3, reps: "10 Tekrar", load: "Zorlayıcı Ağırlık" },
           { set: 4, reps: "6 Tekrar", load: "Ağır Kilogram" },
@@ -1148,6 +1155,7 @@ export const WORKOUT_DAYS = [
       },
       {
         id: "walking-lunges",
+        restSeconds: 150,
         order: 3,
         name: "Dumbbell Forward / Walking Lunges",
         turkishName: "Dambıl İle İleri Adım / Yürüyen Lunge",
@@ -1157,7 +1165,7 @@ export const WORKOUT_DAYS = [
         videoKey: "walking_lunges",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-forward-lunge",
         pyramidSets: [
-          { set: 1, reps: "20 Tekrar", load: "Vücut Ağırlığı / Hafif (Her Bacak 10)" },
+          { set: 1, isWarmup: true, reps: "20 Tekrar", load: "Vücut Ağırlığı / Hafif (Her Bacak 10)" },
           { set: 2, reps: "12 Tekrar", load: "Orta Dambıl (Her Bacak 6)" },
           { set: 3, reps: "8 Tekrar", load: "Ağır Dambıl (Her Bacak 8)" },
         ],
@@ -1198,6 +1206,7 @@ export const WORKOUT_DAYS = [
       },
       {
         id: "seated-leg-curl",
+        restSeconds: 75,
         order: 4,
         name: "Seated Leg Curl",
         turkishName: "Oturarak Arka Bacak Bükme",
@@ -1207,7 +1216,7 @@ export const WORKOUT_DAYS = [
         videoKey: "seated_leg_curl",
         sourceUrl: "https://musclewiki.com/exercise/machine-seated-leg-curl",
         pyramidSets: [
-          { set: 1, reps: "30 Tekrar", load: "Hafif" },
+          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
           { set: 3, reps: "10 Tekrar", load: "Zorlayıcı" },
         ],
@@ -1248,6 +1257,7 @@ export const WORKOUT_DAYS = [
       },
       {
         id: "standing-calf-raise",
+        restSeconds: 75,
         order: 5,
         name: "Standing Calf Raise + Eğimli Yürüyüş",
         turkishName: "Ayakta Kalf & 10 Dk Yağ Yakım Yürüyüşü",
@@ -1257,7 +1267,7 @@ export const WORKOUT_DAYS = [
         videoKey: "standing_calf_raise",
         sourceUrl: "https://musclewiki.com/exercise/machine-standing-calf-raises",
         pyramidSets: [
-          { set: 1, reps: "30 Tekrar", load: "Hafif" },
+          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "20 Tekrar", load: "Orta" },
           { set: 3, reps: "12 Tekrar", load: "Ağır (Tepe ve Dipte 1 sn Bekle)" },
         ],
@@ -1310,6 +1320,7 @@ export const WORKOUT_DAYS = [
     exercises: [
       {
         id: "wide-grip-lat-pulldown",
+        restSeconds: 150,
         order: 1,
         name: "Wide-Grip Lat Pulldown",
         turkishName: "Geniş Tutuş Kanat Çekiş",
@@ -1319,7 +1330,7 @@ export const WORKOUT_DAYS = [
         videoKey: "wide_grip_lat_pulldown",
         sourceUrl: "https://musclewiki.com/exercise/machine-pulldown",
         pyramidSets: [
-          { set: 1, reps: "30 Tekrar", load: "Hafif (Kanat Aktivasyonu)" },
+          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif (Kanat Aktivasyonu)" },
           { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
           { set: 3, reps: "10 Tekrar", load: "Zorlayıcı Ağırlık" },
           { set: 4, reps: "5 Tekrar", load: "Ağır & Kontrollü" },
@@ -1361,6 +1372,7 @@ export const WORKOUT_DAYS = [
       },
       {
         id: "seated-cable-row",
+        restSeconds: 150,
         order: 2,
         name: "Seated Cable Row",
         turkishName: "Oturarak Kablo Sırt Çekiş",
@@ -1370,7 +1382,7 @@ export const WORKOUT_DAYS = [
         videoKey: "seated_cable_row",
         sourceUrl: "https://musclewiki.com/exercise/seated-cable-row",
         pyramidSets: [
-          { set: 1, reps: "30 Tekrar", load: "Hafif" },
+          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
           { set: 3, reps: "10 Tekrar", load: "Orta-Ağır" },
           { set: 4, reps: "5 Tekrar", load: "Ağır" },
@@ -1412,6 +1424,7 @@ export const WORKOUT_DAYS = [
       },
       {
         id: "face-pull",
+        restSeconds: 75,
         order: 3,
         name: "Cable Face Pull",
         turkishName: "Kablo İle Yüze Çekiş (Arka Omuz)",
@@ -1421,7 +1434,7 @@ export const WORKOUT_DAYS = [
         videoKey: "face_pull",
         sourceUrl: "https://musclewiki.com/exercise/machine-face-pulls",
         pyramidSets: [
-          { set: 1, reps: "30 Tekrar", load: "Hafif" },
+          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "20 Tekrar", load: "Orta" },
           { set: 3, reps: "15 Tekrar", load: "Orta-Zorlayıcı" },
         ],
@@ -1462,6 +1475,7 @@ export const WORKOUT_DAYS = [
       },
       {
         id: "dumbbell-bicep-curl",
+        restSeconds: 75,
         order: 4,
         name: "Dumbbell Bicep Curl (Kravitz Özel Seti)",
         turkishName: "Dambıl Biceps Curl — Lenny Kravitz Piramidi",
@@ -1471,7 +1485,7 @@ export const WORKOUT_DAYS = [
         videoKey: "dumbbell_bicep_curl",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-curl",
         pyramidSets: [
-          { set: 1, reps: "45 Tekrar", load: "4-5 kg (Tam Lenny Kravitz Pompası)" },
+          { set: 1, isWarmup: true, reps: "45 Tekrar", load: "4-5 kg (Tam Lenny Kravitz Pompası)" },
           { set: 2, reps: "20 Tekrar", load: "9-10 kg" },
           { set: 3, reps: "10 Tekrar", load: "12.5-15 kg" },
           { set: 4, reps: "5 Tekrar", load: "17.5-20 kg (Sallanmadan)" },
@@ -1513,6 +1527,7 @@ export const WORKOUT_DAYS = [
       },
       {
         id: "incline-hammer-curl",
+        restSeconds: 75,
         order: 5,
         name: "Incline Hammer Curl",
         turkishName: "Eğimli Sehpada Çekiç Curl",
@@ -1522,7 +1537,7 @@ export const WORKOUT_DAYS = [
         videoKey: "incline_hammer_curl",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-incline-hammer-curl",
         pyramidSets: [
-          { set: 1, reps: "25 Tekrar", load: "Hafif" },
+          { set: 1, isWarmup: true, reps: "25 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
           { set: 3, reps: "8 Tekrar", load: "Ağır" },
         ],
@@ -1575,6 +1590,7 @@ export const WORKOUT_DAYS = [
     exercises: [
       {
         id: "kettlebell-swing",
+        restSeconds: 150,
         order: 1,
         name: "Kettlebell Swing",
         turkishName: "Kettlebell Savurma (Kalça & Metabolik Patlama)",
@@ -1584,7 +1600,7 @@ export const WORKOUT_DAYS = [
         videoKey: "kettlebell_swing",
         sourceUrl: "https://musclewiki.com/exercise/kettlebell-swing",
         pyramidSets: [
-          { set: 1, reps: "30 Tekrar", load: "10-12 kg (Ritmi Bul)" },
+          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "10-12 kg (Ritmi Bul)" },
           { set: 2, reps: "20 Tekrar", load: "14-16 kg" },
           { set: 3, reps: "15 Tekrar", load: "16-20 kg" },
           { set: 4, reps: "12 Tekrar", load: "20-24 kg" },
@@ -1626,6 +1642,7 @@ export const WORKOUT_DAYS = [
       },
       {
         id: "renegade-row-pushup",
+        restSeconds: 150,
         order: 2,
         name: "Alternating Dumbbell Renegade Row",
         turkishName: "Plankta Dambıl Renegade Row (Sırt & Core)",
@@ -1635,7 +1652,7 @@ export const WORKOUT_DAYS = [
         videoKey: "renegade_row_pushup",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-renegade-row",
         pyramidSets: [
-          { set: 1, reps: "20 Tekrar (Toplam)", load: "Hafif Dambıl (7.5 - 10 kg) · İsteğe Bağlı Arada Şınav" },
+          { set: 1, isWarmup: true, reps: "20 Tekrar (Toplam)", load: "Hafif Dambıl (7.5 - 10 kg) · İsteğe Bağlı Arada Şınav" },
           { set: 2, reps: "16 Tekrar (Toplam)", load: "Orta Dambıl (12.5 kg)" },
           { set: 3, reps: "12 Tekrar (Toplam)", load: "Ağır Dambıl (15 kg)" },
         ],
@@ -1676,6 +1693,7 @@ export const WORKOUT_DAYS = [
       },
       {
         id: "straight-arm-pulldown",
+        restSeconds: 75,
         order: 3,
         name: "Straight-Arm Cable Pulldown",
         turkishName: "Düz Kol Kablo Çekiş (Kanat & Core)",
@@ -1685,7 +1703,7 @@ export const WORKOUT_DAYS = [
         videoKey: "straight_arm_pulldown",
         sourceUrl: "https://musclewiki.com/exercise/cable-bent-over-bar-pullover",
         pyramidSets: [
-          { set: 1, reps: "30 Tekrar", load: "Hafif" },
+          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
           { set: 3, reps: "10 Tekrar", load: "Orta-Ağır" },
         ],
@@ -1726,6 +1744,7 @@ export const WORKOUT_DAYS = [
       },
       {
         id: "farmers-walk",
+        restSeconds: 150,
         order: 4,
         name: "Farmer's Walk (Çiftçi Yürüyüşü)",
         turkishName: "Ağır Kettlebell / Dambıl İle Çiftçi Yürüyüşü",
@@ -1735,7 +1754,7 @@ export const WORKOUT_DAYS = [
         videoKey: "farmers_walk",
         sourceUrl: "https://musclewiki.com/exercise/kettlebell-farmers-carry",
         pyramidSets: [
-          { set: 1, reps: "45 Saniye Yürüyüş", load: "Orta-Ağır (2× 20 kg)" },
+          { set: 1, isWarmup: true, reps: "45 Saniye Yürüyüş", load: "Orta-Ağır (2× 20 kg)" },
           { set: 2, reps: "45 Saniye Yürüyüş", load: "Ağır (2× 25 kg)" },
           { set: 3, reps: "45 Saniye Yürüyüş", load: "Maksimum Temiz (2× 27.5-30 kg)" },
         ],
@@ -1776,6 +1795,7 @@ export const WORKOUT_DAYS = [
       },
       {
         id: "stomach-vacuum-card",
+        restSeconds: 75,
         order: 5,
         name: "Stomach Vacuum & Hollow Core Hold",
         turkishName: "Mide Vakumu & Hollow Hold (Postür & TVA Kontrolü)",
@@ -1785,7 +1805,7 @@ export const WORKOUT_DAYS = [
         videoKey: "stomach_vacuum",
         sourceUrl: "https://musclewiki.com/exercises/abdominals",
         pyramidSets: [
-          { set: 1, reps: "20-30 Sn Tutuş", load: "Sabah Aç Karnına / Finisher - Set 1" },
+          { set: 1, isWarmup: true, reps: "20-30 Sn Tutuş", load: "Sabah Aç Karnına / Finisher - Set 1" },
           { set: 2, reps: "20-30 Sn Tutuş", load: "Sabah Aç Karnına / Finisher - Set 2" },
           { set: 3, reps: "20-30 Sn Tutuş", load: "Sabah Aç Karnına / Finisher - Set 3" },
           { set: 4, reps: "20-30 Sn Tutuş", load: "Sabah Aç Karnına / Finisher - Set 4" },

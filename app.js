@@ -552,15 +552,20 @@ function createExerciseCardHtml(exercise, badgeText, initialVariantIndex = 0) {
   const variants = getExerciseVariants(exercise, "exercise");
   const activeVariant = variants[initialVariantIndex] || variants[0];
 
+  const restSeconds = exercise.restSeconds || 90;
+  const restWindowLabel =
+    restSeconds >= 120 ? `${restSeconds} sn (2-3 dk · Bileşik)` : `${restSeconds} sn (60-90 sn · İzolasyon)`;
+
   const pyramidHtml = exercise.pyramidSets
     .map((step, index) => {
       const widthPercent = Math.max(36, Math.round(100 - (index * 52) / Math.max(1, maxSets - 1)));
+      const setLabel = step.isWarmup ? `${step.set}. Set (Isınma Seti)` : `${step.set}. Set`;
       return `
-        <div class="pyramid-step">
-          <span class="set-num">${step.set}. Set</span>
+        <div class="pyramid-step ${step.isWarmup ? "is-warmup" : ""}">
+          <span class="set-num">${escapeHtml(setLabel)}</span>
           <div class="set-bar-wrap">
             <span class="set-load">${escapeHtml(step.load)}</span>
-            <div class="set-bar" style="width: ${widthPercent}%"></div>
+            <div class="set-bar ${step.isWarmup ? "is-warmup" : ""}" style="width: ${widthPercent}%"></div>
           </div>
           <span class="set-reps">${escapeHtml(step.reps)}</span>
         </div>
@@ -606,7 +611,11 @@ function createExerciseCardHtml(exercise, badgeText, initialVariantIndex = 0) {
         ${alternativesHtml}
 
         <div class="pyramid-box">
-          <div class="pyramid-box-title">Piramit Merdiveni (${maxSets} Set)</div>
+          <div class="pyramid-box-title-row">
+            <span class="pyramid-box-title">Piramit Merdiveni (${maxSets} Set · 1. Set Isınma)</span>
+            <span class="rest-duration-badge">⏱️ Dinlenme: ${escapeHtml(restWindowLabel)}</span>
+          </div>
+          <p class="rest-strategy-note">21 core yap, kalan sürede dinlenerek çalışma setine toparlanmış gir (Schoenfeld ve ark., 2016).</p>
           <div class="pyramid-steps">${pyramidHtml}</div>
         </div>
 
@@ -686,11 +695,14 @@ function createDaySummaryTableHtml(day, { showDayHeader = false, showJumpBtn = f
   const rowsHtml = (day.exercises || [])
     .map((exercise) => {
       const coreItem = CORE_LIBRARY[exercise.coreRestId];
+      const restSeconds = exercise.restSeconds || 90;
+      const restBadgeText =
+        restSeconds >= 120 ? `${restSeconds} sn (2-3 dk)` : `${restSeconds} sn (60-90 sn)`;
       const pyramidHtml = (exercise.pyramidSets || [])
         .map(
           (step) => `
-          <div class="table-pyramid-item">
-            <span class="table-set-num">${escapeHtml(step.set)}. Set</span>
+          <div class="table-pyramid-item ${step.isWarmup ? "is-warmup" : ""}">
+            <span class="table-set-num">${escapeHtml(step.isWarmup ? `${step.set}. Set (Isınma)` : `${step.set}. Set`)}</span>
             <span class="table-set-reps">${escapeHtml(step.reps)}</span>
             <span class="table-set-load">${escapeHtml(step.load)}</span>
           </div>
@@ -753,9 +765,11 @@ function createDaySummaryTableHtml(day, { showDayHeader = false, showJumpBtn = f
             </div>
           </td>
           <td class="col-pyramid" data-label="Piramit Set & Tekrarlar">
+            <div class="table-rest-pill">⏱️ Dinlenme: ${escapeHtml(restBadgeText)}</div>
             <div class="table-pyramid-list">${pyramidHtml}</div>
           </td>
-          <td class="col-core" data-label="Set Arası (21'ler Core)">
+          <td class="col-core" data-label="Set Arası (21'ler Core + Dinlenme)">
+            <div class="table-core-note">21 core yap, kalan sürede ${escapeHtml(restBadgeText)} tamamla.</div>
             ${
               coreItem
                 ? `

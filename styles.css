@@ -2513,3 +2513,63 @@ body {
   font-size: 0.84rem;
   color: var(--text-secondary);
 }
+
+/* P1-4: Isınma seti görsel ayrımı ve dinlenme süresi rozeti */
+.pyramid-box-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.rest-duration-badge,
+.table-rest-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.table-rest-pill {
+  margin-bottom: 6px;
+}
+
+.rest-strategy-note {
+  margin: 0 0 10px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.pyramid-step.is-warmup {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px dashed rgba(245, 158, 11, 0.4);
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+
+.pyramid-step.is-warmup .set-num {
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+.set-bar.is-warmup {
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.55), rgba(251, 191, 36, 0.85));
+}
+
+.table-pyramid-item.is-warmup {
+  background: rgba(245, 158, 11, 0.1);
+  border-left: 3px solid #f59e0b;
+  padding-left: 6px;
+  border-radius: 4px;
+}
+
+.table-pyramid-item.is-warmup .table-set-num {
+  color: #fbbf24;
+}
