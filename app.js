@@ -7,6 +7,7 @@
  */
 
 import {
+  CARDIO_FINISHER,
   CORE_LIBRARY,
   MUSCLEWIKI_LICENSE_URL,
   DEFAULT_PROFILE,
@@ -690,6 +691,32 @@ function createCoreCardHtml(core, initialVariantIndex = 0) {
   `;
 }
 
+// Core kataloğu veya bitiriş kardiyosu öğesini id ile getirir
+function getCoreOrCardioItem(itemId) {
+  return CORE_LIBRARY[itemId] || (CARDIO_FINISHER.id === itemId ? CARDIO_FINISHER : null);
+}
+
+// Antrenman sonu opsiyonel Bitiriş Kardiyosu bölümünü render eder
+function createCardioFinisherSectionHtml() {
+  return `
+    <section class="finisher-section" aria-label="Bitiriş Kardiyosu">
+      <div class="finisher-section-header">
+        <div>
+          <span class="finisher-badge">🏃 BİTİRİŞ KARDİYOSU · CORE DEĞİL</span>
+          <h3>Antrenman Sonu İsteğe Bağlı Kondisyon Finisher</h3>
+          <p class="muted-text">
+            Eğimli yürüyüş bir karın (core) hareketi değildir; kavrama veya set arası dinlenmeyi etkilemeden
+            yalnızca seans sonunda toplam enerji harcamasını ve kondisyonu desteklemek için ayrılmıştır.
+          </p>
+        </div>
+      </div>
+      <div class="core-grid">
+        ${createCoreCardHtml(CARDIO_FINISHER)}
+      </div>
+    </section>
+  `;
+}
+
 // Seçilen antrenman günü için okunaklı ve etkileşimli tablo özeti üretir
 function createDaySummaryTableHtml(day, { showDayHeader = false, showJumpBtn = false } = {}) {
   const rowsHtml = (day.exercises || [])
@@ -906,6 +933,7 @@ function renderWorkoutDay(day) {
     ${viewModeBarHtml}
     ${tableHtml}
     ${cardsSectionHtml}
+    ${createCardioFinisherSectionHtml()}
   `;
 
   bindCardInteractions();
@@ -1195,6 +1223,16 @@ function renderFullSummaryTab() {
             </table>
           </div>
         </div>
+
+        <div class="summary-table-card finisher-summary-card">
+          <div class="summary-table-header compact">
+            <div>
+              <h3>🏃 Bitiriş Kardiyosu (Core Listesinden Ayrı · Seans Sonu)</h3>
+              <p>${escapeHtml(CARDIO_FINISHER.turkishName)} (${escapeHtml(CARDIO_FINISHER.reps)}) — ${escapeHtml(CARDIO_FINISHER.macfitTip)}</p>
+            </div>
+            <button type="button" class="table-video-btn" data-open-core="${escapeHtml(CARDIO_FINISHER.id)}">Form &amp; Alternatifler</button>
+          </div>
+        </div>
       </section>
 
       <!-- Bölüm 4: Beslenme, Öğün Zamanlaması & Enerji Dengesi Özeti -->
@@ -1302,6 +1340,7 @@ function renderCoreGuide(filteredItems = null) {
       </div>
     </div>
     <div class="core-grid">${cardsHtml}</div>
+    ${createCardioFinisherSectionHtml()}
   `;
 
   bindCardInteractions();
@@ -1495,7 +1534,7 @@ function renderSearchResults(query) {
   });
 
   const matchedCore = [];
-  Object.values(CORE_LIBRARY).forEach((core) => {
+  [...Object.values(CORE_LIBRARY), CARDIO_FINISHER].forEach((core) => {
     const variantIdx = findMatchingVariantIndex(core, "core", normalized);
     if (variantIdx !== -1) {
       matchedCore.push({ core, initialVariantIndex: variantIdx });
@@ -1702,7 +1741,7 @@ function bindCardInteractions() {
   document.querySelectorAll("[data-variant-kind]").forEach((cardEl) => {
     const kind = cardEl.dataset.variantKind;
     const itemId = cardEl.dataset.itemId;
-    const item = kind === "core" ? CORE_LIBRARY[itemId] : findExerciseById(itemId);
+    const item = kind === "core" ? getCoreOrCardioItem(itemId) : findExerciseById(itemId);
     const variants = getExerciseVariants(item, kind);
 
     cardEl.querySelectorAll(".alt-pill-btn").forEach((btn) => {
@@ -1733,7 +1772,7 @@ function bindCardInteractions() {
   // Core / Aktif dinlenme detaylı video modalı butonları
   document.querySelectorAll("[data-open-core]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const core = CORE_LIBRARY[btn.dataset.openCore];
+      const core = getCoreOrCardioItem(btn.dataset.openCore);
       if (!core) return;
       const parentCoreCard = btn.closest('.core-card[data-variant-kind="core"]');
       const activeIdx =
