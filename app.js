@@ -11,6 +11,7 @@ import {
   MUSCLEWIKI_LICENSE_URL,
   DEFAULT_PROFILE,
   NUTRITION_PROTOCOL,
+  SCIENTIFIC_SOURCES,
   SYSTEM_PILLARS,
   WORKOUT_DAYS,
   calculateProfileTargets,
@@ -187,6 +188,34 @@ function getExerciseVariants(item, kind) {
   });
 
   return [primary, ...alts];
+}
+
+// Bilimsel kaynaklar ve basın uyarlama notları bölümünü üretir
+function renderSourcesSectionHtml() {
+  return `
+    <section class="sources-panel" aria-labelledby="sources-heading">
+      <div class="sources-header">
+        <h3 id="sources-heading">📚 Kaynaklar</h3>
+        <p class="muted-text">
+          Bu uygulama <strong>Kravitz'ten Esinlenilmiş Uyarlama</strong>dır. Basın haberlerinde
+          (Men's Health AU; Fitbook, 2026) Kravitz'in haftada 5-6 gün ve 50-35-21-14-10 veya
+          50-25-12-5 tekrar şemalarıyla çalıştığı, bilinçli aralıklı oruç uygulamadığı aktarılır;
+          buradaki 4 günlük 30-15-10-5 şeması ve isteğe bağlı öğün penceresi sürdürülebilir bir uyarlamadır.
+        </p>
+      </div>
+      <ul class="sources-list">
+        ${SCIENTIFIC_SOURCES.map(
+          (src) => `
+          <li class="source-item">
+            <div class="source-topic">${escapeHtml(src.topic)}</div>
+            <div class="source-citation">${escapeHtml(src.citation)}</div>
+            <p class="source-note">${escapeHtml(src.note)}</p>
+          </li>
+        `
+        ).join("")}
+      </ul>
+    </section>
+  `;
 }
 
 // Sistem temel kurallarını (3 sütun) render eder
@@ -1232,6 +1261,8 @@ function renderFullSummaryTab() {
           </article>
         </div>
       </section>
+
+      ${renderSourcesSectionHtml()}
     </div>
   `;
 
@@ -1292,7 +1323,7 @@ function renderNutritionProtocol() {
     <div class="nutrition-layout">
       <div class="day-banner">
         <div>
-          <h2>Yağsız &amp; Fit Silüet İçin Kravitz Beslenme Protokolü</h2>
+          <h2>Kravitz'ten Esinlenilmiş Uyarlama — Beslenme ve Enerji Dengesi</h2>
           <p>
             Profil BMR değerin (${escapeHtml(profileTargets.bmrKcal)} kcal) ve günlük ~${escapeHtml(profileTargets.proteinTargetG)} g protein hedefinle
             mevcut kas kütleni (%${escapeHtml(profileTargets.targetBodyFatPct)} hedef yağ oranı) koruyarak haftalık %0,5-%1 kilo kaybı (genel öneri) hedeflenir.
@@ -1400,6 +1431,8 @@ function renderNutritionProtocol() {
           )
           .join("")}
       </div>
+
+      ${renderSourcesSectionHtml()}
     </div>
   `;
 }

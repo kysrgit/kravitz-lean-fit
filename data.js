@@ -203,13 +203,42 @@ export function calculateProfileTargets(profile = DEFAULT_PROFILE) {
   };
 }
 
-// Dodd Romero & Lenny Kravitz antrenman sisteminin 3 temel kuralı
+// Kanita dayali uyarlama ve basili kaynak listesi
+export const SCIENTIFIC_SOURCES = [
+  {
+    topic: "Bölgesel Yağ Yakımı (Spot Reduction)",
+    citation: "Ramirez-Campillo R. ve ark., Human Movement 2022;23. DOI: 10.5114/hm.2022.110373",
+    note: "Karın veya tek bölge egzersizleri bölgesel yağ yakımı sağlamaz; toplam enerji açığı gerekir.",
+  },
+  {
+    topic: "Aralıklı Oruç ve Sürekli Kalori Kısıtlaması",
+    citation: "Semnani-Azad Z. ve ark., BMJ 2025;389:e082007. DOI: 10.1136/bmj-2024-082007",
+    note: "Benzer kalori açığında aralıklı oruç ile standart öğün düzeni benzer kilo ve yağ kaybı sonuçları verir.",
+  },
+  {
+    topic: "Set Arası Dinlenme Süreleri",
+    citation: "Schoenfeld B.J. ve ark., J Strength Cond Res 2016;30(7):1805-12. DOI: 10.1519/JSC.0000000000001272",
+    note: "Ağır ve bileşik egzersizlerde yeterli set arası dinlenme kuvvet ve hipertrofi verimini destekler.",
+  },
+  {
+    topic: "Lenny Kravitz / Dodd Romero Basın Şeması Farkları",
+    citation: "Men's Health AU, \"The Workout That Keeps Lenny Kravitz Ripped\"; Fitbook (2026), \"Lenny Kravitz Training & Ernährung\"",
+    note: "Basın kaynaklarında 50-35-21-14-10 veya 50-25-12-5 set şemaları ve haftada 5-6 gün geçtiği, bilinçli aralıklı oruç uygulanmadığı aktarılır. Bu sitedeki 30-15-10-5 ve 4 günlük plan sürdürülebilir bir uyarlamadır.",
+  },
+  {
+    topic: "Egzersiz Form Sayfaları ve Lisans Şartları",
+    citation: "MuscleWiki API Terms (https://api.musclewiki.com/api-terms)",
+    note: "Tüm form bağlantıları harici MuscleWiki sayfalarına yönlendirilir; üçüncü taraf medya barındırılmaz.",
+  },
+];
+
+// Kravitz'ten Esinlenilmiş Uyarlama: 3 temel prensip
 export const SYSTEM_PILLARS = [
   {
-    badge: "01 · PİRAMİT MERDİVENİ",
+    badge: "01 · UYARLANMIŞ PİRAMİT",
     title: "30 → 15 → 10 → 5 Tekrar",
     description:
-      "Hafif ağırlıkla 30 tekrar başla: kasa kan pompalar, glikojeni boşaltır ve eklemleri ısıtır. Sonra ağırlığı kademeli artırıp 5 tekrarla bitirerek mevcut kas kütleni koru.",
+      "Kravitz'ten Esinlenilmiş Uyarlama: Basında (Men's Health AU; Fitbook, 2026) 50-35-21-14-10 / 50-25-12-5 ve haftada 5-6 gün aktarılsa da burada sürdürülebilir 4 günlük 30-15-10-5 uyarlaması uygulanır.",
   },
   {
     badge: "02 · AKTİF DİNLENME",
@@ -219,9 +248,9 @@ export const SYSTEM_PILLARS = [
   },
   {
     badge: "03 · KOT PANTOLON TESTİ",
-    title: "45-60 Dk Yüksek Tempo",
+    title: "45-60 Dk Odaklı Seans",
     description:
-      "Seanslar kısa ve keskin. İlk öğün öğleden sonra (18:6 / 16:8), sabahları aç karnına sade kahve + Mide Vakumu. Gelişimi tartıyla değil bel mezurasıyla ölç.",
+      "Basın kaynaklarında Kravitz'in bilinçli aralıklı oruç uygulamadığı belirtilir; buradaki 18:6 / 16:8 pencereleri isteğe bağlıdır. Gelişimi tartıdan çok bel mezurasıyla izle.",
   },
 ];
 
@@ -1450,7 +1479,7 @@ export const WORKOUT_DAYS = [
         coreRestId: "bicycle_crunch",
         coreRestLabel: "Set Arası Aktif Dinlenme: 21× Bicycle Crunch (3 Set)",
         tips: [
-          "Dodd Romero'nun meşhur imza setidir: 45 tekrarda kollarının yanmasını kabullen.",
+          "Kravitz'ten esinlenilmiş yüksek tekrarlı başlangıç setidir: kontrollü tempoyla kası ısıt.",
           "Dirseklerini bel hizasında sabitle; son 5 tekrarlık ağır sette belinden güç alma.",
         ],
         alternatives: [
@@ -1843,7 +1872,7 @@ export const NUTRITION_PROTOCOL = {
   dailyMeals: [
     {
       time: "Öğün 1 · 14:00 - 15:00",
-      title: "Kravitz Kırılış Omleti & Yulaf",
+      title: "İlk Öğün: Sebzeli Omlet & Yulaf",
       totals: { kcal: 685, protein: 48, carbs: 56, fat: 30 },
       restDayTotals: { kcal: 685, protein: 48, carbs: 56, fat: 30 },
       items: [

@@ -2,7 +2,7 @@
 
 # Kravitz Lean & Fit — MACFit Antrenman ve Beslenme Rehberi
 
-Bu web uygulaması, yalnızca kendi tarayıcınızda saklanan kişisel **Profilim** ölçümlerinize ve **Lenny Kravitz / Dodd Romero** tarafından uygulanan **Piramit (30 → 15 → 10 → 5) + 21'ler Aktif Core Dinlenmesi** sistemine göre hazırlanmış, takip karmaşası olmayan, doğrudan **reklamsız egzersiz formu bağlantılı** mobil uyumlu antrenman rehberidir.
+Bu web uygulaması, yalnızca kendi tarayıcınızda saklanan kişisel **Profilim** ölçümlerinize ve **Kravitz'ten Esinlenilmiş Uyarlama** (**Piramit 30 → 15 → 10 → 5 + 21'ler Aktif Core**) çerçevesinde (basın kaynaklarında aktarılan haftada 5-6 gün / 50-35-21-14-10 veya 50-25-12-5 ve aralıklı oruç uygulanmayan düzenin 4 günlük sürdürülebilir uyarlaması olarak) hazırlanmış, takip karmaşası olmayan, doğrudan **reklamsız egzersiz formu bağlantılı** mobil uyumlu antrenman rehberidir.
 
 ## Özellikler
 
