@@ -2305,8 +2305,21 @@ function initDisclaimerBanner() {
   }
 }
 
+// Çevrimdışı PWA desteği için Service Worker kaydını yapar
+function registerServiceWorker() {
+  if (!("serviceWorker" in navigator)) return;
+  try {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    });
+  } catch {
+    // Ortam desteklemiyorsa sessizce atla
+  }
+}
+
 // Uygulama başlangıcı
 function bootstrap() {
+  registerServiceWorker();
   initDisclaimerBanner();
   renderSystemPillars();
   renderTanitaSection();

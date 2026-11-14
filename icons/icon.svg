@@ -1,0 +1,8 @@
+<!--
+  Dosya: icons/icon.svg
+  Açıklama: Kravitz Lean & Fit PWA uygulama ikonu.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="42" fill="#090b10" />
+  <path d="M48 132L78 60h18l-18 42h36l18-42h18l-30 72h-18l15-30H81l-15 30H48z" fill="#f59e0b" />
+</svg>

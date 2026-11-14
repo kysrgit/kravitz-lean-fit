@@ -1,0 +1,19 @@
+{
+  "name": "Kravitz Lean & Fit — Antrenman ve Beslenme Rehberi",
+  "short_name": "Kravitz Fit",
+  "description": "Kravitz'ten esinlenilmiş 30-15-10-5 piramit ve 21'ler core antrenman ve beslenme rehberi.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#090b10",
+  "theme_color": "#090b10",
+  "lang": "tr",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
