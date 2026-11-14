@@ -1803,13 +1803,19 @@ export const WORKOUT_DAYS = [
   },
 ];
 
-// Beslenme ve göbek yağı eritme protokolü verileri
+// Beslenme, makro-kalori dengesi ve porsiyon protokolü verileri
 export const NUTRITION_PROTOCOL = {
   summary: {
-    calories: "2.050 – 2.150 kcal",
-    protein: "170 – 180 g",
-    carbs: "140 – 160 g",
-    fats: "60 – 65 g",
+    targetKcal: 2100,
+    trainingDayTargetKcal: 2150,
+    restDayTargetKcal: 1970,
+    proteinG: 180,
+    carbsG: 190,
+    fatG: 68,
+    calories: "2.100 kcal (Antrenman: 2.150 · Dinlenme: 1.970)",
+    protein: "180 g",
+    carbs: "190 g (Antrenman: 205 g · Dinlenme: 158 g)",
+    fats: "68 g",
     water: "3,0 – 3,5 Litre + 1-2 Maden Suyu",
   },
   fastingWindows: [
@@ -1835,29 +1841,37 @@ export const NUTRITION_PROTOCOL = {
   dailyMeals: [
     {
       time: "Öğün 1 · 14:00 - 15:00",
-      title: "Kravitz Kırılış Omleti",
+      title: "Kravitz Kırılış Omleti & Yulaf",
+      totals: { kcal: 685, protein: 48, carbs: 56, fat: 30 },
+      restDayTotals: { kcal: 685, protein: 48, carbs: 56, fat: 30 },
       items: [
-        "4 yumurta beyazı + 2 tam yumurta",
-        "Bol ıspanak, yeşil biber, mantar ve maydanoz (1 tatlı kaşığı zeytinyağında)",
-        "50 g yağsız lor veya light beyaz peynir",
-        "50-60 g yulaf ezmesi (tarçın + 10 çiğ badem) VEYA 2 dilim ekşi mayalı tam buğday ekmeği",
+        "4 yumurta beyazı (~130 g çiğ) + 2 tam orta yumurta (~100 g çiğ, tavada omlet)",
+        "150 g çiğ ıspanak, 1 yeşil biber, 80 g taze mantar + 1 tatlı kaşığı (5 g) sızma zeytinyağı",
+        "75 g yarım yağlı lor veya light beyaz peynir (pişmemiş)",
+        "65 g (kuru/çiğ ağırlık) yulaf ezmesi + 15 g çiğ badem (VEYA 2 dilim (~70 g) tam buğday ekmeği + 10 g badem)",
       ],
     },
     {
       time: "Öğün 2 · 17:30",
       title: "Antrenman Çevresi Hızlı Yakıt",
+      totals: { kcal: 445, protein: 40, carbs: 62, fat: 4 },
+      restDayTotals: { kcal: 275, protein: 38, carbs: 22, fat: 4 },
       items: [
-        "1 ölçek Whey Protein Shake (su ile)",
-        "1 orta boy yeşil elma veya 1 küçük muz (sadece antrenman günlerinde)",
+        "1,5 ölçek (45 g toz, su ile) Whey Protein Shake",
+        "Antrenman günleri: 1 orta boy muz (~120 g soyulmuş) + 3 adet tam pirinç patlağı (~27 g kuru) veya 45 g kuru ağırlık yulaf",
+        "Dinlenme günleri: Karbonhidratı düşürmek için pirinç patlağı çıkarılır; yalnızca 1 orta boy yeşil elma (~150 g taze) eklenir",
       ],
     },
     {
       time: "Öğün 3 · 20:00",
-      title: "Akşam Protein + Dev Salata",
+      title: "Akşam Protein + Büyük Salata + Ölçülü Karbonhidrat",
+      totals: { kcal: 1020, protein: 92, carbs: 87, fat: 34 },
+      restDayTotals: { kcal: 1010, protein: 94, carbs: 80, fat: 35 },
       items: [
-        "250-300 g ızgara tavuk göğsü, hindi, yağsız dana eti veya somon/levrek",
-        "Dev Yeşil Salata: Roka, marul, salatalık, brokoli (1 yemek kaşığı zeytinyağı + bol limon/elma sirkesi)",
-        "Ölçülü Karbonhidrat: 4-5 yemek kaşığı (~120-150 g pişmiş) basmati pirinç, bulgur veya karabuğday (dinlenme günlerinde yarıya indir)",
+        "350 g çiğ ağırlık (~260 g pişmiş) derisiz ızgara tavuk göğsü, hindi göğsü veya yağsız dana eti",
+        "Büyük Yeşil Salata: 150 g taze roka/marul, 150 g salatalık, 150 g haşlanmış brokoli + 1,5 yemek kaşığı (15 g) sızma zeytinyağı + limon/elma sirkesi",
+        "Antrenman günleri: 95 g çiğ/kuru ağırlık (~280 g pişmiş) basmati pirinç, bulgur veya karabuğday",
+        "Dinlenme günleri: 75 g çiğ/kuru ağırlık (~220 g pişmiş) basmati pirinç/bulgur + 10 g çiğ ceviz içi",
       ],
     },
   ],
@@ -1867,12 +1881,12 @@ export const NUTRITION_PROTOCOL = {
       text: "Her sabah aç karnına 5×20 saniye. İç karın kasını sıkılaştırarak bel çevresini optik ve fiziksel olarak daraltır.",
     },
     {
-      title: "Denzel & Kravitz Kuralı",
-      text: "İlk 3-4 hafta piramit setler kaslarda glikojen ve su tutacağı için tartıya aldanma. Her Pazar aç karnına göbek deliği hizasından mezura ile belini ölç.",
+      title: "Haftalık Kayıp Hızı & Kalori Ayarı (Genel Öneri)",
+      text: "Hedef haftalık kilo kaybı vücut ağırlığının %0,5 - %1,0'idir. 2–3 haftalık ağırlık ortalaması ve bel ölçüsüne göre ilerleme yavaşladıysa veya çok hızlıysa kaloriyi ±100-150 kcal ayarla.",
     },
     {
-      title: "1900 Kalorinin Altına Düşme",
-      text: "BMR değerinin çok altına düşmek metabolizman kendini koruma moduna alıp yavaşlayabileceği için önerilmez; kalorini hesaplanan hedef bandında tutup aktiviteyle açık yarat.",
+      title: "Aşırı Kalori Açığından Kaçın",
+      text: "Aşırı açık, kas kaybını ve programa uyum güçlüğünü artırır (genel öneri). Hesaplanan hedef bandında kalıp antrenman ve günlük adımlarla sürdürülebilir açık yarat.",
     },
   ],
 };

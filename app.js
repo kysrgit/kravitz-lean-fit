@@ -957,12 +957,12 @@ function renderFullSummaryTab() {
   const macroRowsHtml = [
     [
       "Günlük Kalori Hedefi",
-      `${profileTargets.targetCalories} kcal (Örnek Bant: ${summary.calories})`,
-      `Profil BMR (${profileTargets.bmrKcal} kcal) ve TDEE (${profileTargets.estimatedTdeeKcal} kcal) baz alınarak hesaplanır`,
+      `${profileTargets.targetCalories} kcal (Örnek Plan: ${summary.calories})`,
+      `Profil BMR (${profileTargets.bmrKcal} kcal) ve tahmini TDEE (${profileTargets.estimatedTdeeKcal} kcal) baz alınır · Haftalık hedef: vücut ağırlığının %0,5-1'i`,
     ],
-    ["Günlük Protein", summary.protein, `${profileTargets.muscleMassKg.toFixed(1)} kg kas kütleni korumaya ve tokluğa destek olur (~${profileTargets.proteinTargetG} g/gün)`],
-    ["Temiz Karbonhidrat", summary.carbs, "Ağırlıklı olarak antrenman çevresinde tüket"],
-    ["Sağlıklı Yağlar", summary.fats, "Hormon dengesi ve uzun süreli enerji"],
+    ["Günlük Protein", summary.protein, `${profileTargets.muscleMassKg.toFixed(1)} kg kas kütleni korumaya destek olur (örnek planda 180 g; ~1,8-2,2 g/kg)`],
+    ["Karbonhidrat (Çiğ/Kuru Bazlı)", summary.carbs, "Antrenman günlerinde yüksek, dinlenme günlerinde kontrollü (~4 kcal/g)"],
+    ["Sağlıklı Yağlar", summary.fats, "Hormon dengesi ve tokluk (~9 kcal/g)"],
     ["Sıvı Tüketimi", summary.water, "Gün boyu dengeli hidrasyon ve elektrolit desteği"],
   ]
     .map(
@@ -976,21 +976,57 @@ function renderFullSummaryTab() {
     )
     .join("");
 
-  const mealsRowsHtml = dailyMeals
-    .map(
-      (meal) => `
+  const trainingSum = dailyMeals.reduce(
+    (acc, m) => ({
+      kcal: acc.kcal + m.totals.kcal,
+      protein: acc.protein + m.totals.protein,
+      carbs: acc.carbs + m.totals.carbs,
+      fat: acc.fat + m.totals.fat,
+    }),
+    { kcal: 0, protein: 0, carbs: 0, fat: 0 }
+  );
+  const restSum = dailyMeals.reduce(
+    (acc, m) => {
+      const t = m.restDayTotals || m.totals;
+      return {
+        kcal: acc.kcal + t.kcal,
+        protein: acc.protein + t.protein,
+        carbs: acc.carbs + t.carbs,
+        fat: acc.fat + t.fat,
+      };
+    },
+    { kcal: 0, protein: 0, carbs: 0, fat: 0 }
+  );
+
+  const mealsRowsHtml =
+    dailyMeals
+      .map(
+        (meal) => `
       <tr>
-        <td data-label="Saat"><span class="meal-time-badge">${escapeHtml(meal.time)}</span></td>
+        <td data-label="Saat">
+          <span class="meal-time-badge">${escapeHtml(meal.time)}</span>
+          <div class="meal-totals-chip">Antrenman: ${escapeHtml(meal.totals.kcal)} kcal (P ${escapeHtml(meal.totals.protein)}g · K ${escapeHtml(meal.totals.carbs)}g · Y ${escapeHtml(meal.totals.fat)}g)</div>
+          <div class="meal-totals-chip rest">Dinlenme: ${escapeHtml(meal.restDayTotals.kcal)} kcal (P ${escapeHtml(meal.restDayTotals.protein)}g · K ${escapeHtml(meal.restDayTotals.carbs)}g · Y ${escapeHtml(meal.restDayTotals.fat)}g)</div>
+        </td>
         <td data-label="Öğün"><strong>${escapeHtml(meal.title)}</strong></td>
-        <td data-label="İçerik">
+        <td data-label="İçerik (Çiğ / Pişmiş)">
           <ul class="table-bullets">
             ${meal.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
           </ul>
         </td>
       </tr>
     `
-    )
-    .join("");
+      )
+      .join("") +
+    `
+      <tr class="meals-total-row">
+        <td data-label="Günlük Toplam" colspan="3">
+          <strong>Antrenman Günü Toplamı:</strong> ${escapeHtml(trainingSum.kcal)} kcal (P ${escapeHtml(trainingSum.protein)} g · K ${escapeHtml(trainingSum.carbs)} g · Y ${escapeHtml(trainingSum.fat)} g)
+          &nbsp;|&nbsp;
+          <strong>Dinlenme Günü Toplamı:</strong> ${escapeHtml(restSum.kcal)} kcal (P ${escapeHtml(restSum.protein)} g · K ${escapeHtml(restSum.carbs)} g · Y ${escapeHtml(restSum.fat)} g)
+        </td>
+      </tr>
+    `;
 
   elements.contentArea.innerHTML = `
     <div class="summary-layout">
@@ -1229,6 +1265,27 @@ function renderCoreGuide(filteredItems = null) {
 function renderNutritionProtocol() {
   const { summary, fastingWindows, morningFastRules, dailyMeals, waistRules } = NUTRITION_PROTOCOL;
   const profileTargets = getActiveProfileTargets();
+  const trainingDayTotals = dailyMeals.reduce(
+    (acc, meal) => ({
+      kcal: acc.kcal + meal.totals.kcal,
+      protein: acc.protein + meal.totals.protein,
+      carbs: acc.carbs + meal.totals.carbs,
+      fat: acc.fat + meal.totals.fat,
+    }),
+    { kcal: 0, protein: 0, carbs: 0, fat: 0 }
+  );
+  const restDayTotals = dailyMeals.reduce(
+    (acc, meal) => {
+      const rt = meal.restDayTotals || meal.totals;
+      return {
+        kcal: acc.kcal + rt.kcal,
+        protein: acc.protein + rt.protein,
+        carbs: acc.carbs + rt.carbs,
+        fat: acc.fat + rt.fat,
+      };
+    },
+    { kcal: 0, protein: 0, carbs: 0, fat: 0 }
+  );
 
   elements.contentArea.innerHTML = `
     <div class="nutrition-layout">
@@ -1237,34 +1294,40 @@ function renderNutritionProtocol() {
           <h2>Yağsız &amp; Fit Silüet İçin Kravitz Beslenme Protokolü</h2>
           <p>
             Profil BMR değerin (${escapeHtml(profileTargets.bmrKcal)} kcal) ve günlük ~${escapeHtml(profileTargets.proteinTargetG)} g protein hedefinle
-            mevcut kas kütleni (%${escapeHtml(profileTargets.targetBodyFatPct)} hedef yağ oranı) koruyarak kontrollü açık oluşturabilirsin.
+            mevcut kas kütleni (%${escapeHtml(profileTargets.targetBodyFatPct)} hedef yağ oranı) koruyarak haftalık %0,5-%1 kilo kaybı (genel öneri) hedeflenir.
           </p>
         </div>
         <div class="day-meta-badges">
           <span class="meta-pill">🎯 Kişisel Kalori Hedefi: ${escapeHtml(profileTargets.targetCalories)} kcal</span>
+          <span class="meta-pill">📉 Örnek Plan: ${escapeHtml(trainingDayTotals.kcal)} / ${escapeHtml(restDayTotals.kcal)} kcal</span>
         </div>
       </div>
 
       <div class="macro-grid">
         <article class="macro-card">
-          <div class="macro-label">Günlük Kalori Hedefi</div>
-          <div class="macro-val">${escapeHtml(summary.calories)}</div>
+          <div class="macro-label">Ortalama Kalori Hedefi</div>
+          <div class="macro-val">${escapeHtml(summary.targetKcal)} kcal</div>
+          <div class="macro-sub">Antrenman: ${escapeHtml(trainingDayTotals.kcal)} · Dinlenme: ${escapeHtml(restDayTotals.kcal)} kcal</div>
         </article>
         <article class="macro-card">
           <div class="macro-label">Günlük Protein</div>
-          <div class="macro-val">${escapeHtml(summary.protein)}</div>
+          <div class="macro-val">${escapeHtml(summary.proteinG)} g</div>
+          <div class="macro-sub">${escapeHtml(summary.proteinG * 4)} kcal (%${Math.round(((summary.proteinG * 4) / summary.targetKcal) * 100)})</div>
         </article>
         <article class="macro-card">
-          <div class="macro-label">Temiz Karbonhidrat</div>
-          <div class="macro-val">${escapeHtml(summary.carbs)}</div>
+          <div class="macro-label">Karbonhidrat</div>
+          <div class="macro-val">${escapeHtml(summary.carbsG)} g</div>
+          <div class="macro-sub">Antr: ${escapeHtml(trainingDayTotals.carbs)} g · Dinl: ${escapeHtml(restDayTotals.carbs)} g</div>
         </article>
         <article class="macro-card">
           <div class="macro-label">Sağlıklı Yağlar</div>
-          <div class="macro-val">${escapeHtml(summary.fats)}</div>
+          <div class="macro-val">${escapeHtml(summary.fatG)} g</div>
+          <div class="macro-sub">${escapeHtml(summary.fatG * 9)} kcal (zeytinyağı, yumurta, badem)</div>
         </article>
         <article class="macro-card">
           <div class="macro-label">Sıvı Tüketimi</div>
           <div class="macro-val">${escapeHtml(summary.water)}</div>
+          <div class="macro-sub">Hidrasyon &amp; mineral desteği</div>
         </article>
       </div>
 
@@ -1292,6 +1355,17 @@ function renderNutritionProtocol() {
         </article>
       </div>
 
+      <div class="daily-totals-bar">
+        <div class="daily-total-pill">
+          <strong>🏋️ Antrenman Günü Toplamı:</strong>
+          <span>${escapeHtml(trainingDayTotals.kcal)} kcal · P ${escapeHtml(trainingDayTotals.protein)} g · K ${escapeHtml(trainingDayTotals.carbs)} g · Y ${escapeHtml(trainingDayTotals.fat)} g</span>
+        </div>
+        <div class="daily-total-pill is-rest">
+          <strong>🛌 Dinlenme Günü Toplamı:</strong>
+          <span>${escapeHtml(restDayTotals.kcal)} kcal · P ${escapeHtml(restDayTotals.protein)} g · K ${escapeHtml(restDayTotals.carbs)} g · Y ${escapeHtml(restDayTotals.fat)} g</span>
+        </div>
+      </div>
+
       <div class="three-col-grid">
         ${dailyMeals
           .map(
@@ -1299,6 +1373,10 @@ function renderNutritionProtocol() {
           <article class="info-panel">
             <span class="meal-time-badge">${escapeHtml(meal.time)}</span>
             <h3>${escapeHtml(meal.title)}</h3>
+            <div class="meal-macros-summary">
+              <div class="meal-macro-line"><strong>Antrenman:</strong> ${escapeHtml(meal.totals.kcal)} kcal (P ${escapeHtml(meal.totals.protein)}g · K ${escapeHtml(meal.totals.carbs)}g · Y ${escapeHtml(meal.totals.fat)}g)</div>
+              <div class="meal-macro-line rest"><strong>Dinlenme:</strong> ${escapeHtml(meal.restDayTotals.kcal)} kcal (P ${escapeHtml(meal.restDayTotals.protein)}g · K ${escapeHtml(meal.restDayTotals.carbs)}g · Y ${escapeHtml(meal.restDayTotals.fat)}g)</div>
+            </div>
             <ul>
               ${meal.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
             </ul>

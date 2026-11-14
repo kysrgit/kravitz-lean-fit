@@ -1175,6 +1175,64 @@ body {
   gap: 7px;
 }
 
+.macro-sub {
+  margin-top: 4px;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.daily-totals-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.daily-total-pill {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--amber-soft);
+  border: 1px solid var(--border-accent);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.84rem;
+}
+
+.daily-total-pill.is-rest {
+  background: var(--emerald-soft);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.meal-macros-summary {
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(9, 11, 16, 0.55);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.meal-macro-line.rest,
+.meal-totals-chip.rest {
+  color: var(--emerald);
+}
+
+.meal-totals-chip {
+  margin-top: 5px;
+  font-size: 0.74rem;
+  color: var(--amber);
+  font-weight: 600;
+}
+
+.meals-total-row td {
+  background: rgba(245, 158, 11, 0.08);
+  font-size: 0.84rem;
+}
+
 .meal-time-badge {
   display: inline-block;
   padding: 4px 10px;
