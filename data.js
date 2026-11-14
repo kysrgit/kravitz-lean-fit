@@ -157,33 +157,35 @@ export function calculateProfileTargets(profile = DEFAULT_PROFILE) {
     estimatedTdeeKcal,
     targetCalories,
     proteinTargetG,
+    biaMeasurementNote:
+      "Ana ilerleme ölçütün bel mezurasıdır. BIA cihazındaki vücut su yüzdesi yağ oranı düştükçe zaten yükselir ve akut hidrasyona, son öğüne veya egzersize karşı çok duyarlıdır; bu yüzden ölçümleri her zaman aynı standart koşulda (ör. sabah aç karnına) yap.",
     metrics: [
+      {
+        label: "Bel Çevresi (Birincil Ana Metrik)",
+        current: `${waistCm.toFixed(0)} cm`,
+        target: "İstikrarlı Düşüş (Mezura)",
+        note: "Tartı veya tek günlük BIA yerine haftada 1 kez sabah aç karnına aynı noktadan ölç.",
+        highlight: true,
+      },
       {
         label: "Mevcut → Hedef Kilo",
         current: `${weightKg.toFixed(1)} kg`,
         target: `~${targetWeightKg.toFixed(1)} kg`,
-        note: "Kas kütlesini koruyarak kademeli yağ kaybı",
+        note: "Kas kütlesini koruyarak kademeli yağ kaybı (genel öneri)",
         highlight: false,
       },
       {
-        label: "Vücut Yağ Oranı",
+        label: "Vücut Yağ Oranı (BIA Tahmini)",
         current: `%${bodyFatPct.toFixed(1)} (${fatMassKg.toFixed(1)} kg)`,
         target: `%${targetBodyFatPct.toFixed(0)}`,
-        note: "Yağsız kütle korunarak atletik definisyon",
+        note: "BIA hidrasyona duyarlıdır; aynı koşulda (sabah aç) uzun vadeli trende bak",
         highlight: false,
-      },
-      {
-        label: "Bel Çevresi (Ana Metrik)",
-        current: `${waistCm.toFixed(0)} cm`,
-        target: "İstikrarlı Düşüş",
-        note: "Haftalık sabah aç karnına göbek deliği hizasından ölçüm",
-        highlight: true,
       },
       {
         label: "Kas Kütlesi / Yağsız Kütle",
         current: `${muscleMassKg.toFixed(1)} kg`,
         target: "Mevcudu Koru",
-        note: `Günlük ~${proteinTargetG} g protein (~2 g/kg) ile desteklenir`,
+        note: `Günlük ~${proteinTargetG} g protein (~2 g/kg, genel öneri) ile desteklenir`,
         highlight: false,
       },
       {
@@ -197,7 +199,9 @@ export function calculateProfileTargets(profile = DEFAULT_PROFILE) {
         label: "Haftalık Hız (Genel Öneri)",
         current: `%${(0.5).toFixed(1)} - %1,0 / hafta`,
         target: `${(weightKg * 0.005).toFixed(2)} - ${(weightKg * 0.01).toFixed(2)} kg`,
-        note: "Örnek veri (kendi verini Profilim formundan girebilirsin)",
+        note: safe.isCustom
+          ? "Kayıtlı profiline göre haftalık %0,5-1 hedef aralığı"
+          : "Örnek veri (kendi verini Profilim formundan girebilirsin)",
         highlight: false,
       },
     ],
@@ -2068,16 +2072,16 @@ export const NUTRITION_PROTOCOL = {
   ],
   waistRules: [
     {
+      title: "Birincil İlerleme Ölçütü: Bel Mezurası & BIA Şartları",
+      text: "İlerlemede birincil gösterge bel ölçüsüdür. BIA'daki su yüzdesi yağ düştükçe doğal olarak yükselir ve akut hidrasyondan çok etkilenir; BIA ölçümünü daima aynı standart koşullarda (sabah aç karnına) yap.",
+    },
+    {
       title: "Postür & Derin Karın (TVA) Kontrolü + Genel Açık",
-      text: "Sabah mide vakumu bölgesel yağ yakımı sağlamaz; postür farkındalığı ve Transversus Abdominis (TVA) kontrolünü geliştirir. Yağ kaybı yalnızca toplam enerji açığıyla gerçekleşir (Ramirez-Campillo R. ve ark., Human Movement 2022;23, DOI: 10.5114/hm.2022.110373).",
+      text: "Sabah mide vakumu bölgesel yağ yakımı sağlamaz; postür ve TVA kontrolünü geliştirir. Yağ kaybı toplam enerji açığıyla gerçekleşir (Ramirez-Campillo R. ve ark., Human Movement 2022;23, DOI: 10.5114/hm.2022.110373).",
     },
     {
-      title: "Haftalık Kayıp Hızı & Kalori Ayarı (Genel Öneri)",
-      text: "Hedef haftalık kilo kaybı vücut ağırlığının %0,5 - %1,0'idir. 2–3 haftalık ağırlık ortalaması ve bel ölçüsüne göre ilerleme yavaşladıysa veya çok hızlıysa kaloriyi ±100-150 kcal ayarla.",
-    },
-    {
-      title: "Aşırı Kalori Açığından Kaçın",
-      text: "Aşırı açık, kas kaybını ve programa uyum güçlüğünü artırır (genel öneri). Hesaplanan hedef bandında kalıp antrenman ve günlük adımlarla sürdürülebilir açık yarat.",
+      title: "Haftalık Kayıp Hızı (%0,5-1) & Kalori Ayarı",
+      text: "Aşırı açık kas kaybını artırabilir (genel öneri). 2–3 haftalık bel ölçüsü ve ağırlık ortalamasına göre haftalık %0,5-1 kayıp için kaloriyi ±100-150 kcal ayarla.",
     },
   ],
 };

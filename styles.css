@@ -2670,3 +2670,14 @@ body {
   color: var(--accent-soft);
   margin: 4px 0 8px;
 }
+
+/* P1-8: BIA ölçüm standardı ve bel önceliği notu */
+.bia-standard-note {
+  margin: 4px 0 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}

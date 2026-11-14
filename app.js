@@ -303,7 +303,7 @@ function renderTanitaSection() {
     elements.profileTargetChip.textContent = `Hedef: %${profile.targetBodyFatPct} Yağ · ~${profile.targetWeightKg} kg · ${profile.targetCalories} kcal`;
   }
 
-  elements.tanitaGrid.innerHTML = profile.metrics
+  const metricsHtml = profile.metrics
     .map(
       (item) => `
       <article class="tanita-card ${item.highlight ? "highlight" : ""}">
@@ -317,6 +317,11 @@ function renderTanitaSection() {
     `
     )
     .join("");
+
+  elements.tanitaGrid.innerHTML = `
+    ${metricsHtml}
+    <p class="bia-standard-note" style="grid-column: 1 / -1;">📏 <strong>Ölçüm Standardı:</strong> ${escapeHtml(profile.biaMeasurementNote)}</p>
+  `;
 }
 
 // Aktif sekmeye geçer, aramayı temizler ve isteğe bağlı içerik alanına yumuşakça odaklanır
