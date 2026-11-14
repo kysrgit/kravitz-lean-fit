@@ -1,0 +1,870 @@
+/**
+ * Dosya: styles/components/player-card.css
+ * Açıklama: ARENA FIFA/NBA oyuncu kartı (.exercise-card): CSS Container Queries,
+ * dev yarı saydam sıra numarası, 16:9 siyah sahne + dumbbell odak ikonu, scaleX
+ * yoğunluk çubuklu piramit merdiveni, --set-core 21× aktif dinlenme şeridi ve set günlüğü.
+ */
+
+@layer components {
+  .exercises-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .exercise-card {
+    container-type: inline-size;
+    container-name: player-card;
+    position: relative;
+    isolation: isolate;
+    background: var(--stage-1);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--day-accent);
+    border-radius: var(--radius-sharp);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color var(--dur-micro) var(--ease-out);
+  }
+
+  .exercise-card:hover {
+    border-color: var(--accent-border);
+  }
+
+  /* Masaüstü pointer cihazlarda Faz 3 eğim parlaması için GPU specular katmanı */
+  .card-specular {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      260px circle at var(--spec-x, 50%) var(--spec-y, 20%),
+      var(--specular-white),
+      transparent 70%
+    );
+    transition: opacity var(--dur-micro) var(--ease-out);
+  }
+
+  /* 16:9 siyah arena medya / dış form referans sahnesi */
+  .media-stage {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: var(--void);
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+  }
+
+  .media-stage.is-reference-stage {
+    aspect-ratio: auto;
+    min-height: 210px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background:
+      radial-gradient(circle at 50% 42%, var(--accent-wash), transparent 68%), var(--void);
+  }
+
+  .media-video,
+  .media-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: var(--void);
+    transition: opacity var(--dur-micro) var(--ease-out);
+  }
+
+  .is-hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .media-overlay-top {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 14px 0;
+  }
+
+  .media-stage:not(.is-reference-stage) .media-overlay-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 12px;
+    pointer-events: none;
+  }
+
+  .order-badge,
+  .pose-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: var(--radius-cut);
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .order-badge {
+    background: var(--stage-1-glass);
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--day-accent);
+    color: var(--day-accent);
+  }
+
+  .pose-indicator {
+    background: var(--stage-1-glass);
+    border: 1px solid var(--line);
+    color: var(--set-core);
+  }
+
+  .reference-preview-body {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+  }
+
+  .reference-stage-emblem {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--accent-border);
+    background: var(--stage-1);
+    color: var(--day-accent);
+  }
+
+  .reference-preview-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .reference-preview-meta {
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--day-accent);
+  }
+
+  .reference-preview-cue {
+    margin: 0;
+    font-size: var(--fs-14);
+    color: var(--text-1);
+    line-height: 1.45;
+  }
+
+  .media-controls-bar {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 14px 12px;
+    border-top: 1px solid var(--line-soft);
+    background: var(--stage-1-glass);
+  }
+
+  .media-stage:not(.is-reference-stage) .media-controls-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px 12px;
+    border-top: none;
+    background: linear-gradient(to top, var(--void), transparent);
+  }
+
+  .pose-toggle-group {
+    display: inline-flex;
+    background: var(--void);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-cut);
+    padding: 2px;
+    gap: 2px;
+  }
+
+  .pose-btn {
+    min-height: 36px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: var(--radius-sharp);
+    background: transparent;
+    color: var(--text-2);
+    font-size: var(--fs-12);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out);
+  }
+
+  .pose-btn.active {
+    background: var(--day-accent);
+    color: var(--text-on-accent);
+  }
+
+  .source-link-btn,
+  .video-trigger-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 7px 13px;
+    border-radius: var(--radius-cut);
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      filter var(--dur-micro) var(--ease-out),
+      border-color var(--dur-micro) var(--ease-out),
+      background-color var(--dur-micro) var(--ease-out);
+  }
+
+  .source-link-btn {
+    border: 1px solid var(--volt);
+    background: var(--volt);
+    color: var(--text-on-accent);
+  }
+
+  .source-link-btn:hover {
+    filter: brightness(1.08);
+  }
+
+  .video-trigger-btn {
+    border: 1px solid var(--line);
+    background: var(--stage-2);
+    color: var(--text-1);
+  }
+
+  .video-trigger-btn:hover {
+    border-color: var(--day-accent);
+    color: var(--day-accent);
+  }
+
+  /* Kart Gövdesi ve Oyuncu Künyesi */
+  .card-body {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1;
+  }
+
+  .exercise-header {
+    position: relative;
+    padding-right: 68px;
+    min-height: 58px;
+  }
+
+  .card-seq-num {
+    position: absolute;
+    top: -4px;
+    right: 0;
+    font-size: var(--fs-card-num);
+    line-height: 0.85;
+    color: var(--text-ghost);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .exercise-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .tag-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: var(--radius-cut);
+    background: var(--core-wash);
+    border: 1px solid var(--core-border);
+    color: var(--set-core);
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .tag-chip.equipment {
+    background: var(--stage-2);
+    border-color: var(--line);
+    color: var(--text-2);
+  }
+
+  .exercise-title {
+    margin: 0 0 3px;
+    font-family: var(--font-display);
+    font-size: var(--fs-25);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--text-1);
+  }
+
+  .exercise-subtitle {
+    margin: 0;
+    font-size: var(--fs-14);
+    color: var(--text-2);
+  }
+
+  /* Yedek Oyuncular / Alternatif Hareket Seçici */
+  .alternatives-box {
+    background: var(--void);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sharp);
+    padding: 12px;
+  }
+
+  .alternatives-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--day-accent);
+    margin-bottom: 8px;
+  }
+
+  .alt-pills-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .alt-pill-btn {
+    min-height: 38px;
+    padding: 6px 11px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--line);
+    background: var(--stage-1);
+    color: var(--text-2);
+    font-size: var(--fs-12);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      border-color var(--dur-micro) var(--ease-out),
+      background-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out);
+  }
+
+  .alt-pill-btn:hover {
+    border-color: var(--accent-border);
+    color: var(--text-1);
+  }
+
+  .alt-pill-btn.active {
+    background: var(--day-accent);
+    border-color: var(--day-accent);
+    color: var(--text-on-accent);
+  }
+
+  .alt-reason-banner {
+    margin-top: 9px;
+    padding: 8px 10px;
+    border-radius: var(--radius-cut);
+    background: var(--core-wash);
+    border-left: 3px solid var(--set-core);
+    font-size: var(--fs-12);
+    color: var(--text-1);
+  }
+
+  .alt-reason-banner strong {
+    color: var(--set-core);
+  }
+
+  /* Piramit Merdiveni + Yoğunluk Çubukları + Set Günlüğü */
+  .pyramid-box {
+    background: var(--stage-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sharp);
+    padding: 14px;
+  }
+
+  .pyramid-box-title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .pyramid-box-title {
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-1);
+  }
+
+  .rest-timer-trigger-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .rest-duration-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: var(--radius-cut);
+    font-size: var(--fs-12);
+    font-weight: 600;
+    color: var(--text-1);
+    background: var(--accent-wash);
+    border: 1px solid var(--accent-border);
+  }
+
+  .start-rest-timer-btn,
+  .timer-mini-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 36px;
+    padding: 6px 11px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--core-border);
+    background: var(--core-wash);
+    color: var(--set-core);
+    font-size: var(--fs-12);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--dur-micro) var(--ease-out);
+  }
+
+  .start-rest-timer-btn:hover,
+  .timer-mini-btn:hover {
+    background: var(--stage-3);
+  }
+
+  .timer-mini-btn.is-stop {
+    border-color: var(--blaze-border);
+    background: var(--blaze-wash);
+    color: var(--blaze);
+  }
+
+  .rest-strategy-note {
+    margin: 0 0 10px;
+    font-size: var(--fs-12);
+    color: var(--text-2);
+  }
+
+  .pyramid-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .pyramid-step {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--stage-1);
+    border: 1px solid var(--line-soft);
+    border-left: 3px solid var(--day-accent);
+  }
+
+  .pyramid-step.is-warmup {
+    background: var(--warmup-wash);
+    border-color: var(--line);
+    border-left: 3px solid var(--set-warmup);
+  }
+
+  .pyramid-step-main {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .set-head-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 112px;
+  }
+
+  .set-phase-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: var(--radius-cut);
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .set-phase-badge.is-warmup {
+    background: var(--stage-2);
+    border: 1px solid var(--set-warmup);
+    color: var(--text-2);
+  }
+
+  .set-phase-badge.is-work {
+    background: var(--accent-wash);
+    border: 1px solid var(--accent-border);
+    color: var(--day-accent);
+  }
+
+  .set-num {
+    font-size: var(--fs-12);
+    font-weight: 600;
+    color: var(--text-1);
+  }
+
+  .set-bar-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .set-load {
+    font-size: var(--fs-12);
+    color: var(--text-2);
+  }
+
+  .set-bar-track {
+    width: 100%;
+    height: 6px;
+    background: var(--void);
+    border: 1px solid var(--line-soft);
+    overflow: hidden;
+  }
+
+  .set-bar {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--day-accent), var(--volt));
+    transform-origin: left center;
+    transform: scaleX(var(--bar-scale, 1));
+    transition: transform var(--dur-transition) var(--ease-out);
+  }
+
+  .set-bar.is-warmup {
+    background: var(--set-warmup);
+  }
+
+  .set-reps {
+    font-family: var(--font-display);
+    font-size: var(--fs-20);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text-1);
+    white-space: nowrap;
+  }
+
+  .set-log-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--line-soft);
+  }
+
+  .set-prev-badge {
+    font-size: var(--fs-12);
+    color: var(--text-2);
+  }
+
+  .set-log-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .set-log-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: var(--fs-12);
+    color: var(--text-2);
+  }
+
+  .set-log-field input {
+    width: 64px;
+    min-height: 36px;
+    padding: 4px 7px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--line);
+    background: var(--void);
+    color: var(--text-1);
+    font-size: var(--fs-14);
+  }
+
+  .set-log-field input:focus {
+    outline: none;
+    border-color: var(--volt);
+  }
+
+  /* Teknik Form İpuçları */
+  .tips-list {
+    margin: 0;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    color: var(--text-2);
+    font-size: var(--fs-14);
+    line-height: 1.45;
+  }
+
+  /* --set-core 21× Aktif Dinlenme Şeridi */
+  .core-rest-btn {
+    margin-top: auto;
+    width: 100%;
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sharp);
+    border: 1px solid var(--core-border);
+    border-left: 4px solid var(--set-core);
+    background: var(--core-wash);
+    color: var(--text-1);
+    cursor: pointer;
+    text-align: left;
+    transition:
+      border-color var(--dur-micro) var(--ease-out),
+      background-color var(--dur-micro) var(--ease-out);
+  }
+
+  .core-rest-btn:hover {
+    border-color: var(--set-core);
+    background: color-mix(in oklch, var(--set-core) 20%, transparent);
+  }
+
+  .core-thumb-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-cut);
+    display: grid;
+    place-items: center;
+    background: var(--void);
+    border: 1px solid var(--core-border);
+    color: var(--set-core);
+    font-family: var(--font-display);
+    font-size: var(--fs-20);
+    font-weight: 700;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .core-rest-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .core-rest-kicker {
+    font-size: var(--fs-12);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--set-core);
+  }
+
+  .core-rest-text {
+    font-size: var(--fs-14);
+    font-weight: 600;
+    color: var(--text-1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .core-rest-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--fs-12);
+    font-weight: 600;
+    color: var(--volt);
+    white-space: nowrap;
+  }
+
+  /* Sabit Dinlenme Sayacı Çubuğu */
+  .rest-timer-bar {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(var(--nav-mobile-h) + 12px);
+    z-index: var(--z-timer);
+    width: min(calc(100vw - 24px), 440px);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: var(--bar-bg);
+    border: 1px solid var(--core-border);
+    border-left: 4px solid var(--set-core);
+    border-radius: var(--radius-sharp);
+    box-shadow: 0 12px 28px var(--shadow-deep);
+    backdrop-filter: blur(12px);
+  }
+
+  .rest-timer-bar.is-finished {
+    border-color: var(--volt-border);
+    border-left-color: var(--volt);
+  }
+
+  .rest-timer-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .rest-timer-label {
+    font-size: var(--fs-12);
+    color: var(--text-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .rest-timer-clock {
+    font-family: var(--font-display);
+    font-size: var(--fs-25);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--set-core);
+  }
+
+  .rest-timer-bar.is-finished .rest-timer-clock {
+    color: var(--volt);
+  }
+
+  .rest-timer-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  /* Kart içi Container Query uyumu */
+  @container player-card (max-width: 460px) {
+    .exercise-header {
+      padding-right: 52px;
+    }
+
+    .pyramid-step-main {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+
+    .set-reps {
+      justify-self: start;
+    }
+
+    .core-rest-btn {
+      flex-wrap: wrap;
+    }
+
+    .core-rest-action {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .exercises-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .card-body {
+      padding: 15px;
+      gap: 12px;
+    }
+
+    .alt-pills-row {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+
+    .alt-pills-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .alt-pill-btn {
+      flex: 0 0 auto;
+      scroll-snap-align: start;
+      min-height: 44px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .media-stage:not(.is-reference-stage) {
+      aspect-ratio: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .media-stage:not(.is-reference-stage) .media-video {
+      position: relative;
+      inset: auto;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      display: block;
+    }
+
+    .media-stage:not(.is-reference-stage) .media-frame {
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: auto;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+    }
+
+    .media-stage:not(.is-reference-stage) .media-controls-bar {
+      position: static;
+      padding: 8px 10px;
+      background: var(--void);
+      border-top: 1px solid var(--line);
+    }
+
+    .pose-btn,
+    .source-link-btn,
+    .video-trigger-btn {
+      min-height: 44px;
+      padding: 8px 12px;
+    }
+  }
+}

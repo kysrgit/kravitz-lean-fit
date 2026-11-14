@@ -344,8 +344,13 @@ export function createMediaStageHtml({
       </div>
 
       <div class="reference-preview-body">
-        <div class="reference-preview-meta">${escapeHtml(metaSummary)}</div>
-        <p class="reference-preview-cue">${escapeHtml(cueText)}</p>
+        <div class="reference-stage-emblem" aria-hidden="true">
+          ${lucideIcon("dumbbell", { size: 36, className: "icon-hero" })}
+        </div>
+        <div class="reference-preview-copy">
+          <div class="reference-preview-meta">${escapeHtml(metaSummary)}</div>
+          <p class="reference-preview-cue">${escapeHtml(cueText)}</p>
+        </div>
       </div>
 
       <div class="media-controls-bar">

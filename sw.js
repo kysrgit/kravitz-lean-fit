@@ -5,8 +5,8 @@
  * üçüncü taraf veya lisanssız medya dosyalarını kesinlikle önbelleğe almaz.
  */
 
-const SHELL_CACHE = "klf-shell-v4";
-const DATA_CACHE = "klf-data-v4";
+const SHELL_CACHE = "klf-shell-v5";
+const DATA_CACHE = "klf-data-v5";
 
 const APP_SHELL_URLS = [
   "./",
@@ -18,6 +18,7 @@ const APP_SHELL_URLS = [
   "./styles/components/hero.css",
   "./styles/components/scoreboard.css",
   "./styles/components/day-poster.css",
+  "./styles/components/player-card.css",
   "./styles/legacy-bridge.css",
   "./styles/motion.css",
   "./app.js",

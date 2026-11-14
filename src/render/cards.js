@@ -33,7 +33,7 @@ export function createAlternativesBoxHtml(variants, activeIndex = 0) {
 
   return `
     <div class="alternatives-box">
-      <div class="alternatives-header">${lucideIcon("refresh-cw", { size: 15 })} <span>Alternatif Hareketler (Makine Doluysa / Yapılamıyorsa)</span></div>
+      <div class="alternatives-header">${lucideIcon("refresh-cw", { size: 15 })} <span>Yedek Oyuncular · Alternatifler (Makine Doluysa)</span></div>
       <div class="alt-pills-row">${pillsHtml}</div>
       <div class="alt-reason-banner" ${activeVariant.whenToUse ? "" : "hidden"}>${reasonHtml}</div>
     </div>
@@ -44,6 +44,7 @@ export function createAlternativesBoxHtml(variants, activeIndex = 0) {
 export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex = 0) {
   const coreItem = CORE_LIBRARY[exercise.coreRestId];
   const maxSets = exercise.pyramidSets.length;
+  const seqLabel = String(exercise.order || 1).padStart(2, "0");
 
   const variants = getExerciseVariants(exercise, "exercise");
   const activeVariant = variants[initialVariantIndex] || variants[0];
@@ -57,8 +58,12 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
 
   const pyramidHtml = exercise.pyramidSets
     .map((step, index) => {
-      const widthPercent = Math.max(36, Math.round(100 - (index * 52) / Math.max(1, maxSets - 1)));
-      const setLabel = step.isWarmup ? `${step.set}. Set (Isınma Seti)` : `${step.set}. Set`;
+      const scaleRatio = Math.min(
+        1,
+        Math.max(0.36, 0.36 + (index / Math.max(1, maxSets - 1)) * 0.64)
+      ).toFixed(2);
+      const setLabel = `${step.set}. Set`;
+      const phaseBadgeText = step.isWarmup ? "ISINMA" : "ÇALIŞMA";
       const todaySet = todaySession?.sets?.[String(step.set)] || null;
       const prevSet = previousSession?.sets?.[String(step.set)] || null;
       const prevBadgeText =
@@ -71,12 +76,17 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
       return `
         <div class="pyramid-step ${step.isWarmup ? "is-warmup" : ""}">
           <div class="pyramid-step-main">
-            <span class="set-num">${escapeHtml(setLabel)}</span>
+            <div class="set-head-group">
+              <span class="set-phase-badge ${step.isWarmup ? "is-warmup" : "is-work"}">${phaseBadgeText}</span>
+              <span class="set-num">${escapeHtml(setLabel)}</span>
+            </div>
             <div class="set-bar-wrap">
               <span class="set-load">${escapeHtml(step.load)}</span>
-              <div class="set-bar ${step.isWarmup ? "is-warmup" : ""}" style="width: ${widthPercent}%"></div>
+              <div class="set-bar-track" aria-hidden="true">
+                <div class="set-bar ${step.isWarmup ? "is-warmup" : ""}" style="--bar-scale: ${scaleRatio}"></div>
+              </div>
             </div>
-            <span class="set-reps">${escapeHtml(step.reps)}</span>
+            <span class="set-reps tabular">${escapeHtml(step.reps)}</span>
           </div>
           <div class="set-log-controls" data-set-log-row data-log-ex="${escapeHtml(exercise.id)}" data-log-set="${escapeHtml(step.set)}">
             <span class="set-prev-badge" data-set-prev>${escapeHtml(prevBadgeText)}</span>
@@ -139,10 +149,12 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
       data-item-id="${escapeHtml(exercise.id)}"
       data-active-variant-index="${activeVariant.index}"
     >
+      <div class="card-specular" aria-hidden="true"></div>
       ${stageHtml}
 
       <div class="card-body">
         <div class="exercise-header">
+          <span class="card-seq-num display-type tabular" aria-hidden="true">${escapeHtml(seqLabel)}</span>
           <div class="exercise-tags">
             <span class="tag-chip">${escapeHtml(activeVariant.primaryTag)}</span>
             <span class="tag-chip equipment">${escapeHtml(activeVariant.secondaryTag)}</span>
@@ -182,12 +194,12 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
             class="core-rest-btn"
             data-open-core="${escapeHtml(coreItem.id)}"
           >
-            <span class="core-thumb-badge" aria-hidden="true">21×</span>
+            <span class="core-thumb-badge tabular" aria-hidden="true">21×</span>
             <div class="core-rest-copy">
               <span class="core-rest-kicker">Set Arası Aktif Dinlenme</span>
               <span class="core-rest-text">${escapeHtml(exercise.coreRestLabel)}</span>
             </div>
-            <span class="core-rest-action">Form &amp; Alternatifler →</span>
+            <span class="core-rest-action">Form &amp; Alternatifler ${lucideIcon("arrow-right", { size: 14 })}</span>
           </button>
         `
             : ""
