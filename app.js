@@ -771,28 +771,55 @@ function selectTab(tabId, { scrollToContent = false } = {}) {
 function renderTabs() {
   const hasSearch = state.searchQuery.trim().length > 0;
 
-  elements.tabsNav.innerHTML = TABS.map(
-    (tab) => `
+  elements.tabsNav.innerHTML = TABS.map((tab) => {
+    const isActive = state.activeTab === tab.id && !hasSearch;
+    return `
       <button
         type="button"
         role="tab"
-        class="tab-btn ${state.activeTab === tab.id && !hasSearch ? "active" : ""}"
+        class="tab-btn ${isActive ? "active" : ""}"
         data-tab="${escapeHtml(tab.id)}"
-        aria-selected="${state.activeTab === tab.id && !hasSearch}"
+        aria-selected="${isActive}"
+        tabindex="${isActive ? "0" : "-1"}"
       >
         <span class="tab-btn-top">${escapeHtml(tab.top)}</span>
         <span class="tab-btn-sub">${escapeHtml(tab.sub)}</span>
       </button>
-    `
-  ).join("");
+    `;
+  }).join("");
 
   if (elements.openSummaryBtn) {
     elements.openSummaryBtn.classList.toggle("active", state.activeTab === "summary" && !hasSearch);
   }
 
-  elements.tabsNav.querySelectorAll(".tab-btn").forEach((btn) => {
+  const tabButtons = Array.from(elements.tabsNav.querySelectorAll('[role="tab"]'));
+  tabButtons.forEach((btn, idx) => {
     btn.addEventListener("click", () => {
       selectTab(btn.dataset.tab, { scrollToContent: true });
+    });
+
+    btn.addEventListener("keydown", (event) => {
+      let nextIdx = null;
+      if (event.key === "ArrowRight") {
+        nextIdx = (idx + 1) % tabButtons.length;
+      } else if (event.key === "ArrowLeft") {
+        nextIdx = (idx - 1 + tabButtons.length) % tabButtons.length;
+      } else if (event.key === "Home") {
+        nextIdx = 0;
+      } else if (event.key === "End") {
+        nextIdx = tabButtons.length - 1;
+      }
+
+      if (nextIdx === null) return;
+      event.preventDefault();
+      const targetTabId = tabButtons[nextIdx].dataset.tab;
+      selectTab(targetTabId, { scrollToContent: false });
+      const focusedTab = Array.from(elements.tabsNav.querySelectorAll('[role="tab"]')).find(
+        (el) => el.dataset.tab === targetTabId
+      );
+      if (focusedTab) {
+        focusedTab.focus();
+      }
     });
   });
 
@@ -2456,7 +2483,24 @@ function findExerciseById(exerciseId) {
 }
 
 // Harici form referansı ("Formu izle ↗"), alternatif seçici ve uygulama ipuçları modalını açar
+let lastFocusedBeforeModal = null;
+
+// Modal içindeki odaklanabilir ve görünür öğeleri döndürür
+function getModalFocusableElements() {
+  const dialog = elements.modal.querySelector(".modal-dialog");
+  if (!dialog) return [];
+  const candidates = dialog.querySelectorAll(
+    'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  );
+  return Array.from(candidates).filter((el) => {
+    if (el.closest("[hidden]")) return false;
+    return el.getClientRects().length > 0;
+  });
+}
+
 function openMediaModal({ variants, initialVariantIndex = 0 }) {
+  lastFocusedBeforeModal =
+    document.activeElement instanceof HTMLElement ? document.activeElement : null;
   if (!variants || variants.length === 0) return;
 
   let activeVariantIndex = initialVariantIndex;
@@ -2610,9 +2654,17 @@ function openMediaModal({ variants, initialVariantIndex = 0 }) {
 
   elements.modal.hidden = false;
   document.body.style.overflow = "hidden";
+  window.requestAnimationFrame(() => {
+    const focusables = getModalFocusableElements();
+    if (focusables.length > 0) {
+      focusables[0].focus();
+    } else if (elements.modalCloseBtn) {
+      elements.modalCloseBtn.focus();
+    }
+  });
 }
 
-// Modalı kapatır ve video oynatımını durdurur
+// Modalı kapatır, video oynatımını durdurur ve odağı tetikleyen öğeye iade eder
 function closeMediaModal() {
   const player = document.getElementById("modal-video-player");
   if (player) {
@@ -2623,6 +2675,12 @@ function closeMediaModal() {
   elements.modalVariantsBar.innerHTML = "";
   elements.modalVariantsBar.hidden = true;
   document.body.style.overflow = "";
+
+  const restoreTarget = lastFocusedBeforeModal;
+  lastFocusedBeforeModal = null;
+  if (restoreTarget && document.contains(restoreTarget) && typeof restoreTarget.focus === "function") {
+    restoreTarget.focus();
+  }
 }
 
 // Aktif sekmeye veya aramaya göre ana içeriği render eder
@@ -2730,8 +2788,34 @@ function initEventListeners() {
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !elements.modal.hidden) {
+    if (elements.modal.hidden) return;
+
+    if (event.key === "Escape") {
       closeMediaModal();
+      return;
+    }
+
+    if (event.key === "Tab") {
+      const focusables = getModalFocusableElements();
+      if (focusables.length === 0) {
+        event.preventDefault();
+        if (elements.modalCloseBtn) elements.modalCloseBtn.focus();
+        return;
+      }
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const dialog = elements.modal.querySelector(".modal-dialog");
+      const activeInside = dialog ? dialog.contains(document.activeElement) : false;
+
+      if (event.shiftKey) {
+        if (!activeInside || document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else if (!activeInside || document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
   });
 }

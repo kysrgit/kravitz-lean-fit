@@ -12,9 +12,11 @@
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-accent: rgba(245, 158, 11, 0.35);
 
+  --bg-card: #111520;
   --text-primary: #f3f4f6;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --accent-soft: #fcd34d;
 
   --amber: #f59e0b;
   --amber-soft: rgba(245, 158, 11, 0.14);
@@ -2949,4 +2951,10 @@ body {
     grid-template-columns: 1fr;
     gap: 4px;
   }
+}
+
+/* P2-4: WCAG AA klavye odak görünürlüğü */
+:focus-visible {
+  outline: 2px solid #fbbf24;
+  outline-offset: 2px;
 }
