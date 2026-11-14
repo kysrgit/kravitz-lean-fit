@@ -1,0 +1,435 @@
+/**
+ * Dosya: styles/components/scoreboard.css
+ * Açıklama: ARENA Profilim / Tanita spor yayını skor tablosu kartları, profile formu,
+ * scaleX ilerleme çubukları, --blaze öncelikli yağ kaybı vurgusu ve bel/kilo SVG grafiği stilleri.
+ */
+
+@layer components {
+  .tanita-section {
+    background: var(--stage-1);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--volt);
+    border-radius: var(--radius-sharp);
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .section-header-inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 14px;
+    margin-bottom: 16px;
+  }
+
+  .section-header-inline h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-25);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 0.95;
+    text-transform: uppercase;
+  }
+
+  .muted-text {
+    margin: 4px 0 0;
+    color: var(--text-2);
+    font-size: var(--fs-14);
+  }
+
+  .status-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--core-border);
+    background: var(--core-wash);
+    color: var(--set-core);
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .profile-form {
+    margin-bottom: 20px;
+    padding: 16px;
+    border-radius: var(--radius-sharp);
+    background: var(--void);
+    border: 1px solid var(--line);
+  }
+
+  .profile-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .profile-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+
+  .profile-field input,
+  .profile-field select {
+    width: 100%;
+    min-height: 44px;
+    padding: 9px 10px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--line);
+    background: var(--stage-1);
+    color: var(--text-1);
+    font-family: inherit;
+    font-size: var(--fs-14);
+    transition: border-color var(--dur-micro) var(--ease-out);
+  }
+
+  .profile-field input:focus,
+  .profile-field select:focus {
+    outline: none;
+    border-color: var(--volt);
+    box-shadow: 0 0 0 1px var(--volt);
+  }
+
+  .profile-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .btn-primary-small {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 9px 18px;
+    border: none;
+    border-radius: var(--radius-cut);
+    background: var(--volt);
+    color: var(--text-on-accent);
+    font-size: var(--fs-14);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      filter var(--dur-micro) var(--ease-out),
+      transform var(--dur-micro) var(--ease-out);
+  }
+
+  .btn-primary-small:hover {
+    filter: brightness(1.06);
+  }
+
+  /* Tanita Skor Tablosu Izgarası */
+  .tanita-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .tanita-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--stage-2);
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--line);
+    border-radius: var(--radius-sharp);
+    padding: 16px;
+  }
+
+  .tanita-card.highlight {
+    border-color: var(--blaze-border);
+    border-top: 2px solid var(--blaze);
+    background: linear-gradient(145deg, var(--blaze-wash), var(--stage-1));
+  }
+
+  .tanita-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .tanita-label {
+    font-size: var(--fs-12);
+    color: var(--text-2);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .tanita-priority-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: var(--radius-cut);
+    background: var(--blaze-wash);
+    border: 1px solid var(--blaze-border);
+    color: var(--blaze);
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .tanita-priority-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--blaze);
+    display: inline-block;
+  }
+
+  .tanita-values {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .tanita-score-line {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+  }
+
+  .tanita-score-tag {
+    display: block;
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin-bottom: 2px;
+  }
+
+  .tanita-current {
+    font-family: var(--font-display);
+    font-size: var(--fs-score);
+    font-weight: 700;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    color: var(--text-1);
+    overflow-wrap: anywhere;
+  }
+
+  .tanita-target-wrap {
+    text-align: left;
+  }
+
+  .tanita-target {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--fs-16);
+    font-weight: 600;
+    color: var(--volt);
+  }
+
+  .tanita-card.highlight .tanita-target {
+    color: var(--blaze);
+  }
+
+  /* GPU dostu scaleX skor ilerleme çubuğu */
+  .score-progress-track {
+    width: 100%;
+    height: 4px;
+    background: var(--void);
+    border: 1px solid var(--line-soft);
+    overflow: hidden;
+  }
+
+  .score-progress-fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--set-core);
+    transform-origin: left center;
+    transform: scaleX(var(--score-progress, 0.5));
+    transition: transform var(--dur-stage) var(--ease-out);
+  }
+
+  .tanita-card.highlight .score-progress-fill {
+    background: var(--blaze);
+  }
+
+  .tanita-note {
+    margin: 0;
+    font-size: var(--fs-12);
+    color: var(--text-2);
+    line-height: 1.45;
+  }
+
+  .bia-standard-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 4px 0 0;
+    padding: 12px 14px;
+    border-radius: var(--radius-sharp);
+    background: var(--stage-2);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--set-core);
+    font-size: var(--fs-14);
+    color: var(--text-2);
+  }
+
+  .bia-standard-note .icon {
+    margin-top: 3px;
+    color: var(--set-core);
+  }
+
+  /* Haftalık bel & kilo takip paneli */
+  .body-log-panel {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+
+  .body-log-panel h4 {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 4px;
+    font-family: var(--font-display);
+    font-size: var(--fs-20);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .body-log-form {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    align-items: end;
+  }
+
+  .body-log-submit-wrap {
+    display: flex;
+  }
+
+  .body-log-chart {
+    margin-top: 14px;
+  }
+
+  .svg-trend-legend {
+    display: flex;
+    gap: 16px;
+    font-size: var(--fs-12);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .legend-waist {
+    color: var(--day-accent);
+  }
+
+  .legend-weight {
+    color: var(--set-core);
+  }
+
+  .body-trend-svg {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    background: var(--void);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sharp);
+  }
+
+  .body-log-items {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+  }
+
+  .body-log-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--line);
+    background: var(--stage-2);
+    font-size: var(--fs-14);
+  }
+
+  .body-log-del-btn {
+    min-height: 36px;
+    padding: 4px 12px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--blaze-border);
+    background: transparent;
+    color: var(--blaze);
+    font-size: var(--fs-12);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .body-log-del-btn:hover {
+    background: var(--blaze-wash);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .tanita-card.highlight {
+      animation: arena-blaze-border 2.8s var(--ease-in-out) infinite alternate;
+    }
+
+    .tanita-priority-dot {
+      animation: arena-blaze-dot 1.8s var(--ease-in-out) infinite alternate;
+    }
+  }
+
+  @keyframes arena-blaze-border {
+    from {
+      box-shadow: 0 0 0 transparent;
+    }
+    to {
+      box-shadow: 0 0 20px var(--blaze-wash);
+    }
+  }
+
+  @keyframes arena-blaze-dot {
+    from {
+      opacity: 0.45;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1.25);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .tanita-section {
+      padding: 15px;
+    }
+
+    .tanita-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .tanita-target-wrap {
+      text-align: left;
+    }
+  }
+}

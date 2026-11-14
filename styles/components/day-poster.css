@@ -1,0 +1,239 @@
+/**
+ * Dosya: styles/components/day-poster.css
+ * Açıklama: Gün başlığı maç afişi (.day-banner), dev dış çizgili gün numarası (01..04),
+ * ısınma banner'ı ve gün içi görünüm seçici çubuğu (.view-mode-bar) stilleri.
+ */
+
+@layer components {
+  .day-banner {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 24px;
+    background:
+      radial-gradient(65% 120% at 90% 10%, var(--accent-wash), transparent 70%), var(--stage-1);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--day-accent);
+    border-radius: var(--radius-sharp);
+    padding: 22px 24px;
+    margin-bottom: 20px;
+    overflow: clip;
+  }
+
+  .day-poster-lead {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    max-width: 780px;
+  }
+
+  .day-poster-num {
+    flex: 0 0 auto;
+    font-size: var(--fs-day-title);
+    line-height: 0.85;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--accent-border);
+    user-select: none;
+  }
+
+  .day-poster-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .day-poster-kicker {
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--day-accent);
+  }
+
+  .day-banner h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-score);
+    font-weight: 700;
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    color: var(--text-1);
+  }
+
+  .day-banner p {
+    margin: 0;
+    color: var(--text-2);
+    font-size: var(--fs-14);
+    line-height: 1.5;
+    max-width: 68ch;
+  }
+
+  .day-meta-badges {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    flex: 0 1 320px;
+  }
+
+  .meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: var(--radius-cut);
+    background: var(--stage-2);
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--day-accent);
+    font-size: var(--fs-12);
+    font-weight: 600;
+    color: var(--text-1);
+    line-height: 1.35;
+  }
+
+  .meta-pill .icon {
+    color: var(--day-accent);
+  }
+
+  /* Antrenman öncesi ısınma protokolü */
+  .warmup-banner {
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    background: var(--stage-1);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--volt);
+    border-radius: var(--radius-sharp);
+  }
+
+  .warmup-banner-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--fs-14);
+    color: var(--text-1);
+  }
+
+  .warmup-banner-head strong {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--volt);
+    font-weight: 600;
+  }
+
+  .warmup-steps-list {
+    margin: 8px 0 0;
+    padding-left: 18px;
+    font-size: var(--fs-14);
+    color: var(--text-2);
+    display: grid;
+    gap: 4px;
+  }
+
+  /* Gün içi görünüm modu seçici */
+  .view-mode-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 14px;
+    padding: 10px 14px;
+    margin-bottom: 18px;
+    background: var(--stage-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sharp);
+  }
+
+  .view-mode-label {
+    font-size: var(--fs-12);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-2);
+  }
+
+  .view-mode-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .view-mode-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 7px 12px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--line);
+    background: var(--void);
+    color: var(--text-2);
+    font-size: var(--fs-14);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      border-color var(--dur-micro) var(--ease-out),
+      background-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out);
+  }
+
+  .view-mode-btn:hover {
+    border-color: var(--accent-border);
+    color: var(--text-1);
+  }
+
+  .view-mode-btn.active {
+    background: var(--day-accent);
+    border-color: var(--day-accent);
+    color: var(--text-on-accent);
+  }
+
+  @media (max-width: 768px) {
+    .day-banner {
+      padding: 16px 14px;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .day-poster-lead {
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .day-meta-badges {
+      flex: 1 1 100%;
+    }
+
+    .view-mode-bar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      padding: 10px;
+      margin-bottom: 14px;
+    }
+
+    .view-mode-label {
+      display: none;
+    }
+
+    .view-mode-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .view-mode-btn {
+      padding: 8px 6px;
+      font-size: var(--fs-12);
+      text-align: center;
+      min-height: 44px;
+      line-height: 1.2;
+    }
+  }
+}

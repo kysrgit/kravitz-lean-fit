@@ -6,197 +6,6 @@
  */
 
 @layer components {
-  /* Tanita Analiz Çekmecesi */
-  .tanita-section {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    padding: 20px;
-    margin-bottom: 24px;
-  }
-
-  .section-header-inline {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .section-header-inline h3 {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: var(--fs-20);
-  }
-
-  .muted-text {
-    margin: 2px 0 0;
-    color: var(--text-secondary);
-    font-size: var(--fs-14);
-  }
-
-  .status-chip {
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: var(--emerald-soft);
-    color: var(--emerald);
-    font-size: var(--fs-14);
-    font-weight: 700;
-  }
-
-  .profile-form {
-    margin-bottom: 18px;
-    padding: 16px;
-    border-radius: var(--radius-md);
-    background: var(--stage-1-glass);
-    border: 1px solid var(--border-subtle);
-  }
-
-  .profile-form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 12px;
-  }
-
-  .profile-field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-size: var(--fs-12);
-    font-weight: 700;
-    color: var(--text-secondary);
-  }
-
-  .profile-field input,
-  .profile-field select {
-    width: 100%;
-    padding: 9px 10px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-subtle);
-    background: var(--bg-surface);
-    color: var(--text-primary);
-    font-family: inherit;
-    font-size: var(--fs-14);
-  }
-
-  .profile-form-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-    margin-top: 14px;
-  }
-
-  .btn-primary-small {
-    padding: 9px 16px;
-    border: none;
-    border-radius: 999px;
-    background: var(--amber);
-    color: var(--text-on-accent);
-    font-size: var(--fs-14);
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .btn-primary-small:hover {
-    filter: brightness(1.06);
-  }
-
-  .tanita-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  .tanita-card {
-    background: var(--bg-surface-2);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    padding: 14px;
-  }
-
-  .tanita-card.highlight {
-    border-color: var(--border-accent);
-    background: linear-gradient(145deg, var(--accent-wash), var(--bg-surface-2));
-  }
-
-  .tanita-label {
-    font-size: var(--fs-12);
-    color: var(--text-secondary);
-    font-weight: 600;
-  }
-
-  .tanita-values {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 8px;
-    margin: 6px 0 4px;
-  }
-
-  .tanita-current {
-    font-family: var(--font-display);
-    font-size: var(--fs-20);
-    color: var(--text-primary);
-  }
-
-  .tanita-target {
-    font-size: var(--fs-14);
-    font-weight: 700;
-    color: var(--emerald);
-  }
-
-  .tanita-note {
-    margin: 0;
-    font-size: var(--fs-12);
-    color: var(--text-muted);
-  }
-
-  /* Gün Başlık Bandı */
-  .day-banner {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    background: linear-gradient(135deg, var(--accent-wash), var(--core-wash));
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    padding: 20px 22px;
-    margin-bottom: 22px;
-  }
-
-  .day-banner h2 {
-    margin: 0 0 6px;
-    font-family: var(--font-display);
-    font-size: var(--fs-25);
-    letter-spacing: 0.02em;
-  }
-
-  .day-banner p {
-    margin: 0;
-    color: var(--text-secondary);
-    font-size: var(--fs-14);
-    max-width: 720px;
-  }
-
-  .day-meta-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .meta-pill {
-    padding: 7px 12px;
-    border-radius: 999px;
-    background: var(--stage-1-glass);
-    border: 1px solid var(--border-subtle);
-    font-size: var(--fs-12);
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-
   /* Egzersiz Kartları Grid */
   .exercises-grid {
     display: grid;
@@ -1177,7 +986,6 @@
 
   /* Responsive Uyumluluk (Tablet Altı Genel) */
   @media (max-width: 1024px) {
-    .tanita-grid,
     .core-grid,
     .three-col-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1186,61 +994,6 @@
     .macro-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
-  }
-
-  /* ==========================================================================
-   Gün İçi Görünüm Modu Seçici & Yazılı / Tablo Özeti Stilleri
-   ========================================================================== */
-
-  .view-mode-bar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px 14px;
-    padding: 10px 14px;
-    margin-bottom: 18px;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-  }
-
-  .view-mode-label {
-    font-size: var(--fs-12);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-secondary);
-  }
-
-  .view-mode-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .view-mode-btn {
-    padding: 7px 12px;
-    border-radius: 999px;
-    border: 1px solid var(--border-subtle);
-    background: var(--bg-main);
-    color: var(--text-secondary);
-    font-size: var(--fs-14);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.16s ease;
-  }
-
-  .view-mode-btn:hover {
-    border-color: var(--border-accent);
-    color: var(--text-primary);
-  }
-
-  .view-mode-btn.active {
-    background: var(--amber);
-    border-color: var(--amber);
-    color: var(--text-on-accent);
-    font-weight: 700;
   }
 
   .summary-layout {
@@ -1678,7 +1431,6 @@
    ========================================================================== */
 
   @media (max-width: 768px) {
-    .tanita-grid,
     .exercises-grid,
     .core-grid,
     .two-col-grid,
@@ -1689,20 +1441,6 @@
       grid-template-columns: 1fr;
     }
 
-    .day-banner {
-      padding: 15px;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .day-banner h2 {
-      font-size: var(--fs-20);
-    }
-
-    .day-banner p {
-      font-size: var(--fs-14);
-    }
-
     .card-body {
       padding: 15px;
       gap: 12px;
@@ -1711,33 +1449,6 @@
     .pyramid-step {
       grid-template-columns: 46px 1fr auto;
       font-size: var(--fs-12);
-    }
-
-    /* Gün içi görünüm seçici: Mobilde 3 eşit tam genişlikli buton */
-    .view-mode-bar {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 8px;
-      padding: 10px;
-      margin-bottom: 14px;
-    }
-
-    .view-mode-label {
-      display: none;
-    }
-
-    .view-mode-buttons {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 6px;
-    }
-
-    .view-mode-btn {
-      padding: 8px 6px;
-      font-size: var(--fs-12);
-      text-align: center;
-      min-height: 40px;
-      line-height: 1.2;
     }
 
     /* Özet sayfası içi yapışkan atlama çubuğu */
@@ -2140,52 +1851,11 @@
     margin-bottom: 6px;
   }
 
-  /* P1-7: Günlük adım, uyku ve ısınma protokolü */
-  .warmup-banner {
-    margin-bottom: 16px;
-    padding: 12px 16px;
-    background: var(--accent-wash);
-    border: 1px solid var(--accent-border);
-    border-radius: var(--radius-md);
-  }
-
-  .warmup-banner-head {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    font-size: var(--fs-14);
-    color: var(--text-primary);
-  }
-
-  .warmup-banner-head strong {
-    color: var(--volt);
-  }
-
-  .warmup-steps-list {
-    margin: 8px 0 0;
-    padding-left: 18px;
-    font-size: var(--fs-14);
-    color: var(--text-secondary);
-    display: grid;
-    gap: 4px;
-  }
-
   .lifestyle-target {
     font-size: var(--fs-16);
     font-weight: 700;
     color: var(--accent-soft);
     margin: 4px 0 8px;
-  }
-
-  /* P1-8: BIA ölçüm standardı ve bel önceliği notu */
-  .bia-standard-note {
-    margin: 4px 0 0;
-    padding: 10px 12px;
-    border-radius: var(--radius-md);
-    background: var(--stage-2);
-    border: 1px solid var(--border-subtle);
-    font-size: var(--fs-14);
-    color: var(--text-secondary);
   }
 
   /* P1-9: İlk açılış ve footer sağlık uyarısı */
@@ -2366,88 +2036,6 @@
     display: flex;
     gap: 6px;
     flex-shrink: 0;
-  }
-
-  .body-log-panel {
-    margin-top: 20px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border-subtle);
-  }
-
-  .body-log-panel h4 {
-    margin: 0 0 4px;
-    font-size: var(--fs-16);
-  }
-
-  .body-log-form {
-    margin-top: 10px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
-    gap: 10px;
-    align-items: end;
-  }
-
-  .body-log-submit-wrap {
-    display: flex;
-  }
-
-  .body-log-chart {
-    margin-top: 14px;
-  }
-
-  .svg-trend-legend {
-    display: flex;
-    gap: 14px;
-    font-size: var(--fs-12);
-    margin-bottom: 6px;
-  }
-
-  .legend-waist {
-    color: var(--day-accent);
-    font-weight: 600;
-  }
-
-  .legend-weight {
-    color: var(--set-core);
-    font-weight: 600;
-  }
-
-  .body-trend-svg {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    background: var(--stage-2);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-  }
-
-  .body-log-items {
-    list-style: none;
-    margin: 10px 0 0;
-    padding: 0;
-    display: grid;
-    gap: 6px;
-  }
-
-  .body-log-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 7px 10px;
-    border-radius: 8px;
-    background: var(--stage-2);
-    font-size: var(--fs-14);
-  }
-
-  .body-log-del-btn {
-    padding: 4px 10px;
-    border-radius: 6px;
-    border: 1px solid var(--blaze-border);
-    background: transparent;
-    color: var(--blaze);
-    font-size: var(--fs-12);
-    cursor: pointer;
   }
 
   @media (max-width: 520px) {

@@ -10,5 +10,7 @@
 @import url("./styles/base.css");
 @import url("./styles/components/broadcast-bar.css");
 @import url("./styles/components/hero.css");
+@import url("./styles/components/scoreboard.css");
+@import url("./styles/components/day-poster.css");
 @import url("./styles/legacy-bridge.css");
 @import url("./styles/motion.css");

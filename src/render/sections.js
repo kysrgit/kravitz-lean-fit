@@ -173,6 +173,23 @@ export function renderBodyLogsSection() {
 
 // Dinlenme sayacı, Wake Lock ve ses/titreşim yönetimi
 
+// Profil skor tablosu (Tanita / mezura) kartlarını ve hedef ilerleme çubuğunu üretir
+function getMetricProgressRatio(profile, idx) {
+  if (idx === 0) return Math.min(0.95, Math.max(0.25, 1 - (profile.waistCm - 74) / 36));
+  if (idx === 1)
+    return Math.min(0.95, Math.max(0.25, profile.targetWeightKg / Math.max(1, profile.weightKg)));
+  if (idx === 2)
+    return Math.min(
+      0.95,
+      Math.max(0.25, profile.targetBodyFatPct / Math.max(1, profile.bodyFatPct))
+    );
+  if (idx === 3)
+    return Math.min(0.95, Math.max(0.3, profile.muscleMassKg / Math.max(1, profile.weightKg)));
+  if (idx === 4)
+    return Math.min(0.95, Math.max(0.3, profile.bmrKcal / Math.max(1, profile.targetCalories)));
+  return 0.68;
+}
+
 export function renderTanitaSection() {
   const profile = getActiveProfileTargets();
   syncProfileForm(profile);
@@ -184,23 +201,41 @@ export function renderTanitaSection() {
   }
 
   const metricsHtml = profile.metrics
-    .map(
-      (item) => `
+    .map((item, idx) => {
+      const progressRatio = getMetricProgressRatio(profile, idx).toFixed(2);
+      const priorityBadge = item.highlight
+        ? '<span class="tanita-priority-tag"><span class="tanita-priority-dot" aria-hidden="true"></span>ANA HEDEF</span>'
+        : "";
+      return `
       <article class="tanita-card ${item.highlight ? "highlight" : ""}">
-        <div class="tanita-label">${escapeHtml(item.label)}</div>
+        <div class="tanita-card-head">
+          <div class="tanita-label">${escapeHtml(item.label)}</div>
+          ${priorityBadge}
+        </div>
         <div class="tanita-values">
-          <span class="tanita-current">${escapeHtml(item.current)}</span>
-          <span class="tanita-target">→ ${escapeHtml(item.target)}</span>
+          <div class="tanita-score-line">
+            <div>
+              <span class="tanita-score-tag">MEVCUT</span>
+              <span class="tanita-current display-type tabular" data-count-value="${escapeHtml(item.current)}">${escapeHtml(item.current)}</span>
+            </div>
+            <div class="tanita-target-wrap">
+              <span class="tanita-score-tag">HEDEF</span>
+              <span class="tanita-target tabular">${lucideIcon("arrow-right", { size: 14 })} ${escapeHtml(item.target)}</span>
+            </div>
+          </div>
+          <div class="score-progress-track" aria-hidden="true">
+            <span class="score-progress-fill" style="--score-progress: ${progressRatio}"></span>
+          </div>
         </div>
         <p class="tanita-note">${escapeHtml(item.note)}</p>
       </article>
-    `
-    )
+    `;
+    })
     .join("");
 
   elements.tanitaGrid.innerHTML = `
     ${metricsHtml}
-    <p class="bia-standard-note" style="grid-column: 1 / -1;">${lucideIcon("ruler", { size: 15 })} <strong>Ölçüm Standardı:</strong> ${escapeHtml(profile.biaMeasurementNote)}</p>
+    <p class="bia-standard-note" style="grid-column: 1 / -1;">${lucideIcon("ruler", { size: 15 })} <span><strong>Ölçüm Standardı:</strong> ${escapeHtml(profile.biaMeasurementNote)}</span></p>
   `;
 }
 
@@ -358,15 +393,23 @@ export function renderWorkoutDay(day) {
           .join("")}</div>`
       : "";
 
+  const dayNumLabel = String(day.id || "")
+    .replace(/\D+/g, "")
+    .padStart(2, "0");
+
   elements.contentArea.innerHTML = `
     <div class="day-banner">
-      <div>
-        <h2>${escapeHtml(day.fullTitle)}</h2>
-        <p>${escapeHtml(day.targetGoal)}</p>
+      <div class="day-poster-lead">
+        <span class="day-poster-num display-type tabular" aria-hidden="true">${escapeHtml(dayNumLabel)}</span>
+        <div class="day-poster-copy">
+          <span class="day-poster-kicker">${escapeHtml(day.tabLabel)} · ARENA PROTOKOLÜ</span>
+          <h2>${escapeHtml(day.fullTitle)}</h2>
+          <p>${escapeHtml(day.targetGoal)}</p>
+        </div>
       </div>
       <div class="day-meta-badges">
-        <span class="meta-pill">${lucideIcon("clock", { size: 14 })} ${escapeHtml(day.duration)}</span>
-        <span class="meta-pill">${lucideIcon("calendar", { size: 14 })} ${escapeHtml(day.scheduleNote)}</span>
+        <span class="meta-pill">${lucideIcon("clock", { size: 16 })} <span>${escapeHtml(day.duration)}</span></span>
+        <span class="meta-pill">${lucideIcon("calendar", { size: 16 })} <span>${escapeHtml(day.scheduleNote)}</span></span>
       </div>
     </div>
     ${createWarmupBannerHtml()}
