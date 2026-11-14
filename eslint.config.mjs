@@ -8,11 +8,11 @@ import globals from "globals";
 
 export default [
   {
-    ignores: ["node_modules/**", "assets/**"],
+    ignores: ["node_modules/**", "assets/**", "vendor/**"],
   },
   js.configs.recommended,
   {
-    files: ["app.js", "data.js", "src/**/*.js"],
+    files: ["app.js", "data.js", "src/**/*.js", "js/**/*.js"],
     languageOptions: {
       ecmaVersion: 2024,
       sourceType: "module",

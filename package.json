@@ -7,12 +7,13 @@
   "scripts": {
     "lint": "eslint .",
     "validate": "node scripts/validate.mjs",
-    "format:check": "prettier --check index.html app.js data.js sw.js src scripts styles styles.css manifest.webmanifest"
+    "format:check": "prettier --check index.html app.js data.js sw.js src js scripts styles styles.css manifest.webmanifest"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
     "eslint": "^9.39.0",
     "globals": "^16.0.0",
+    "gsap": "^3.15.1",
     "prettier": "^3.5.0"
   }
 }

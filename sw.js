@@ -5,8 +5,8 @@
  * üçüncü taraf veya lisanssız medya dosyalarını kesinlikle önbelleğe almaz.
  */
 
-const SHELL_CACHE = "klf-shell-v7";
-const DATA_CACHE = "klf-data-v7";
+const SHELL_CACHE = "klf-shell-v8";
+const DATA_CACHE = "klf-data-v8";
 
 const APP_SHELL_URLS = [
   "./",
@@ -23,6 +23,12 @@ const APP_SHELL_URLS = [
   "./styles/components/match-program.css",
   "./styles/motion.css",
   "./app.js",
+  "./js/motion.js",
+  "./vendor/gsap/index.js",
+  "./vendor/gsap/gsap.min.js",
+  "./vendor/gsap/ScrollTrigger.min.js",
+  "./vendor/gsap/SplitText.min.js",
+  "./vendor/gsap/Flip.min.js",
   "./src/state.js",
   "./src/media.js",
   "./src/modal.js",

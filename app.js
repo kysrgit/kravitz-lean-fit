@@ -14,6 +14,7 @@ import {
   saveStoredProfile,
   state,
 } from "./src/state.js";
+import { animateScoreboardOpen, initArenaMotion } from "./js/motion.js";
 import { initRestTimerControls } from "./src/media.js";
 import { closeMediaModal, getModalFocusableElements } from "./src/modal.js";
 import {
@@ -38,6 +39,9 @@ function initEventListeners() {
     const isExpanded = elements.tanitaToggleBtn.getAttribute("aria-expanded") === "true";
     elements.tanitaToggleBtn.setAttribute("aria-expanded", String(!isExpanded));
     elements.tanitaDrawer.hidden = isExpanded;
+    if (!elements.tanitaDrawer.hidden) {
+      animateScoreboardOpen();
+    }
   });
 
   // Profilim formu kaydetme ve sıfırlama
@@ -216,6 +220,7 @@ function bootstrap() {
   initRestTimerControls();
   renderTabs();
   renderMainContent();
+  initArenaMotion();
   initEventListeners();
 }
 

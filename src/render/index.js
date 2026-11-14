@@ -6,6 +6,11 @@
 
 import { WORKOUT_DAYS } from "../../data.js";
 import {
+  animateTabChange,
+  animateVariantChange,
+  refreshMotionForContent,
+} from "../../js/motion.js";
+import {
   TABS,
   elements,
   escapeHtml,
@@ -44,8 +49,7 @@ export function selectTab(tabId, { scrollToContent = false } = {}) {
     elements.searchInput.value = "";
     elements.clearSearchBtn.hidden = true;
   }
-  renderTabs();
-  renderMainContent();
+  animateTabChange(renderTabs, renderMainContent, { useViewTransition: scrollToContent });
   if (scrollToContent && elements.contentArea) {
     elements.contentArea.scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -123,16 +127,18 @@ export function renderTabs() {
 
     elements.mobileBottomNav.innerHTML = mobileTabs
       .map((tab) => {
+        const isActive = state.activeTab === tab.id && !hasSearch;
         const iconVisual = tab.mobileIconName
           ? lucideIcon(tab.mobileIconName, { size: 18 })
           : `<span class="mobile-nav-code tabular">${escapeHtml(tab.mobileCode)}</span>`;
         return `
         <button
           type="button"
-          class="mobile-nav-btn ${state.activeTab === tab.id && !hasSearch ? "active" : ""}"
+          class="mobile-nav-btn ${isActive ? "active" : ""}"
           data-mobile-tab="${escapeHtml(tab.id)}"
-          aria-current="${state.activeTab === tab.id && !hasSearch ? "page" : "false"}"
+          aria-current="${isActive ? "page" : "false"}"
         >
+          ${isActive ? '<span class="mobile-nav-indicator" data-flip-id="mobile-tab-indicator" aria-hidden="true"></span>' : ""}
           <span class="mobile-nav-icon" aria-hidden="true">${iconVisual}</span>
           <span class="mobile-nav-label">${escapeHtml(tab.mobileLabel)}</span>
         </button>
@@ -232,7 +238,7 @@ export function bindCardInteractions() {
     cardEl.querySelectorAll(".alt-pill-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         const idx = Number(btn.dataset.variantIndex);
-        applyVariantToCard(cardEl, variants, idx);
+        animateVariantChange(cardEl, () => applyVariantToCard(cardEl, variants, idx));
       });
     });
   });
@@ -362,6 +368,7 @@ export function renderMainContent() {
 
   // Tüm görünümlerde kart, tablo, set günlüğü, modal ve sayaç etkileşimlerini bağla
   bindCardInteractions();
+  refreshMotionForContent();
 }
 
 // Olay dinleyicilerini başlatır
