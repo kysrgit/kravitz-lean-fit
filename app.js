@@ -33,6 +33,59 @@ const state = {
   photoTimers: [],
 };
 
+let mediaVisibilityObserver = null;
+
+// prefers-reduced-motion veya Data Saver aktifken otomatik oynatmayı kapatır
+function shouldDisableAutoplay() {
+  const reducedMotion =
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const saveData = Boolean(navigator.connection && navigator.connection.saveData === true);
+  return reducedMotion || saveData;
+}
+
+// Görünürlük bazlı video oynatma gözlemcisini temizler ve yeniden kurar
+function observeVisibleVideos() {
+  if (mediaVisibilityObserver) {
+    mediaVisibilityObserver.disconnect();
+    mediaVisibilityObserver = null;
+  }
+
+  const videos = Array.from(document.querySelectorAll(".media-video"));
+  if (videos.length === 0) return;
+
+  const disableAutoplay = shouldDisableAutoplay();
+  if (disableAutoplay) {
+    videos.forEach((videoEl) => {
+      videoEl.autoplay = false;
+      videoEl.pause();
+    });
+    return;
+  }
+
+  if (typeof IntersectionObserver === "undefined") return;
+
+  mediaVisibilityObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        const videoEl = entry.target;
+        if (videoEl.classList.contains("is-hidden")) {
+          videoEl.pause();
+          return;
+        }
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+          videoEl.play().catch(() => {});
+        } else {
+          videoEl.pause();
+        }
+      });
+    },
+    { threshold: [0, 0.5] }
+  );
+
+  videos.forEach((videoEl) => mediaVisibilityObserver.observe(videoEl));
+}
+
 // Günlere özel mobil ikonlar
 const DAY_MOBILE_ICONS = ["1️⃣", "2️⃣", "3️⃣", "4️⃣"];
 
@@ -430,7 +483,7 @@ function createMediaStageHtml({
           poster="${escapeHtml(media.startImg || "")}"
           data-front-src="${escapeHtml(media.frontMp4)}"
           data-side-src="${escapeHtml(media.sideMp4 || "")}"
-          autoplay
+          ${shouldDisableAutoplay() ? "controls" : ""}
           loop
           muted
           playsinline
@@ -1800,6 +1853,7 @@ function bindCardInteractions() {
     // Seçilen görünüme göre video açısını veya HD fotoğraf karesini uygular
     const applyMode = (mode) => {
       stopPhotoLoop();
+      if (!videoEl) return;
 
       if (mode === "front" || mode === "side") {
         const targetSrc = mode === "front" ? videoEl.dataset.frontSrc : videoEl.dataset.sideSrc;
@@ -1808,7 +1862,9 @@ function bindCardInteractions() {
           videoEl.load();
         }
         videoEl.classList.remove("is-hidden");
-        videoEl.play().catch(() => {});
+        if (!shouldDisableAutoplay()) {
+          videoEl.play().catch(() => {});
+        }
         if (startImg) startImg.classList.add("is-hidden");
         if (endImg) endImg.classList.add("is-hidden");
         indicator.textContent = mode === "front" ? "Ön Açı · Video" : "Yan Açı · Video";
@@ -1827,11 +1883,13 @@ function bindCardInteractions() {
       };
 
       showFrame(false);
-      photoLoopTimer = window.setInterval(() => {
-        showEnd = !showEnd;
-        showFrame(showEnd);
-      }, 1700);
-      state.photoTimers.push(photoLoopTimer);
+      if (!shouldDisableAutoplay()) {
+        photoLoopTimer = window.setInterval(() => {
+          showEnd = !showEnd;
+          showFrame(showEnd);
+        }, 1700);
+        state.photoTimers.push(photoLoopTimer);
+      }
     };
 
     modeButtons.forEach((btn) => {
@@ -1842,6 +1900,8 @@ function bindCardInteractions() {
       });
     });
   });
+
+  observeVisibleVideos();
 
   // Kart içi Alternatif Hareketler seçicisi
   document.querySelectorAll("[data-variant-kind]").forEach((cardEl) => {
@@ -1976,11 +2036,12 @@ function openMediaModal({ variants, initialVariantIndex = 0 }) {
     elements.modalSubtitle.textContent = variant.turkishName;
 
     if (media.frontMp4) {
+      const disableAutoplay = shouldDisableAutoplay();
       elements.modalVideoContainer.innerHTML = `
         <video
           id="modal-video-player"
           controls
-          autoplay
+          ${disableAutoplay ? "" : "autoplay"}
           loop
           muted
           playsinline
@@ -1991,7 +2052,9 @@ function openMediaModal({ variants, initialVariantIndex = 0 }) {
       player.poster = (currentCamera === "front" ? media.startImg : media.endImg) || "";
       player.load();
       player.playbackRate = currentSpeed;
-      player.play().catch(() => {});
+      if (!disableAutoplay) {
+        player.play().catch(() => {});
+      }
       updateExternalLink(media);
       elements.modalPlaybackBar.hidden = false;
     } else {
