@@ -1,4 +1,3 @@
-/* global self, caches, fetch, URL */
 /**
  * Dosya: sw.js
  * Açıklama: Çevrimdışı (bodrum kat salonlar dahil) kullanım için PWA Service Worker.
@@ -14,6 +13,16 @@ const APP_SHELL_URLS = [
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./src/state.js",
+  "./src/media.js",
+  "./src/modal.js",
+  "./src/render/cards.js",
+  "./src/render/sections.js",
+  "./src/render/index.js",
+  "./assets/fonts/inter-latin.woff2",
+  "./assets/fonts/inter-latin-ext.woff2",
+  "./assets/fonts/oswald-latin.woff2",
+  "./assets/fonts/oswald-latin-ext.woff2",
   "./manifest.webmanifest",
   "./icons/icon.svg",
 ];
@@ -21,9 +30,11 @@ const APP_SHELL_URLS = [
 // Üçüncü taraf veya lisanssız medya yollarını tespit eder (önbelleğe alınmaz)
 function isUnlicensedOrMediaRequest(url) {
   if (url.origin !== self.location.origin) return true;
-  return /\.(mp4|webm|mov|avi|mkv|jpg|jpeg|png|gif)$/i.test(url.pathname) ||
+  return (
+    /\.(mp4|webm|mov|avi|mkv|jpg|jpeg|png|gif)$/i.test(url.pathname) ||
     url.pathname.includes("/assets/videos") ||
-    url.pathname.includes("/assets/images");
+    url.pathname.includes("/assets/images")
+  );
 }
 
 self.addEventListener("install", (event) => {
@@ -41,11 +52,7 @@ self.addEventListener("activate", (event) => {
     caches
       .keys()
       .then((keys) =>
-        Promise.all(
-          keys
-            .filter((key) => !validCaches.has(key))
-            .map((key) => caches.delete(key))
-        )
+        Promise.all(keys.filter((key) => !validCaches.has(key)).map((key) => caches.delete(key)))
       )
       .then(() => self.clients.claim())
   );

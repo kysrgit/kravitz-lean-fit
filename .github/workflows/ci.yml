@@ -1,0 +1,35 @@
+# Dosya: .github/workflows/ci.yml
+# Açıklama: Her push ve PR'da ESLint kod kalitesi, Prettier biçimlendirme ve validate.mjs kontrollerini çalıştırır.
+
+name: CI Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Depoyu indir
+        uses: actions/checkout@v4
+
+      - name: Node.js kurulumu
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Geliştirme bağımlılıklarını yükle
+        run: npm ci
+
+      - name: ESLint çalıştır
+        run: npm run lint
+
+      - name: Prettier biçim kontrolü
+        run: npm run format:check
+
+      - name: Veri ve kural doğrulaması (validate.mjs)
+        run: npm run validate
