@@ -1,7 +1,7 @@
 /**
  * Dosya: app.js
  * Açıklama: Kravitz Lean & Fit uygulamasının arayüz oluşturma, sekme yönetimi,
- * egzersiz arama, çift kareli canlı form animasyonu ve video modalı mantığını yürütür.
+ * egzersiz arama, reklamsız yerel MP4 video sahneleri, fotoğraf geçişleri ve hız kontrollü video modalını yürütür.
  */
 
 import {
@@ -10,14 +10,13 @@ import {
   SYSTEM_PILLARS,
   TANITA_PROFILE,
   WORKOUT_DAYS,
-  getExerciseImages,
+  getExerciseMedia,
 } from "./data.js";
 
 // Uygulama durumu
 const state = {
   activeTab: "day-1",
   searchQuery: "",
-  animationIntervals: [],
 };
 
 // Sekme tanımları
@@ -56,6 +55,7 @@ const elements = {
   modalTitle: document.getElementById("modal-title"),
   modalSubtitle: document.getElementById("modal-subtitle"),
   modalVideoContainer: document.getElementById("modal-video-container"),
+  modalPlaybackBar: document.getElementById("modal-playback-bar"),
   modalFramesSection: document.getElementById("modal-frames-section"),
   modalImgStart: document.getElementById("modal-img-start"),
   modalImgEnd: document.getElementById("modal-img-end"),
@@ -71,12 +71,6 @@ function escapeHtml(text) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
-}
-
-// Aktif görsel animasyon zamanlayıcılarını temizler
-function clearAnimationTimers() {
-  state.animationIntervals.forEach((timerId) => window.clearInterval(timerId));
-  state.animationIntervals = [];
 }
 
 // Sistem temel kurallarını (3 sütun) render eder
@@ -142,16 +136,80 @@ function renderTabs() {
   });
 }
 
+// Medya sahnesi HTML'ini (yerel MP4 video + başlangıç/bitiş fotoğrafları) üretir
+function createMediaStageHtml({ badgeText, name, videoKey, imageId, triggerAttr }) {
+  const media = getExerciseMedia(videoKey, imageId);
+
+  return `
+    <div class="media-stage" data-media-mode="video">
+      <video
+        class="media-video"
+        src="${escapeHtml(media.mp4)}"
+        poster="${escapeHtml(media.gif || media.start || "")}"
+        autoplay
+        loop
+        muted
+        playsinline
+        preload="metadata"
+        aria-label="${escapeHtml(name)} hareket videosu"
+      ></video>
+
+      ${
+        media.start
+          ? `<img
+              class="media-frame frame-start is-hidden"
+              src="${escapeHtml(media.start)}"
+              alt="${escapeHtml(name)} başlangıç pozisyonu"
+              loading="lazy"
+            />`
+          : ""
+      }
+      ${
+        media.end
+          ? `<img
+              class="media-frame frame-end is-hidden"
+              src="${escapeHtml(media.end)}"
+              alt="${escapeHtml(name)} bitiş pozisyonu"
+              loading="lazy"
+            />`
+          : ""
+      }
+
+      <div class="media-overlay-top">
+        <span class="order-badge">${escapeHtml(badgeText)}</span>
+        <span class="pose-indicator">Canlı Video</span>
+      </div>
+
+      <div class="media-controls-bar">
+        <div class="pose-toggle-group" role="group" aria-label="Görünüm seçici">
+          <button type="button" class="pose-btn active" data-pose="video">Canlı Video</button>
+          <button type="button" class="pose-btn" data-pose="start">1. Başlangıç</button>
+          <button type="button" class="pose-btn" data-pose="end">2. Bitiş</button>
+        </div>
+
+        <button
+          type="button"
+          class="video-trigger-btn"
+          ${triggerAttr}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          <span>Detaylı Video</span>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
 // Tekil egzersiz kartı HTML'ini üretir
 function createExerciseCardHtml(exercise, badgeText) {
-  const images = getExerciseImages(exercise.imageId);
   const coreItem = CORE_LIBRARY[exercise.coreRestId];
-  const coreImages = coreItem ? getExerciseImages(coreItem.imageId) : null;
+  const coreMedia = coreItem ? getExerciseMedia(coreItem.videoKey, coreItem.imageId) : null;
   const maxSets = exercise.pyramidSets.length;
 
   const pyramidHtml = exercise.pyramidSets
     .map((step, index) => {
-      // İlk set en geniş bar, son ağır set daha kompakt vurgulu bar görünümünde
       const widthPercent = Math.max(36, Math.round(100 - (index * 52) / Math.max(1, maxSets - 1)));
       return `
         <div class="pyramid-step">
@@ -168,46 +226,17 @@ function createExerciseCardHtml(exercise, badgeText) {
 
   const tipsHtml = exercise.tips.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("");
 
+  const stageHtml = createMediaStageHtml({
+    badgeText,
+    name: exercise.name,
+    videoKey: exercise.videoKey,
+    imageId: exercise.imageId,
+    triggerAttr: `data-open-exercise="${escapeHtml(exercise.id)}"`,
+  });
+
   return `
     <article class="exercise-card" data-exercise-id="${escapeHtml(exercise.id)}">
-      <div class="media-stage" data-pose-mode="auto">
-        <img
-          class="media-frame frame-start"
-          src="${escapeHtml(images.start)}"
-          alt="${escapeHtml(exercise.name)} başlangıç pozisyonu"
-          loading="lazy"
-        />
-        <img
-          class="media-frame frame-end is-hidden"
-          src="${escapeHtml(images.end)}"
-          alt="${escapeHtml(exercise.name)} bitiş pozisyonu"
-          loading="lazy"
-        />
-
-        <div class="media-overlay-top">
-          <span class="order-badge">${escapeHtml(badgeText)}</span>
-          <span class="pose-indicator">1. Başlangıç</span>
-        </div>
-
-        <div class="media-controls-bar">
-          <div class="pose-toggle-group" role="group" aria-label="Pozisyon görünümü">
-            <button type="button" class="pose-btn active" data-pose="auto">Otomatik</button>
-            <button type="button" class="pose-btn" data-pose="start">1. Başlangıç</button>
-            <button type="button" class="pose-btn" data-pose="end">2. Bitiş</button>
-          </div>
-
-          <button
-            type="button"
-            class="video-trigger-btn"
-            data-open-exercise="${escapeHtml(exercise.id)}"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-            <span>Videoyu İzle</span>
-          </button>
-        </div>
-      </div>
+      ${stageHtml}
 
       <div class="card-body">
         <div class="exercise-header">
@@ -235,19 +264,52 @@ function createExerciseCardHtml(exercise, badgeText) {
             data-open-core="${escapeHtml(coreItem.id)}"
           >
             ${
-              coreImages
-                ? `<img class="core-thumb" src="${escapeHtml(coreImages.start)}" alt="${escapeHtml(coreItem.name)}" loading="lazy" />`
+              coreMedia && (coreMedia.gif || coreMedia.start)
+                ? `<img class="core-thumb" src="${escapeHtml(coreMedia.gif || coreMedia.start)}" alt="${escapeHtml(coreItem.name)}" loading="lazy" />`
                 : ""
             }
             <div class="core-rest-copy">
               <span class="core-rest-kicker">Set Arası Aktif Dinlenme</span>
               <span class="core-rest-text">${escapeHtml(exercise.coreRestLabel)}</span>
             </div>
-            <span class="core-rest-action">Görsel &amp; Video →</span>
+            <span class="core-rest-action">Video &amp; Form →</span>
           </button>
         `
             : ""
         }
+      </div>
+    </article>
+  `;
+}
+
+// Core kartı HTML'ini üretir
+function createCoreCardHtml(core) {
+  const isVacuum = core.id === "stomach_vacuum";
+  const stageHtml = createMediaStageHtml({
+    badgeText: isVacuum ? "SABAH RUTİNİ" : "21× AKTİF DİNLENME",
+    name: core.name,
+    videoKey: core.videoKey,
+    imageId: core.imageId,
+    triggerAttr: `data-open-core="${escapeHtml(core.id)}"`,
+  });
+
+  return `
+    <article class="core-card">
+      ${stageHtml}
+      <div class="card-body">
+        <div class="exercise-header">
+          <div class="exercise-tags">
+            <span class="tag-chip">${escapeHtml(core.target)}</span>
+            <span class="tag-chip equipment">${escapeHtml(core.reps)}</span>
+          </div>
+          <h3 class="exercise-title">${escapeHtml(core.name)}</h3>
+          <p class="exercise-subtitle">${escapeHtml(core.turkishName)}</p>
+        </div>
+
+        <ul class="tips-list">
+          <li>${escapeHtml(core.formCue)}</li>
+          <li><strong>MACFit İpucu:</strong> ${escapeHtml(core.macfitTip)}</li>
+        </ul>
       </div>
     </article>
   `;
@@ -279,72 +341,7 @@ function renderWorkoutDay(day) {
 // Core (21'ler) ve Mide Vakumu rehber sekmesini render eder
 function renderCoreGuide(filteredItems = null) {
   const coreEntries = filteredItems || Object.values(CORE_LIBRARY);
-
-  const cardsHtml = coreEntries
-    .map((core) => {
-      const images = getExerciseImages(core.imageId);
-      const isVacuum = core.id === "stomach_vacuum";
-
-      return `
-        <article class="core-card">
-          <div class="media-stage" data-pose-mode="auto">
-            <img
-              class="media-frame frame-start"
-              src="${escapeHtml(images.start)}"
-              alt="${escapeHtml(core.name)} başlangıç pozisyonu"
-              loading="lazy"
-            />
-            <img
-              class="media-frame frame-end is-hidden"
-              src="${escapeHtml(images.end)}"
-              alt="${escapeHtml(core.name)} bitiş pozisyonu"
-              loading="lazy"
-            />
-
-            <div class="media-overlay-top">
-              <span class="order-badge">${isVacuum ? "SABAH RUTİNİ" : "21× AKTİF DİNLENME"}</span>
-              <span class="pose-indicator">1. Başlangıç</span>
-            </div>
-
-            <div class="media-controls-bar">
-              <div class="pose-toggle-group" role="group" aria-label="Pozisyon görünümü">
-                <button type="button" class="pose-btn active" data-pose="auto">Otomatik</button>
-                <button type="button" class="pose-btn" data-pose="start">1. Başlangıç</button>
-                <button type="button" class="pose-btn" data-pose="end">2. Bitiş</button>
-              </div>
-
-              <button
-                type="button"
-                class="video-trigger-btn"
-                data-open-core="${escapeHtml(core.id)}"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-                <span>${core.videoId ? "Videoyu İzle" : "Detayı Gör"}</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="card-body">
-            <div class="exercise-header">
-              <div class="exercise-tags">
-                <span class="tag-chip">${escapeHtml(core.target)}</span>
-                <span class="tag-chip equipment">${escapeHtml(core.reps)}</span>
-              </div>
-              <h3 class="exercise-title">${escapeHtml(core.name)}</h3>
-              <p class="exercise-subtitle">${escapeHtml(core.turkishName)}</p>
-            </div>
-
-            <ul class="tips-list">
-              <li>${escapeHtml(core.formCue)}</li>
-              <li><strong>MACFit İpucu:</strong> ${escapeHtml(core.macfitTip)}</li>
-            </ul>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
+  const cardsHtml = coreEntries.map((core) => createCoreCardHtml(core)).join("");
 
   elements.contentArea.innerHTML = `
     <div class="day-banner">
@@ -513,41 +510,7 @@ function renderSearchResults(query) {
       <div style="margin-top: 26px;">
         <h3 style="font-family: Oswald, sans-serif; margin-bottom: 14px;">Eşleşen Core (21'ler) Hareketleri</h3>
         <div class="core-grid">
-          ${matchedCore
-            .map((core) => {
-              const images = getExerciseImages(core.imageId);
-              return `
-                <article class="core-card">
-                  <div class="media-stage" data-pose-mode="auto">
-                    <img class="media-frame frame-start" src="${escapeHtml(images.start)}" alt="${escapeHtml(core.name)}" loading="lazy" />
-                    <img class="media-frame frame-end is-hidden" src="${escapeHtml(images.end)}" alt="${escapeHtml(core.name)}" loading="lazy" />
-                    <div class="media-overlay-top">
-                      <span class="order-badge">CORE</span>
-                      <span class="pose-indicator">1. Başlangıç</span>
-                    </div>
-                    <div class="media-controls-bar">
-                      <div class="pose-toggle-group">
-                        <button type="button" class="pose-btn active" data-pose="auto">Otomatik</button>
-                        <button type="button" class="pose-btn" data-pose="start">1. Başlangıç</button>
-                        <button type="button" class="pose-btn" data-pose="end">2. Bitiş</button>
-                      </div>
-                      <button type="button" class="video-trigger-btn" data-open-core="${escapeHtml(core.id)}">
-                        <span>Videoyu İzle</span>
-                      </button>
-                    </div>
-                  </div>
-                  <div class="card-body">
-                    <div class="exercise-tags">
-                      <span class="tag-chip">${escapeHtml(core.target)}</span>
-                      <span class="tag-chip equipment">${escapeHtml(core.reps)}</span>
-                    </div>
-                    <h3 class="exercise-title">${escapeHtml(core.name)}</h3>
-                    <p class="exercise-subtitle">${escapeHtml(core.turkishName)}</p>
-                  </div>
-                </article>
-              `;
-            })
-            .join("")}
+          ${matchedCore.map((core) => createCoreCardHtml(core)).join("")}
         </div>
       </div>
     `
@@ -567,64 +530,57 @@ function renderSearchResults(query) {
   bindCardInteractions();
 }
 
-// Tüm kartlardaki otomatik görsel animasyonu ve modal tetikleyicilerini bağlar
+// Kartlardaki Canlı Video / Başlangıç / Bitiş geçişlerini ve modal butonlarını bağlar
 function bindCardInteractions() {
-  clearAnimationTimers();
-
   document.querySelectorAll(".media-stage").forEach((stage) => {
+    const videoEl = stage.querySelector(".media-video");
     const startImg = stage.querySelector(".frame-start");
     const endImg = stage.querySelector(".frame-end");
     const indicator = stage.querySelector(".pose-indicator");
     const poseButtons = stage.querySelectorAll(".pose-btn");
 
-    let showEnd = false;
-    let timerId = null;
-
-    // İki kare arasında görünürlüğü günceller
-    const applyPose = (pose) => {
-      if (pose === "start") {
-        startImg.classList.remove("is-hidden");
-        endImg.classList.add("is-hidden");
+    // Seçilen moda göre video ve fotoğraf görünürlüğünü değiştirir
+    const applyMode = (mode) => {
+      if (mode === "video") {
+        stage.classList.remove("is-photo-mode");
+        if (videoEl) {
+          videoEl.classList.remove("is-hidden");
+          videoEl.play().catch(() => {});
+        }
+        if (startImg) startImg.classList.add("is-hidden");
+        if (endImg) endImg.classList.add("is-hidden");
+        indicator.textContent = "Canlı Video";
+      } else if (mode === "start") {
+        stage.classList.add("is-photo-mode");
+        if (videoEl) {
+          videoEl.classList.add("is-hidden");
+          videoEl.pause();
+        }
+        if (startImg) startImg.classList.remove("is-hidden");
+        if (endImg) endImg.classList.add("is-hidden");
         indicator.textContent = "1. Başlangıç";
       } else {
-        startImg.classList.add("is-hidden");
-        endImg.classList.remove("is-hidden");
+        stage.classList.add("is-photo-mode");
+        if (videoEl) {
+          videoEl.classList.add("is-hidden");
+          videoEl.pause();
+        }
+        if (startImg) startImg.classList.add("is-hidden");
+        if (endImg) endImg.classList.remove("is-hidden");
         indicator.textContent = "2. Bitiş / Kasılma";
       }
     };
-
-    const startAutoLoop = () => {
-      if (timerId) window.clearInterval(timerId);
-      timerId = window.setInterval(() => {
-        showEnd = !showEnd;
-        applyPose(showEnd ? "end" : "start");
-      }, 1450);
-      state.animationIntervals.push(timerId);
-    };
-
-    // Başlangıçta otomatik geçişi aktif et
-    startAutoLoop();
 
     poseButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
         poseButtons.forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
-
-        const mode = btn.dataset.pose;
-        if (mode === "auto") {
-          startAutoLoop();
-        } else {
-          if (timerId) {
-            window.clearInterval(timerId);
-            timerId = null;
-          }
-          applyPose(mode);
-        }
+        applyMode(btn.dataset.pose);
       });
     });
   });
 
-  // Ana egzersiz video modalı butonları
+  // Ana egzersiz detaylı video modalı butonları
   document.querySelectorAll("[data-open-exercise]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const exercise = findExerciseById(btn.dataset.openExercise);
@@ -633,14 +589,14 @@ function bindCardInteractions() {
         badge: `${exercise.muscleGroup} · ${exercise.equipment}`,
         title: exercise.name,
         subtitle: exercise.turkishName,
+        videoKey: exercise.videoKey,
         imageId: exercise.imageId,
-        videoId: exercise.videoId,
         tips: exercise.tips,
       });
     });
   });
 
-  // Core / Aktif dinlenme video modalı butonları
+  // Core / Aktif dinlenme detaylı video modalı butonları
   document.querySelectorAll("[data-open-core]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const core = CORE_LIBRARY[btn.dataset.openCore];
@@ -649,8 +605,8 @@ function bindCardInteractions() {
         badge: `Aktif Dinlenme Core · ${core.reps}`,
         title: core.name,
         subtitle: core.turkishName,
+        videoKey: core.videoKey,
         imageId: core.imageId,
-        videoId: core.videoId,
         tips: [core.formCue, `MACFit İpucu: ${core.macfitTip}`],
       });
     });
@@ -666,54 +622,66 @@ function findExerciseById(exerciseId) {
   return null;
 }
 
-// Video & Form Görselleri modalını açar
-function openMediaModal({ badge, title, subtitle, imageId, videoId, tips }) {
+// Reklamsız yerel HTML5 MP4 Video & Form Görselleri modalını açar
+function openMediaModal({ badge, title, subtitle, videoKey, imageId, tips }) {
+  const media = getExerciseMedia(videoKey, imageId);
+
   elements.modalBadge.textContent = badge;
   elements.modalTitle.textContent = title;
   elements.modalSubtitle.textContent = subtitle;
 
-  // Video oynatıcı alanı
-  if (videoId) {
-    const embedUrl = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(
-      videoId
-    )}?rel=0&autoplay=1`;
-    const watchUrl = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
-
+  // Yerel HTML5 video oynatıcı
+  if (media.mp4) {
     elements.modalVideoContainer.innerHTML = `
-      <iframe
-        src="${embedUrl}"
-        title="${escapeHtml(title)} Eğitim Videosu"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen
-      ></iframe>
+      <video
+        id="modal-video-player"
+        src="${escapeHtml(media.mp4)}"
+        poster="${escapeHtml(media.gif || media.start || "")}"
+        controls
+        autoplay
+        loop
+        muted
+        playsinline
+      ></video>
     `;
+
+    // Hız kontrol butonlarını sıfırla ve bağla
+    const speedBtns = elements.modalPlaybackBar.querySelectorAll(".speed-btn");
+    const player = document.getElementById("modal-video-player");
+
+    speedBtns.forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.speed === "1");
+      btn.onclick = () => {
+        const rate = parseFloat(btn.dataset.speed);
+        if (player) {
+          player.playbackRate = rate;
+        }
+        speedBtns.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+      };
+    });
 
     elements.modalExternalActions.innerHTML = `
       <a
-        href="${watchUrl}"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="youtube-direct-link"
+        href="${escapeHtml(media.mp4)}"
+        download="${escapeHtml(videoKey)}.mp4"
+        class="download-mp4-link"
       >
-        YouTube Uygulamasında Aç ↗
+        MP4 İndir ↓
       </a>
     `;
+    elements.modalPlaybackBar.hidden = false;
   } else {
-    elements.modalVideoContainer.innerHTML = `
-      <div class="video-fallback-box">
-        <strong>Koşu Bandı Finisher Protokolü</strong>
-        <p>Eğimi %10-12 seviyesine, hızı 5.0-5.5 km/s değerine ayarla ve ön barlara tutunmadan 10 dakika tempolu yürü.</p>
-      </div>
-    `;
+    elements.modalVideoContainer.innerHTML = "";
+    elements.modalPlaybackBar.hidden = true;
     elements.modalExternalActions.innerHTML = "";
   }
 
   // Başlangıç ve Bitiş kareleri
-  const images = getExerciseImages(imageId);
-  if (images) {
+  if (media.start && media.end) {
     elements.modalFramesSection.hidden = false;
-    elements.modalImgStart.src = images.start;
-    elements.modalImgEnd.src = images.end;
+    elements.modalImgStart.src = media.start;
+    elements.modalImgEnd.src = media.end;
   } else {
     elements.modalFramesSection.hidden = true;
   }
@@ -727,6 +695,10 @@ function openMediaModal({ badge, title, subtitle, imageId, videoId, tips }) {
 
 // Modalı kapatır ve video oynatımını durdurur
 function closeMediaModal() {
+  const player = document.getElementById("modal-video-player");
+  if (player) {
+    player.pause();
+  }
   elements.modal.hidden = true;
   elements.modalVideoContainer.innerHTML = "";
   document.body.style.overflow = "";

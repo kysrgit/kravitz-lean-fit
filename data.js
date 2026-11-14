@@ -1,19 +1,16 @@
 /**
  * Dosya: data.js
- * Açıklama: Kravitz Lean & Fit (MACFit) antrenman programı, doğrulanmış görsel/video kimlikleri,
- * Tanita vücut analizi özeti, 21'ler Core rehberi ve göbek yağı eritme beslenme protokolü verilerini içerir.
+ * Açıklama: Kravitz Lean & Fit (MACFit) antrenman programı, reklamsız yerel açık kaynak
+ * video/GIF/görsel yolları, Tanita vücut analizi özeti, 21'ler Core rehberi ve beslenme protokolünü içerir.
  */
 
-// Egzersiz görselleri için GitHub tabanlı açık kaynak veritabanı temel adresi
-export const IMAGE_BASE_URL =
-  "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises";
-
-// Yardımcı fonksiyon: Egzersiz görsel ID'sine göre başlangıç (0.jpg) ve bitiş (1.jpg) URL'lerini üretir
-export function getExerciseImages(imageId) {
-  if (!imageId) return null;
+// Yardımcı fonksiyon: Egzersizin yerel MP4 videosu, GIF animasyonu ve başlangıç/bitiş fotoğraflarını döndürür
+export function getExerciseMedia(videoKey, imageId) {
   return {
-    start: `${IMAGE_BASE_URL}/${imageId}/0.jpg`,
-    end: `${IMAGE_BASE_URL}/${imageId}/1.jpg`,
+    mp4: videoKey ? `./assets/videos/${videoKey}.mp4` : null,
+    gif: videoKey ? `./assets/gifs/${videoKey}.gif` : null,
+    start: imageId ? `./assets/images/${imageId}/0.jpg` : null,
+    end: imageId ? `./assets/images/${imageId}/1.jpg` : null,
   };
 }
 
@@ -99,7 +96,7 @@ export const CORE_LIBRARY = {
     target: "Alt Karın & Derin Core",
     reps: "21 Tekrar (3 Set)",
     imageId: "Hanging_Leg_Raise",
-    videoId: "hdng3Nm1x_E",
+    videoKey: "hanging_leg_raise",
     formCue:
       "Barfikse asıl, sallanmayı durdur. Dizlerini veya düz bacaklarını kalçanı hafifçe yukarı kıvırarak göğsüne çek. Yavaşça indir.",
     macfitTip: "Zorlanırsan ilk sette diz bükük (Knee Raise), sonraki setlerde düz bacak yapabilirsin.",
@@ -111,7 +108,7 @@ export const CORE_LIBRARY = {
     target: "Üst & Orta Karın Kasları",
     reps: "21 Tekrar (3 Set)",
     imageId: "Cable_Crunch",
-    videoId: "2fbujeH3F0E",
+    videoKey: "cable_crunch",
     formCue:
       "Halat aparatını başının iki yanında sabitle, kalçanı geriye oynatmadan sadece omurganı bükerek dirseklerini dizlerine yaklaştır.",
     macfitTip: "Ağırlığı kollarınla değil, karnını sıkarak aşağı çek; tepe noktada nefesi tamamen boşalt.",
@@ -123,7 +120,7 @@ export const CORE_LIBRARY = {
     target: "Karın & Oblik (Yan Bel)",
     reps: "21 Tekrar (3 Set)",
     imageId: "Air_Bike",
-    videoId: "9FGilxCbdz8",
+    videoKey: "bicycle_crunch",
     formCue:
       "Sırtüstü yat, eller kulak hizasında (boyundan çekme). Sağ dirseği sol dize yaklaştırırken diğer bacağı yere paralel uzat.",
     macfitTip: "Hızlı ve savurarak değil, her dönüşte 1 saniye karın sıkıştırmasıyla uygula.",
@@ -135,7 +132,7 @@ export const CORE_LIBRARY = {
     target: "Transverse Abdominis (İç Korse)",
     reps: "45 Saniye Tutuş",
     imageId: "Plank",
-    videoId: "pSHjTRCQxIw",
+    videoKey: "plank",
     formCue:
       "Dirsekler omuz altında, kalça ne yukarıda ne sarkık. Göbek deliğini omurgaya doğru içeri çekerek tüm gövdeyi kilitle.",
     macfitTip: "Belini çukurlaştırmadan kalçanı ve karnını aynı anda sıktığında karın titremeye başlamalı.",
@@ -147,7 +144,7 @@ export const CORE_LIBRARY = {
     target: "Tüm Karın Duvarı",
     reps: "21 Tekrar (3 Set)",
     imageId: "Decline_Crunch",
-    videoId: "Xyd_fa5zoEU",
+    videoKey: "decline_crunch",
     formCue:
       "Ayakları pedlere sabitle, beli tamamen yere yatırmadan kontrollü şekilde geriye açıl ve nefes vererek yukarı kalk.",
     macfitTip: "MACFit'te eğimli mekik sehpası doluysa zeminde ağırlıksız kontrollü Crunch yapabilirsin.",
@@ -159,7 +156,7 @@ export const CORE_LIBRARY = {
     target: "Yan Karın & Bel Simidi",
     reps: "21 Tekrar (3 Set)",
     imageId: "Russian_Twist",
-    videoId: "wkD8rjkodUI",
+    videoKey: "russian_twist",
     formCue:
       "Gövdeyi 45 derece geriye yatır, sırtı dik tut. Topuklar hafifçe havada veya yerde iken göğüs kafesini sağa-sola çevir.",
     macfitTip: "Sadece ellerini değil omuzlarını ve göğsünü döndür; isteğe göre 5 kg plaka tutabilirsin.",
@@ -171,7 +168,7 @@ export const CORE_LIBRARY = {
     target: "Alt Karın",
     reps: "21 Tekrar (3 Set)",
     imageId: "Flat_Bench_Lying_Leg_Raise",
-    videoId: "JB2oyawG9KI",
+    videoKey: "lying_leg_raise",
     formCue:
       "Düz sehpaya veya mata uzan, ellerle sehpanın kenarını tut. Bel boşluğunu yere bastırarak bacakları kontrollü kaldır ve indir.",
     macfitTip: "Topukları yere değdirmeden durdurmak alt karındaki gerilimi kesintisiz tutar.",
@@ -183,7 +180,7 @@ export const CORE_LIBRARY = {
     target: "Oblikler & Bel İnceltme",
     reps: "21 Tekrar (Her Yön / 3 Set)",
     imageId: "Standing_Cable_Wood_Chop",
-    videoId: "pAplQXk3dkU",
+    videoKey: "cable_woodchopper",
     formCue:
       "Kablo makinesini omuz hizasına al, yan dön. Kollar gergin halde kabloyu çapraz aşağı doğru gövdeni döndürerek çek.",
     macfitTip: "Düşük kilo seç, kollarla değil yan karın (oblik) kaslarınla dönüşü üret.",
@@ -195,7 +192,7 @@ export const CORE_LIBRARY = {
     target: "Alt Karın",
     reps: "21 Tekrar (3 Set)",
     imageId: "Reverse_Crunch",
-    videoId: "hyv14e2QDq0",
+    videoKey: "reverse_crunch",
     formCue:
       "Sırtüstü yat, dizler 90 derece bükülü. Kalçanı yerden hafifçe yuvarlayarak dizleri göğse doğru kaldır.",
     macfitTip: "İvme almak yerine alt karın kasıyla leğen kemiğini yukarı kıvırmaya odaklan.",
@@ -207,7 +204,7 @@ export const CORE_LIBRARY = {
     target: "Tüm Ön & Derin Core",
     reps: "21 Tekrar (veya 12-15 Temiz)",
     imageId: "Ab_Roller",
-    videoId: "rqiTPdK1c_I",
+    videoKey: "ab_wheel",
     formCue:
       "Dizlerin üstünde tekerleği tut, kalçayı sık ve sırtı hafif kamburlaştır. Belini çukurlaştırmadan ileri uzanıp karınla geri çek.",
     macfitTip: "MACFit fonksiyonel alanında yoksa Fitness Topu (Swiss Ball) üzerinde Rollout veya Crunch yap.",
@@ -219,7 +216,7 @@ export const CORE_LIBRARY = {
     target: "Core + Kardiyo Yağ Yakımı",
     reps: "21 Tekrar (Her Bacak)",
     imageId: "Mountain_Climbers",
-    videoId: "nmwgirgXLYM",
+    videoKey: "mountain_climbers",
     formCue:
       "Şınav pozisyonunda eller omuz altında. Kalçayı zıplatmadan sırayla dizleri hızla göğse çek.",
     macfitTip: "Nefesini tutma, ritmik ve hızlı tempoyla nabzı yukarı taşı.",
@@ -231,7 +228,7 @@ export const CORE_LIBRARY = {
     target: "Transverse Abdominis (Bel Çevresi)",
     reps: "Her Sabah 5 Set × 20 Saniye",
     imageId: "Stomach_Vacuum",
-    videoId: "gDx1xfSobG4",
+    videoKey: "stomach_vacuum",
     formCue:
       "Sabah aç karnına nefesini tamamen ver, akciğerler boşken göbek deliğini omurgana ve kaburgalarının altına doğru maksimum içeri çek ve tut.",
     macfitTip: "Ayakta eller dizlerde hafif öne eğilerek veya sırtüstü dizler bükülü başlaman vakumu çok kolaylaştırır.",
@@ -243,7 +240,7 @@ export const CORE_LIBRARY = {
     target: "Doğrudan Göbek Yağı & Kondisyon",
     reps: "10 Dakika Finisher (Eğim 10-12 / Hız 5.0-5.5 km/s)",
     imageId: "Walking_Treadmill",
-    videoId: null,
+    videoKey: "incline_walk",
     formCue:
       "Koşu bandının ön barlarına tutunmadan dik dur. Adımlarını kalçadan iterek at ve burundan nefes alıp ver.",
     macfitTip: "Bacak antrenmanı sonunda yorgun glikojen depoları varken yapılan bu yürüyüş saf yağ oksidasyonunu hızlandırır.",
@@ -270,7 +267,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Üst Göğüs & Ön Omuz",
         equipment: "30° Eğimli Sehpa + Dambıl",
         imageId: "Incline_Dumbbell_Press",
-        videoId: "8iPEnn-ltC8",
+        videoKey: "incline_db_press",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Çok Hafif (Isınma & Kan Pompalama)" },
           { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
@@ -293,7 +290,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Ön & Yan Omuz",
         equipment: "Dik Sehpa + Dambıl",
         imageId: "Dumbbell_Shoulder_Press",
-        videoId: "qEwKCR5JCog",
+        videoKey: "seated_db_shoulder_press",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif Ağırlık" },
           { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
@@ -315,7 +312,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Yan Omuz (Deltoid)",
         equipment: "Dambıl",
         imageId: "Side_Lateral_Raise",
-        videoId: "3VcKaXpzqRo",
+        videoKey: "dumbbell_lateral_raise",
         pyramidSets: [
           { set: 1, reps: "35 Tekrar", load: "Çok Hafif (2.5 - 4 kg)" },
           { set: 2, reps: "20 Tekrar", load: "Hafif-Orta" },
@@ -337,7 +334,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Göğüs İç Çizgi & Dış Hat",
         equipment: "MACFit Cable İstasyonu",
         imageId: "Cable_Crossover",
-        videoId: "taI4XduLpTk",
+        videoKey: "cable_crossover",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
@@ -358,7 +355,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Triceps (3 Baş)",
         equipment: "Cable + İp Aparatı",
         imageId: "Triceps_Pushdown_-_Rope_Attachment",
-        videoId: "vB5OHsJ3EME",
+        videoKey: "rope_triceps_pushdown",
         pyramidSets: [
           { set: 1, reps: "35 Tekrar", load: "Hafif" },
           { set: 2, reps: "20 Tekrar", load: "Orta" },
@@ -392,7 +389,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Ön Bacak (Quadriceps) & Kalça",
         equipment: "MACFit Leg Press Makinesi",
         imageId: "Leg_Press",
-        videoId: "IZxyjW7MPJQ",
+        videoKey: "leg_press",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif (Diz & Kalça Isındırma)" },
           { set: 2, reps: "15 Tekrar", load: "Orta Plaka" },
@@ -414,7 +411,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Arka Bacak (Hamstring) & Kalça",
         equipment: "Barbell veya Ağır Dambıl",
         imageId: "Romanian_Deadlift",
-        videoId: "JCXUYuzwNrM",
+        videoKey: "romanian_deadlift",
         pyramidSets: [
           { set: 1, reps: "25 Tekrar", load: "Hafif (Form Provası)" },
           { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
@@ -436,7 +433,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Bacak, Kalça & Denge",
         equipment: "Dambıl + Koridor Alanı",
         imageId: "Dumbbell_Lunges",
-        videoId: "L8fvypPrzzs",
+        videoKey: "walking_lunges",
         pyramidSets: [
           { set: 1, reps: "20 Tekrar", load: "Vücut Ağırlığı / Hafif (Her Bacak 10)" },
           { set: 2, reps: "12 Tekrar", load: "Orta Dambıl (Her Bacak 6)" },
@@ -457,7 +454,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Arka Bacak (Hamstring)",
         equipment: "MACFit Seated Leg Curl",
         imageId: "Seated_Leg_Curl",
-        videoId: "ELOCsoDSmrg",
+        videoKey: "seated_leg_curl",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
@@ -478,7 +475,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Kalf & Kardiyovasküler Sistem",
         equipment: "Calf Makinesi / Smith + Koşu Bandı",
         imageId: "Standing_Calf_Raises",
-        videoId: "gwLzBJYoWlI",
+        videoKey: "standing_calf_raise",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "20 Tekrar", load: "Orta" },
@@ -511,7 +508,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Sırt Genişliği (Latissimus Dorsi)",
         equipment: "Lat Pulldown İstasyonu",
         imageId: "Wide-Grip_Lat_Pulldown",
-        videoId: "CAwf7n6Luuc",
+        videoKey: "wide_grip_lat_pulldown",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif (Kanat Aktivasyonu)" },
           { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
@@ -533,7 +530,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Orta Sırt & Postür",
         equipment: "Seated Row İstasyonu",
         imageId: "Seated_Cable_Rows",
-        videoId: "GZbfZ033f74",
+        videoKey: "seated_cable_row",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
@@ -555,7 +552,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Arka Omuz & Üst Sırt",
         equipment: "Cable + İp Aparatı",
         imageId: "Face_Pull",
-        videoId: "rep-qVOkqgk",
+        videoKey: "face_pull",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "20 Tekrar", load: "Orta" },
@@ -576,7 +573,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Biceps (Ön Kol)",
         equipment: "Dambıl (4-5 kg'dan 17.5-20 kg'a)",
         imageId: "Dumbbell_Bicep_Curl",
-        videoId: "ykJmrZ5v0Oo",
+        videoKey: "dumbbell_bicep_curl",
         pyramidSets: [
           { set: 1, reps: "45 Tekrar", load: "4-5 kg (Tam Lenny Kravitz Pompası)" },
           { set: 2, reps: "20 Tekrar", load: "9-10 kg" },
@@ -598,7 +595,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Brachialis & Ön Kol (Forearm)",
         equipment: "45° Sehpa + Dambıl",
         imageId: "Incline_Hammer_Curls",
-        videoId: "TwD-YGVP4Bk",
+        videoKey: "incline_hammer_curl",
         pyramidSets: [
           { set: 1, reps: "25 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
@@ -631,7 +628,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Kalça, Arka Bacak, Core & Kondisyon",
         equipment: "Kettlebell (MACFit Fonksiyonel Alan)",
         imageId: "One-Arm_Kettlebell_Swings",
-        videoId: "YSxHifyI6s8",
+        videoKey: "kettlebell_swing",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "10-12 kg (Ritmi Bul)" },
           { set: 2, reps: "20 Tekrar", load: "14-16 kg" },
@@ -653,7 +650,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Göğüs, Sırt & Anti-Rotasyon Core",
         equipment: "2 Adet Altıgen (Hex) Dambıl",
         imageId: "Alternating_Renegade_Row",
-        videoId: "roCP6wCXPqo",
+        videoKey: "renegade_row_pushup",
         pyramidSets: [
           { set: 1, reps: "20 Şınav + 16 Row", load: "Hafif Dambıl (7.5 - 10 kg)" },
           { set: 2, reps: "15 Şınav + 12 Row", load: "Orta Dambıl (12.5 kg)" },
@@ -674,7 +671,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Alt Kanat & Serratus (Kaburga Çizgisi)",
         equipment: "Cable + Düz Bar veya İp",
         imageId: "Straight-Arm_Pulldown",
-        videoId: "G9uNaXGTJ4w",
+        videoKey: "straight_arm_pulldown",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
@@ -695,7 +692,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Derin Core, Kavrama, Omuz & Yağ Yakımı",
         equipment: "2 Adet Ağır Dambıl / Kettlebell",
         imageId: "Farmers_Walk",
-        videoId: "Fkzk_RqlYig",
+        videoKey: "farmers_walk",
         pyramidSets: [
           { set: 1, reps: "45 Saniye Yürüyüş", load: "Orta-Ağır (2× 20 kg)" },
           { set: 2, reps: "45 Saniye Yürüyüş", load: "Ağır (2× 25 kg)" },
@@ -716,7 +713,7 @@ export const WORKOUT_DAYS = [
         muscleGroup: "Transverse Abdominis (İç Bel Kuşağı)",
         equipment: "Ekipmansız (Sabah Aç Karnına)",
         imageId: "Stomach_Vacuum",
-        videoId: "gDx1xfSobG4",
+        videoKey: "stomach_vacuum",
         pyramidSets: [
           { set: 1, reps: "20 Saniye Tutuş", load: "Sabah Aç Karnına - Set 1" },
           { set: 2, reps: "20 Saniye Tutuş", load: "Sabah Aç Karnına - Set 2" },

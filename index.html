@@ -1,7 +1,7 @@
 <!--
   Dosya: index.html
   Açıklama: Kravitz Lean & Fit (MACFit) antrenman ve beslenme rehberi web uygulamasının
-  ana HTML iskeleti. Gün sekmeleri, hareket kartları, canlı form görselleştirme ve video modalını barındırır.
+  ana HTML iskeleti. Gün sekmeleri, hareket kartları, reklamsız yerel video oynatıcısı ve detay modalını barındırır.
 -->
 <!DOCTYPE html>
 <html lang="tr">
@@ -36,7 +36,7 @@
     <header class="top-header">
       <div class="container header-inner">
         <div class="brand">
-          <div class="brand-badge">MACFIT · LEAN &amp; FIT</div>
+          <div class="brand-badge">MACFIT · REKLAMSIZ VİDEO &amp; GÖRSEL</div>
           <h1 class="brand-title">KRAVITZ SİSTEMİ</h1>
         </div>
 
@@ -68,8 +68,8 @@
           </h2>
           <p class="hero-subtitle">
             25 yaş · <strong>62,9 kg kas kütleni</strong> koruyarak gövdede toplanan
-            <strong>10,6 kg (%23,1) yağı</strong> eritmek için tasarlanmış, görsel ve video destekli
-            MACFit salon rehberin.
+            <strong>10,6 kg (%23,1) yağı</strong> eritmek için tasarlanmış, sıfır reklamlı yerleşik
+            açık kaynak video ve görsel destekli MACFit salon rehberin.
           </p>
         </div>
 
@@ -142,13 +142,14 @@
           Dinlenmesi · Denzel kuralı: <em>"Pantolonlar yalan söylemez."</em>
         </p>
         <p class="footer-sub">
-          Tüm egzersiz görselleri açık kaynak <code>free-exercise-db</code> üzerinden, eğitim videoları
-          doğrulanmış YouTube içeriklerinden sunulmaktadır.
+          Tüm egzersiz videoları ve görselleri açık kaynak <code>exercises-dataset</code> ve
+          <code>free-exercise-db</code> üzerinden site içine indirilmiş olup reklamsız yerel HTML5
+          <code>.mp4</code> olarak sunulmaktadır.
         </p>
       </div>
     </footer>
 
-    <!-- Video & Detay Modalı -->
+    <!-- Reklamsız Yerel Video & Detay Modalı -->
     <div
       id="media-modal"
       class="modal-backdrop"
@@ -175,8 +176,17 @@
         </div>
 
         <div class="modal-body">
-          <!-- YouTube Gömülü Oynatıcı veya Bilgilendirme -->
-          <div id="modal-video-container" class="modal-video-container"></div>
+          <!-- Yerel HTML5 MP4 Oynatıcı + Oynatma Hızı Kontrolleri -->
+          <div id="modal-video-container" class="modal-video-container is-video-stage"></div>
+
+          <div id="modal-playback-bar" class="modal-playback-bar">
+            <div class="speed-group" role="group" aria-label="Video oynatma hızı">
+              <span class="speed-label">Hız:</span>
+              <button type="button" class="speed-btn" data-speed="0.5">0.5× Yavaş Çekim</button>
+              <button type="button" class="speed-btn active" data-speed="1">1.0× Normal</button>
+            </div>
+            <div id="modal-external-actions" class="modal-external-actions"></div>
+          </div>
 
           <!-- Başlangıç ve Bitiş Pozisyonu Karşılaştırması -->
           <div id="modal-frames-section" class="modal-frames-section">
@@ -193,13 +203,12 @@
             </div>
           </div>
 
-          <!-- Uygulama İpuçları ve Direkt YouTube Bağlantısı -->
+          <!-- MACFit Uygulama İpuçları -->
           <div class="modal-details-row">
             <div class="modal-tips-box">
               <h4>MACFit Uygulama İpuçları</h4>
               <ul id="modal-tips-list"></ul>
             </div>
-            <div id="modal-external-actions" class="modal-external-actions"></div>
           </div>
         </div>
       </div>
