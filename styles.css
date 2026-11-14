@@ -8,5 +8,7 @@
 
 @import url("./styles/tokens.css");
 @import url("./styles/base.css");
+@import url("./styles/components/broadcast-bar.css");
+@import url("./styles/components/hero.css");
 @import url("./styles/legacy-bridge.css");
 @import url("./styles/motion.css");

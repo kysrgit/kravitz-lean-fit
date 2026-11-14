@@ -1,0 +1,400 @@
+/**
+ * Dosya: styles/components/broadcast-bar.css
+ * Açıklama: Sabit üst yayın barı, lower-third sekme + genişleyen arama kontrol bandı
+ * ve 64px mobil başparmak alt kumandası stilleri.
+ */
+
+@layer components {
+  /* Üst sabit yayın header'ı */
+  .top-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    background: var(--bar-bg);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+  }
+
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-left: 10px;
+    border-left: 3px solid var(--day-accent);
+  }
+
+  .brand-badge {
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--set-core);
+  }
+
+  .brand-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-25);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 0.95;
+    text-transform: uppercase;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 8px 14px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--line);
+    background: var(--stage-1);
+    color: var(--text-1);
+    font-size: var(--fs-14);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      border-color var(--dur-micro) var(--ease-out),
+      background-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out);
+  }
+
+  .btn-outline:hover {
+    border-color: var(--day-accent);
+    background: var(--stage-2);
+  }
+
+  .btn-summary-shortcut {
+    border-color: var(--volt-border);
+    background: var(--volt-wash);
+    color: var(--volt);
+  }
+
+  .btn-summary-shortcut:hover,
+  .btn-summary-shortcut.active {
+    background: var(--volt);
+    color: var(--text-on-accent);
+    border-color: var(--volt);
+  }
+
+  .btn-outline svg {
+    transition: transform var(--dur-micro) var(--ease-out);
+  }
+
+  .btn-outline[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+  }
+
+  /* Lower-third yapışkan yayın bandı: sekmeler + arama */
+  .controls-bar {
+    position: sticky;
+    top: 71px;
+    z-index: calc(var(--z-header) - 10);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 12px;
+    padding: 8px 12px;
+    margin-bottom: 24px;
+    background: var(--bar-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--day-accent);
+    border-radius: var(--radius-sharp);
+  }
+
+  .tabs-nav {
+    display: flex;
+    align-items: stretch;
+    gap: 3px;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    max-width: 100%;
+    scrollbar-width: none;
+  }
+
+  .tabs-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab-btn {
+    position: relative;
+    flex: 0 0 auto;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 44px;
+    padding: 6px 10px 9px;
+    border-radius: var(--radius-sharp);
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-2);
+    cursor: pointer;
+    text-align: left;
+    transition:
+      background-color var(--dur-micro) var(--ease-out),
+      border-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out);
+  }
+
+  .tab-btn:hover {
+    background: var(--stage-2);
+    color: var(--text-1);
+  }
+
+  .tab-btn.active {
+    background: var(--accent-wash);
+    border-color: var(--accent-border);
+    color: var(--text-1);
+  }
+
+  .tab-active-indicator {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 3px;
+    background: var(--day-accent);
+    pointer-events: none;
+  }
+
+  .tab-btn-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--day-accent);
+  }
+
+  .tab-btn-sub {
+    font-family: var(--font-display);
+    font-size: var(--fs-16);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.05;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* Arama kutusu: odakta --volt vurgu ve akıcı genişleme */
+  .search-wrapper {
+    position: relative;
+    flex: 1 1 360px;
+    max-width: 440px;
+    transition:
+      flex-basis var(--dur-transition) var(--ease-out),
+      max-width var(--dur-transition) var(--ease-out);
+  }
+
+  .search-wrapper:focus-within {
+    flex-basis: 420px;
+    max-width: 520px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-2);
+    pointer-events: none;
+    transition: color var(--dur-micro) var(--ease-out);
+  }
+
+  .search-wrapper:focus-within .search-icon {
+    color: var(--volt);
+  }
+
+  .search-input {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 38px 10px 36px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--line);
+    background: var(--void);
+    color: var(--text-1);
+    font-size: var(--fs-14);
+    transition:
+      border-color var(--dur-micro) var(--ease-out),
+      box-shadow var(--dur-micro) var(--ease-out);
+  }
+
+  .search-input::placeholder {
+    color: var(--text-2);
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: var(--volt);
+    box-shadow: 0 0 0 1px var(--volt);
+  }
+
+  .search-clear {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: var(--radius-cut);
+    background: var(--stage-2);
+    color: var(--text-1);
+    cursor: pointer;
+    transition: background-color var(--dur-micro) var(--ease-out);
+  }
+
+  .search-clear:hover {
+    background: var(--stage-3);
+    color: var(--volt);
+  }
+
+  /* Mobil alt kumanda barı (masaüstünde gizli) */
+  .mobile-bottom-nav {
+    display: none;
+  }
+
+  .mobile-nav-btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-height: 48px;
+    padding: 4px 2px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sharp);
+    background: transparent;
+    color: var(--text-2);
+    font-size: var(--fs-12);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color var(--dur-micro) var(--ease-out),
+      border-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out);
+  }
+
+  .mobile-nav-btn .mobile-nav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .mobile-nav-code {
+    font-family: var(--font-display);
+    font-size: var(--fs-20);
+    font-weight: 700;
+    line-height: 0.9;
+  }
+
+  .mobile-nav-btn .mobile-nav-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .mobile-nav-btn.active {
+    background: var(--accent-wash);
+    border-color: var(--accent-border);
+    color: var(--day-accent);
+  }
+
+  .mobile-nav-btn.active::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--day-accent);
+  }
+
+  @media (max-width: 768px) {
+    body {
+      padding-bottom: calc(var(--nav-mobile-h) + 12px + env(safe-area-inset-bottom));
+    }
+
+    .header-inner {
+      padding: 10px 0;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .brand-badge {
+      letter-spacing: 0.08em;
+    }
+
+    .brand-title {
+      font-size: var(--fs-20);
+    }
+
+    .btn-outline {
+      padding: 8px 10px;
+      font-size: var(--fs-12);
+      min-height: 40px;
+    }
+
+    .controls-bar {
+      position: static;
+      padding: 10px;
+      gap: 10px;
+    }
+
+    .search-wrapper,
+    .search-wrapper:focus-within {
+      max-width: 100%;
+      flex: 1 1 100%;
+    }
+
+    .search-input {
+      font-size: var(--fs-16);
+    }
+
+    .mobile-bottom-nav {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: var(--z-mobile-nav);
+      min-height: var(--nav-mobile-h);
+      gap: 2px;
+      padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+      background: var(--bar-bg);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--line);
+    }
+  }
+}

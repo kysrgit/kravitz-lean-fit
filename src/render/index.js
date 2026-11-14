@@ -70,6 +70,7 @@ export function renderTabs() {
       >
         <span class="tab-btn-top">${topIcon}${escapeHtml(tab.top)}</span>
         <span class="tab-btn-sub">${escapeHtml(tab.sub)}</span>
+        ${isActive ? '<span class="tab-active-indicator" data-flip-id="tab-indicator" aria-hidden="true"></span>' : ""}
       </button>
     `;
   }).join("");

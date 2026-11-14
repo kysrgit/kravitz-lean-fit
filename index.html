@@ -280,12 +280,24 @@
       </aside>
 
       <!-- Hero ve Sistem Kuralları Bölümü -->
-      <section class="hero-section">
+      <section class="hero-section" aria-labelledby="hero-arena-heading">
+        <div class="arena-spotlight" aria-hidden="true"></div>
         <div class="hero-copy">
-          <span class="pill-tag">Kravitz'ten Esinlenilmiş Uyarlama · 45-60 Dk</span>
-          <h2>
-            Spider-Man &amp; Bruce Lee Silüeti İçin
-            <span class="text-gradient">Piramit + 21’ler Core</span>
+          <div class="hero-kicker-row">
+            <span class="pill-tag">Kravitz'ten Esinlenilmiş Uyarlama · 45-60 Dk</span>
+            <span class="hero-discipline-tag"
+              >SPIDER-MAN &amp; BRUCE LEE SİLÜETİ · PİRAMİT + 21’LER CORE</span
+            >
+          </div>
+          <h2
+            id="hero-arena-heading"
+            class="hero-arena-title display-type"
+            aria-label="Kravitz Lean and Fit: Piramit ve 21'ler Core Sistemi"
+          >
+            <span class="hero-word-solid" data-hero-line="solid" aria-hidden="true">KRAVITZ</span>
+            <span class="hero-word-outline" data-hero-line="outline" aria-hidden="true"
+              >LEAN &amp; FIT</span
+            >
           </h2>
           <p class="hero-subtitle">
             <strong>Profilim</strong> alanına girdiğin kişisel ölçümlerine göre hedef kilo ve
@@ -293,6 +305,22 @@
             harici MuscleWiki form referanslı, MACFit salonlarında uygulanmak üzere hazırlanmış
             kişisel rehberin.
           </p>
+        </div>
+
+        <!-- Temel kurallar yayın şeridi -->
+        <div class="hero-rules-strip" role="list" aria-label="Temel antrenman kuralları">
+          <div class="hero-rule-item" role="listitem">
+            <span class="hero-rule-num display-type tabular">01</span>
+            <span class="hero-rule-label">30-15-10-5 PİRAMİT</span>
+          </div>
+          <div class="hero-rule-item" role="listitem">
+            <span class="hero-rule-num display-type tabular">02</span>
+            <span class="hero-rule-label">21× CORE + DİNLENME</span>
+          </div>
+          <div class="hero-rule-item" role="listitem">
+            <span class="hero-rule-num display-type tabular">03</span>
+            <span class="hero-rule-label">45-60 DK SEANS</span>
+          </div>
         </div>
 
         <!-- 3 Temel Sistem Kuralı Kartları -->
@@ -464,7 +492,20 @@
             aria-label="Aramayı temizle"
             hidden
           >
-            ×
+            <svg
+              class="icon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <use href="#icon-x"></use>
+            </svg>
           </button>
         </div>
       </section>

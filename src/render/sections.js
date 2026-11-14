@@ -58,15 +58,19 @@ export function renderSourcesSectionHtml() {
 
 // Sistem temel kurallarını (3 sütun) render eder
 export function renderSystemPillars() {
-  elements.pillarsGrid.innerHTML = SYSTEM_PILLARS.map(
-    (pillar) => `
+  elements.pillarsGrid.innerHTML = SYSTEM_PILLARS.map((pillar, idx) => {
+    const numLabel = String(idx + 1).padStart(2, "0");
+    return `
       <article class="pillar-card">
-        <span class="pillar-badge">${escapeHtml(pillar.badge)}</span>
+        <div class="pillar-card-head">
+          <span class="pillar-badge">${escapeHtml(pillar.badge)}</span>
+          <span class="pillar-index display-type tabular" aria-hidden="true">${numLabel}</span>
+        </div>
         <h3>${escapeHtml(pillar.title)}</h3>
         <p>${escapeHtml(pillar.description)}</p>
       </article>
-    `
-  ).join("");
+    `;
+  }).join("");
 }
 
 // localStorage üzerinden kayıtlı profili güvenli (try/catch) biçimde okur
