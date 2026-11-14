@@ -1,0 +1,143 @@
+/**
+ * Dosya: styles/tokens.css
+ * Açıklama: ARENA tasarım sisteminin oklch() renk, akışkan/sabit tipografi ölçeği,
+ * hareket eğrileri, boşluklar ve gün bazlı vurgu token'larını tanımlar.
+ * Projedeki tek renk ve tipografi boyutu kaynağıdır.
+ */
+
+@layer tokens {
+  :root {
+    /* Yüzeyler (Stadyum karanlığı) */
+    --void: oklch(0.1 0.005 260);
+    --stage-1: oklch(0.15 0.01 260);
+    --stage-2: oklch(0.2 0.012 260);
+    --stage-3: oklch(0.24 0.012 260);
+    --line: oklch(0.32 0.01 260);
+
+    /* Metin hiyerarşisi (WCAG AA >= 4.5:1) */
+    --text-1: oklch(0.97 0 0);
+    --text-2: oklch(0.76 0.01 260);
+    --text-on-accent: oklch(0.12 0.01 260);
+
+    /* Enerji & Durum vurguları */
+    --volt: oklch(0.92 0.21 125);
+    --blaze: oklch(0.68 0.22 35);
+    --set-warmup: oklch(0.62 0.01 260);
+    --set-core: oklch(0.74 0.14 230);
+
+    /* Gün bazlı vurgu paleti */
+    --day-1: var(--volt);
+    --day-2: var(--blaze);
+    --day-3: oklch(0.74 0.14 230);
+    --day-4: oklch(0.8 0.16 75);
+    --day-accent: var(--day-1);
+
+    /* Token türevleri (oklch / color-mix) */
+    --scrim-void: oklch(0.1 0.005 260 / 0.8);
+    --bar-bg: oklch(0.15 0.01 260 / 0.94);
+    --stage-1-glass: oklch(0.15 0.01 260 / 0.86);
+    --line-soft: oklch(0.32 0.01 260 / 0.55);
+    --text-ghost: oklch(0.97 0 0 / 0.07);
+    --specular-white: oklch(0.97 0 0 / 0.14);
+    --shadow-deep: oklch(0.05 0.005 260 / 0.65);
+
+    --accent-wash: color-mix(in oklch, var(--day-accent) 12%, transparent);
+    --accent-tint: color-mix(in oklch, var(--day-accent) 20%, var(--stage-1));
+    --accent-border: color-mix(in oklch, var(--day-accent) 45%, transparent);
+    --accent-glow: color-mix(in oklch, var(--day-accent) 32%, transparent);
+
+    --volt-wash: color-mix(in oklch, var(--volt) 12%, transparent);
+    --volt-border: color-mix(in oklch, var(--volt) 45%, transparent);
+    --blaze-wash: color-mix(in oklch, var(--blaze) 14%, transparent);
+    --blaze-border: color-mix(in oklch, var(--blaze) 48%, transparent);
+    --blaze-glow: color-mix(in oklch, var(--blaze) 34%, transparent);
+    --core-wash: color-mix(in oklch, var(--set-core) 14%, transparent);
+    --core-border: color-mix(in oklch, var(--set-core) 45%, transparent);
+    --warmup-wash: color-mix(in oklch, var(--set-warmup) 16%, transparent);
+
+    /* Yazdırma yüzeyleri */
+    --print-bg: oklch(1 0 0);
+    --print-ink: oklch(0.12 0 0);
+    --print-muted: oklch(0.38 0 0);
+    --print-line: oklch(0.78 0 0);
+
+    /* Font aileleri */
+    --font-display: "Big Shoulders Display", system-ui, sans-serif;
+    --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+    /* Tek Display Ölçeği (clamp) */
+    --fs-hero: clamp(5rem, 22vw, 18rem);
+    --fs-day-title: clamp(3rem, 12vw, 8rem);
+    --fs-card-num: clamp(4rem, 14vw, 7rem);
+    --fs-score: clamp(2.5rem, 8vw, 5rem);
+
+    /* Tek Metin Ölçeği (12 · 14 · 16 · 20 · 25 px) */
+    --fs-12: 0.75rem;
+    --fs-14: 0.875rem;
+    --fs-16: 1rem;
+    --fs-20: 1.25rem;
+    --fs-25: 1.5625rem;
+
+    /* Hareket eğrileri & süreler */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --dur-micro: 150ms;
+    --dur-transition: 320ms;
+    --dur-stage: 800ms;
+
+    /* Keskin ARENA geometrisi ve boşluklar */
+    --radius-sharp: 0px;
+    --radius-cut: 2px;
+    --container-max: 1280px;
+    --nav-mobile-h: 64px;
+
+    /* Z-katmanları */
+    --z-noise: 90;
+    --z-header: 50;
+    --z-mobile-nav: 60;
+    --z-timer: 65;
+    --z-modal: 100;
+
+    /* Faz 1-2 geçiş uyumluluk takma adları (Faz 2 sonunda kaldırılacaktır) */
+    --bg-main: var(--void);
+    --bg-surface: var(--stage-1);
+    --bg-surface-2: var(--stage-2);
+    --bg-glass: var(--stage-1-glass);
+    --border-subtle: var(--line);
+    --border-accent: var(--accent-border);
+    --bg-card: var(--stage-1);
+    --text-primary: var(--text-1);
+    --text-secondary: var(--text-2);
+    --text-muted: var(--text-2);
+    --accent-soft: var(--day-accent);
+    --amber: var(--day-accent);
+    --amber-soft: var(--accent-wash);
+    --emerald: var(--set-core);
+    --emerald-soft: var(--core-wash);
+    --radius-sm: var(--radius-cut);
+    --radius-md: var(--radius-cut);
+    --radius-lg: var(--radius-cut);
+    --shadow-card: 0 18px 40px -18px var(--shadow-deep);
+  }
+
+  /* Aktif gün vurgusunu kapsayıcı üzerinden otomatik türet */
+  [data-day-theme="day-1"] {
+    --day-accent: var(--day-1);
+  }
+  [data-day-theme="day-2"] {
+    --day-accent: var(--day-2);
+  }
+  [data-day-theme="day-3"] {
+    --day-accent: var(--day-3);
+  }
+  [data-day-theme="day-4"] {
+    --day-accent: var(--day-4);
+  }
+  [data-day-theme="core-guide"] {
+    --day-accent: var(--set-core);
+  }
+  [data-day-theme="nutrition"],
+  [data-day-theme="summary"] {
+    --day-accent: var(--volt);
+  }
+}

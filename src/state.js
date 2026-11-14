@@ -27,7 +27,7 @@ export const state = {
   photoTimers: [],
 };
 
-export const DAY_MOBILE_ICONS = ["1️⃣", "2️⃣", "3️⃣", "4️⃣"];
+export const DAY_MOBILE_CODES = ["01", "02", "03", "04"];
 
 // Sekme tanımları (masaüstü üst bar + mobil thumb-zone alt navigasyon barı)
 export const TABS = [
@@ -35,28 +35,33 @@ export const TABS = [
     id: day.id,
     top: day.tabLabel,
     sub: day.shortTitle,
-    mobileIcon: DAY_MOBILE_ICONS[idx] || "•",
+    mobileCode: DAY_MOBILE_CODES[idx] || "00",
+    mobileIconName: null,
     mobileLabel: day.tabLabel,
   })),
   {
     id: "core-guide",
     top: "Aktif Dinlenme",
     sub: "21'ler Core & Vakum",
-    mobileIcon: "🔥",
+    mobileCode: null,
+    mobileIconName: "flame",
     mobileLabel: "21'ler",
   },
   {
     id: "nutrition",
     top: "Protokol",
     sub: "Beslenme & Enerji Açığı",
-    mobileIcon: "🥗",
+    mobileCode: null,
+    mobileIconName: "utensils",
     mobileLabel: "Besin",
   },
   {
     id: "summary",
-    top: "📋 Hızlı Bakış",
+    top: "Hızlı Bakış",
     sub: "Yazılı & Tablo Özet",
-    mobileIcon: "📋",
+    topIconName: "clipboard-list",
+    mobileCode: null,
+    mobileIconName: "clipboard-list",
     mobileLabel: "Özet",
   },
 ];
@@ -374,4 +379,4 @@ export function findExerciseById(exerciseId) {
   return null;
 }
 
-// Harici form referansı ("Formu izle ↗"), alternatif seçici ve uygulama ipuçları modalını açar
+// Harici form referansı ("Formu izle"), alternatif seçici ve uygulama ipuçları modalını açar

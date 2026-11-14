@@ -7,6 +7,7 @@
 import { MUSCLEWIKI_LICENSE_URL, getExerciseMedia } from "../data.js";
 import { elements, escapeHtml } from "./state.js";
 import { shouldDisableAutoplay } from "./media.js";
+import { lucideIcon } from "./render/icons.js";
 import { createAlternativesBoxHtml } from "./render/cards.js";
 
 let lastFocusedBeforeModal = null;
@@ -46,7 +47,7 @@ export function openMediaModal({ variants, initialVariantIndex = 0 }) {
         rel="noopener noreferrer"
         class="source-link-btn"
       >
-        Formu izle ↗
+        Formu izle ${lucideIcon("arrow-up-right", { size: 14 })}
       </a>
     `;
   };
@@ -101,7 +102,7 @@ export function openMediaModal({ variants, initialVariantIndex = 0 }) {
               rel="noopener noreferrer"
               class="source-link-btn is-modal"
             >
-              Formu izle ↗ (MuscleWiki)
+              Formu izle ${lucideIcon("arrow-up-right", { size: 14 })} (MuscleWiki)
             </a>
             <a
               href="${escapeHtml(licenseUrl)}"
@@ -109,7 +110,7 @@ export function openMediaModal({ variants, initialVariantIndex = 0 }) {
               rel="noopener noreferrer"
               class="license-terms-link"
             >
-              MuscleWiki Kullanım Şartları ↗
+              MuscleWiki Kullanım Şartları ${lucideIcon("arrow-up-right", { size: 14 })}
             </a>
           </div>
         </div>

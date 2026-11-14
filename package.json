@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "eslint .",
     "validate": "node scripts/validate.mjs",
-    "format:check": "prettier --check index.html app.js data.js sw.js src scripts styles.css manifest.webmanifest"
+    "format:check": "prettier --check index.html app.js data.js sw.js src scripts styles styles.css manifest.webmanifest"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

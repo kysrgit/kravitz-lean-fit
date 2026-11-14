@@ -6,6 +6,7 @@
 
 import { getExerciseMedia } from "../data.js";
 import { TIMER_STORAGE_KEY, escapeHtml, state } from "./state.js";
+import { lucideIcon } from "./render/icons.js";
 
 let mediaVisibilityObserver = null;
 
@@ -354,7 +355,7 @@ export function createMediaStageHtml({
           rel="noopener noreferrer"
           class="source-link-btn"
         >
-          Formu izle ↗
+          Formu izle ${lucideIcon("arrow-up-right", { size: 14 })}
         </a>
 
         <button

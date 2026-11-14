@@ -7,6 +7,7 @@
 import { CORE_LIBRARY, getExerciseMedia } from "../../data.js";
 import { escapeHtml, getExerciseSetHistory, getExerciseVariants } from "../state.js";
 import { createMediaStageHtml } from "../media.js";
+import { lucideIcon } from "./icons.js";
 
 export function createAlternativesBoxHtml(variants, activeIndex = 0) {
   if (!variants || variants.length <= 1) return "";
@@ -32,7 +33,7 @@ export function createAlternativesBoxHtml(variants, activeIndex = 0) {
 
   return `
     <div class="alternatives-box">
-      <div class="alternatives-header">🔄 Alternatif Hareketler (Makine Doluysa / Yapılamıyorsa)</div>
+      <div class="alternatives-header">${lucideIcon("refresh-cw", { size: 15 })} <span>Alternatif Hareketler (Makine Doluysa / Yapılamıyorsa)</span></div>
       <div class="alt-pills-row">${pillsHtml}</div>
       <div class="alt-reason-banner" ${activeVariant.whenToUse ? "" : "hidden"}>${reasonHtml}</div>
     </div>
@@ -156,14 +157,14 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
           <div class="pyramid-box-title-row">
             <span class="pyramid-box-title">Piramit Merdiveni (${maxSets} Set · 1. Set Isınma)</span>
             <div class="rest-timer-trigger-wrap">
-              <span class="rest-duration-badge">⏱️ Dinlenme: ${escapeHtml(restWindowLabel)}</span>
+              <span class="rest-duration-badge">${lucideIcon("clock", { size: 14 })} Dinlenme: ${escapeHtml(restWindowLabel)}</span>
               <button
                 type="button"
                 class="start-rest-timer-btn"
                 data-start-timer="${escapeHtml(restSeconds)}"
                 data-timer-label="${escapeHtml(activeVariant.name)} Dinlenme"
               >
-                ▶ Sayacı Başlat
+                ${lucideIcon("play", { size: 14 })} Sayacı Başlat
               </button>
             </div>
           </div>
@@ -316,12 +317,12 @@ export function createDaySummaryTableHtml(
                 rel="noopener noreferrer"
                 class="table-video-btn"
               >
-                Formu izle ↗
+                Formu izle ${lucideIcon("arrow-up-right", { size: 14 })}
               </a>
             </div>
           </td>
           <td class="col-pyramid" data-label="Piramit Set & Tekrarlar">
-            <div class="table-rest-pill">⏱️ Dinlenme: ${escapeHtml(restBadgeText)}</div>
+            <div class="table-rest-pill">${lucideIcon("clock", { size: 14 })} Dinlenme: ${escapeHtml(restBadgeText)}</div>
             <div class="table-pyramid-list">${pyramidHtml}</div>
           </td>
           <td class="col-core" data-label="Set Arası (21'ler Core + Dinlenme)">
@@ -359,8 +360,8 @@ export function createDaySummaryTableHtml(
           <p>${escapeHtml(day.targetGoal)}</p>
         </div>
         <div class="summary-table-header-actions">
-          <span class="meta-pill">⏱ ${escapeHtml(day.duration)}</span>
-          <span class="meta-pill">📅 ${escapeHtml(day.scheduleNote)}</span>
+          <span class="meta-pill">${lucideIcon("clock", { size: 14 })} ${escapeHtml(day.duration)}</span>
+          <span class="meta-pill">${lucideIcon("calendar", { size: 14 })} ${escapeHtml(day.scheduleNote)}</span>
           ${
             showJumpBtn
               ? `<button type="button" class="table-jump-btn" data-jump-day="${escapeHtml(day.id)}">Gün Kartlarını Aç →</button>`
@@ -372,7 +373,7 @@ export function createDaySummaryTableHtml(
     : `
       <div class="summary-table-header compact">
         <div>
-          <h3>📋 ${escapeHtml(day.tabLabel)} Hızlı Tablo Özeti</h3>
+          <h3>${lucideIcon("clipboard-list", { size: 18 })} ${escapeHtml(day.tabLabel)} Hızlı Tablo Özeti</h3>
           <p>Hareket, piramit set/tekrarları, set arası 21'ler core ve alternatiflere tek bakışta göz at.</p>
         </div>
       </div>

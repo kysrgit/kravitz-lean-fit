@@ -23,6 +23,7 @@ import {
 } from "../media.js";
 import { openMediaModal } from "../modal.js";
 import { applyVariantToCard } from "./cards.js";
+import { lucideIcon } from "./icons.js";
 import {
   renderBodyLogsSection,
   renderCoreGuide,
@@ -37,6 +38,7 @@ import {
 export function selectTab(tabId, { scrollToContent = false } = {}) {
   if (!tabId) return;
   state.activeTab = tabId;
+  document.body.dataset.dayTheme = tabId;
   if (state.searchQuery) {
     state.searchQuery = "";
     elements.searchInput.value = "";
@@ -52,9 +54,11 @@ export function selectTab(tabId, { scrollToContent = false } = {}) {
 // Üst sekme çubuğu ve mobil alt navigasyon barını senkronize biçimde oluşturur
 export function renderTabs() {
   const hasSearch = state.searchQuery.trim().length > 0;
+  document.body.dataset.dayTheme = hasSearch ? "day-1" : state.activeTab;
 
   elements.tabsNav.innerHTML = TABS.map((tab) => {
     const isActive = state.activeTab === tab.id && !hasSearch;
+    const topIcon = tab.topIconName ? lucideIcon(tab.topIconName, { size: 14 }) : "";
     return `
       <button
         type="button"
@@ -64,7 +68,7 @@ export function renderTabs() {
         aria-selected="${isActive}"
         tabindex="${isActive ? "0" : "-1"}"
       >
-        <span class="tab-btn-top">${escapeHtml(tab.top)}</span>
+        <span class="tab-btn-top">${topIcon}${escapeHtml(tab.top)}</span>
         <span class="tab-btn-sub">${escapeHtml(tab.sub)}</span>
       </button>
     `;
@@ -117,19 +121,22 @@ export function renderTabs() {
     const mobileTabs = mobileOrder.map((id) => TABS.find((t) => t.id === id)).filter(Boolean);
 
     elements.mobileBottomNav.innerHTML = mobileTabs
-      .map(
-        (tab) => `
+      .map((tab) => {
+        const iconVisual = tab.mobileIconName
+          ? lucideIcon(tab.mobileIconName, { size: 18 })
+          : `<span class="mobile-nav-code tabular">${escapeHtml(tab.mobileCode)}</span>`;
+        return `
         <button
           type="button"
           class="mobile-nav-btn ${state.activeTab === tab.id && !hasSearch ? "active" : ""}"
           data-mobile-tab="${escapeHtml(tab.id)}"
           aria-current="${state.activeTab === tab.id && !hasSearch ? "page" : "false"}"
         >
-          <span class="mobile-nav-icon" aria-hidden="true">${escapeHtml(tab.mobileIcon)}</span>
+          <span class="mobile-nav-icon" aria-hidden="true">${iconVisual}</span>
           <span class="mobile-nav-label">${escapeHtml(tab.mobileLabel)}</span>
         </button>
-      `
-      )
+      `;
+      })
       .join("");
 
     elements.mobileBottomNav.querySelectorAll(".mobile-nav-btn").forEach((btn) => {
@@ -141,7 +148,7 @@ export function renderTabs() {
 }
 
 // Medya veya dış form referans sahnesi HTML'ini üretir
-// Lisanslı yerel medya yoksa MuscleWiki kaynak sayfasına giden "Formu izle ↗" bağlantısı gösterilir.
+// Lisanslı yerel medya yoksa MuscleWiki kaynak sayfasına giden "Formu izle" bağlantısı gösterilir.
 
 export function bindCardInteractions() {
   clearPhotoTimers();

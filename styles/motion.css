@@ -1,0 +1,21 @@
+/**
+ * Dosya: styles/motion.css
+ * Açıklama: Hareket katmanı yer tutucusu (Faz 3'te CSS scroll-driven animations,
+ * View Transitions API ve reduced-motion kurallarıyla doldurulacaktır).
+ */
+
+@layer motion {
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

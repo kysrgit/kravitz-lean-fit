@@ -27,12 +27,13 @@ import {
   syncProfileForm,
 } from "../state.js";
 import { createCoreCardHtml, createDaySummaryTableHtml, createExerciseCardHtml } from "./cards.js";
+import { lucideIcon } from "./icons.js";
 
 export function renderSourcesSectionHtml() {
   return `
     <section class="sources-panel" aria-labelledby="sources-heading">
       <div class="sources-header">
-        <h3 id="sources-heading">📚 Kaynaklar</h3>
+        <h3 id="sources-heading">${lucideIcon("book-open", { size: 18 })} Kaynaklar</h3>
         <p class="muted-text">
           Bu uygulama <strong>Kravitz'ten Esinlenilmiş Uyarlama</strong>dır. Basın haberlerinde
           (Men's Health AU; Fitbook, 2026) Kravitz'in haftada 5-6 gün ve 50-35-21-14-10 veya
@@ -114,14 +115,14 @@ export function createBodyTrendSvgHtml(logs) {
       <span class="legend-weight">● Kilo (kg)</span>
     </div>
     <svg class="body-trend-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Haftalık bel çevresi ve kilo trend grafiği">
-      <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${height - padY}" stroke="#334155" stroke-width="1" />
-      <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="#334155" stroke-width="1" />
-      <polyline fill="none" stroke="#f59e0b" stroke-width="2.5" points="${escapeHtml(toPolyline(waistPts))}" />
-      <polyline fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-dasharray="4 3" points="${escapeHtml(toPolyline(weightPts))}" />
-      ${waistPts.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="3.5" fill="#f59e0b" />`).join("")}
-      ${weightPts.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#38bdf8" />`).join("")}
-      <text x="${padX}" y="${height - 4}" fill="#94a3b8" font-size="9">${escapeHtml(logs[0].date)}</text>
-      <text x="${width - padX}" y="${height - 4}" text-anchor="end" fill="#94a3b8" font-size="9">${escapeHtml(logs[logs.length - 1].date)}</text>
+      <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${height - padY}" stroke="var(--line)" stroke-width="1" />
+      <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="var(--line)" stroke-width="1" />
+      <polyline fill="none" stroke="var(--day-accent)" stroke-width="2.5" points="${escapeHtml(toPolyline(waistPts))}" />
+      <polyline fill="none" stroke="var(--set-core)" stroke-width="2.2" stroke-dasharray="4 3" points="${escapeHtml(toPolyline(weightPts))}" />
+      ${waistPts.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="3.5" fill="var(--day-accent)" />`).join("")}
+      ${weightPts.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="var(--set-core)" />`).join("")}
+      <text x="${padX}" y="${height - 4}" fill="var(--text-2)" font-size="12">${escapeHtml(logs[0].date)}</text>
+      <text x="${width - padX}" y="${height - 4}" text-anchor="end" fill="var(--text-2)" font-size="12">${escapeHtml(logs[logs.length - 1].date)}</text>
     </svg>
   `;
 }
@@ -195,7 +196,7 @@ export function renderTanitaSection() {
 
   elements.tanitaGrid.innerHTML = `
     ${metricsHtml}
-    <p class="bia-standard-note" style="grid-column: 1 / -1;">📏 <strong>Ölçüm Standardı:</strong> ${escapeHtml(profile.biaMeasurementNote)}</p>
+    <p class="bia-standard-note" style="grid-column: 1 / -1;">${lucideIcon("ruler", { size: 15 })} <strong>Ölçüm Standardı:</strong> ${escapeHtml(profile.biaMeasurementNote)}</p>
   `;
 }
 
@@ -206,7 +207,7 @@ export function createWarmupBannerHtml() {
   return `
     <div class="warmup-banner">
       <div class="warmup-banner-head">
-        <strong>🔥 ${escapeHtml(warmupProtocol.title)}:</strong>
+        <strong>${lucideIcon("flame", { size: 16 })} ${escapeHtml(warmupProtocol.title)}:</strong>
         <span>${escapeHtml(warmupProtocol.summary)}</span>
       </div>
       <ul class="warmup-steps-list">
@@ -222,19 +223,19 @@ export function createLifestyleGridHtml() {
   return `
     <div class="three-col-grid lifestyle-grid">
       <article class="info-panel">
-        <span class="meal-time-badge">👣 Günlük Aktivite</span>
+        <span class="meal-time-badge">${lucideIcon("footprints", { size: 14 })} Günlük Aktivite</span>
         <h3>${escapeHtml(dailySteps.title)}</h3>
         <div class="lifestyle-target">${escapeHtml(dailySteps.target)}</div>
         <p class="muted-text">${escapeHtml(dailySteps.description)}</p>
       </article>
       <article class="info-panel">
-        <span class="meal-time-badge">😴 Toparlanma</span>
+        <span class="meal-time-badge">${lucideIcon("moon", { size: 14 })} Toparlanma</span>
         <h3>${escapeHtml(sleep.title)}</h3>
         <div class="lifestyle-target">${escapeHtml(sleep.target)}</div>
         <p class="muted-text">${escapeHtml(sleep.description)}</p>
       </article>
       <article class="info-panel">
-        <span class="meal-time-badge">🔥 Seans Başlangıcı</span>
+        <span class="meal-time-badge">${lucideIcon("flame", { size: 14 })} Seans Başlangıcı</span>
         <h3>${escapeHtml(warmupProtocol.title)}</h3>
         <div class="lifestyle-target">${escapeHtml(warmupProtocol.summary)}</div>
         <ul class="table-bullets">
@@ -267,7 +268,7 @@ export function createProgressionAndTemplatesHtml() {
     <section class="progression-section" aria-label="İlerleme kuralı ve 3 günlük alternatif">
       <div class="two-col-grid">
         <article class="info-panel">
-          <h3>📈 ${escapeHtml(PROGRESSION_MODEL.title)}</h3>
+          <h3>${lucideIcon("trending-up", { size: 18 })} ${escapeHtml(PROGRESSION_MODEL.title)}</h3>
           <ul class="table-bullets">
             <li><strong>Çift İlerleme:</strong> ${escapeHtml(PROGRESSION_MODEL.doubleProgression)}</li>
             <li><strong>Planlı Deload:</strong> ${escapeHtml(PROGRESSION_MODEL.deloadRule)}</li>
@@ -276,7 +277,7 @@ export function createProgressionAndTemplatesHtml() {
         </article>
 
         <article class="info-panel">
-          <h3>📅 Haftada 3 Gün Antrenman Alternatifi (≥2×/Hafta Frekans)</h3>
+          <h3>${lucideIcon("calendar", { size: 18 })} Haftada 3 Gün Antrenman Alternatifi (≥2×/Hafta Frekans)</h3>
           <p class="muted-text" style="margin-bottom:10px;">${escapeHtml(THREE_DAY_TEMPLATES.intro)}</p>
           <div class="templates-stack">${templatesHtml}</div>
         </article>
@@ -292,7 +293,7 @@ export function createCardioFinisherSectionHtml() {
     <section class="finisher-section" aria-label="Bitiriş Kardiyosu">
       <div class="finisher-section-header">
         <div>
-          <span class="finisher-badge">🏃 BİTİRİŞ KARDİYOSU · CORE DEĞİL</span>
+          <span class="finisher-badge">${lucideIcon("zap", { size: 14 })} BİTİRİŞ KARDİYOSU · CORE DEĞİL</span>
           <h3>Antrenman Sonu İsteğe Bağlı Kondisyon Finisher</h3>
           <p class="muted-text">
             Eğimli yürüyüş bir karın (core) hareketi değildir; kavrama veya set arası dinlenmeyi etkilemeden
@@ -319,21 +320,21 @@ export function renderWorkoutDay(day) {
           class="view-mode-btn ${state.viewMode === "both" ? "active" : ""}"
           data-view-mode="both"
         >
-          📋 Tablo + Hareket Kartları
+          ${lucideIcon("clipboard-list", { size: 15 })} Tablo + Hareket Kartları
         </button>
         <button
           type="button"
           class="view-mode-btn ${state.viewMode === "table-only" ? "active" : ""}"
           data-view-mode="table-only"
         >
-          📊 Sadece Yazılı / Tablo Özeti
+          ${lucideIcon("trending-up", { size: 15 })} Sadece Yazılı / Tablo Özeti
         </button>
         <button
           type="button"
           class="view-mode-btn ${state.viewMode === "cards-only" ? "active" : ""}"
           data-view-mode="cards-only"
         >
-          🏋️ Sadece Hareket Kartları
+          ${lucideIcon("dumbbell", { size: 15 })} Sadece Hareket Kartları
         </button>
       </div>
     </div>
@@ -360,8 +361,8 @@ export function renderWorkoutDay(day) {
         <p>${escapeHtml(day.targetGoal)}</p>
       </div>
       <div class="day-meta-badges">
-        <span class="meta-pill">⏱ ${escapeHtml(day.duration)}</span>
-        <span class="meta-pill">📅 ${escapeHtml(day.scheduleNote)}</span>
+        <span class="meta-pill">${lucideIcon("clock", { size: 14 })} ${escapeHtml(day.duration)}</span>
+        <span class="meta-pill">${lucideIcon("calendar", { size: 14 })} ${escapeHtml(day.scheduleNote)}</span>
       </div>
     </div>
     ${createWarmupBannerHtml()}
@@ -440,7 +441,7 @@ export function renderFullSummaryTab() {
                 rel="noopener noreferrer"
                 class="table-video-btn"
               >
-                Formu izle ↗
+                Formu izle ${lucideIcon("arrow-up-right", { size: 14 })}
               </a>
             </div>
           </td>
@@ -546,7 +547,7 @@ export function renderFullSummaryTab() {
     <div class="summary-layout">
       <div class="day-banner">
         <div>
-          <h2>📋 Kravitz Lean &amp; Fit — Tüm Programın Yazılı &amp; Tablo Özeti</h2>
+          <h2>${lucideIcon("clipboard-list", { size: 22 })} Kravitz Lean &amp; Fit — Tüm Programın Yazılı &amp; Tablo Özeti</h2>
           <p>
             Kartlar arasında gezinmeden; tüm antrenman günlerini, piramit set/tekrarlarını,
             set arası 21'ler core hareketlerini, alternatifleri ve beslenme protokolünü tek sayfada gör.
@@ -554,20 +555,20 @@ export function renderFullSummaryTab() {
         </div>
         <div class="day-meta-badges">
           <button type="button" id="print-summary-btn" class="btn-outline btn-print-summary">
-            🖨️ Yazdır / PDF Kaydet
+            ${lucideIcon("printer", { size: 15 })} Yazdır / PDF Kaydet
           </button>
         </div>
       </div>
 
       <!-- Mobilde ve Masaüstünde Tek Dokunuşla Bölüm Atlama Çubuğu -->
       <div class="summary-quick-nav" role="navigation" aria-label="Özet Bölümleri Hızlı Geçiş">
-        <button type="button" class="summary-quick-chip" data-scroll-target="summary-sec-weekly">🗓️ Haftalık Şema</button>
+        <button type="button" class="summary-quick-chip" data-scroll-target="summary-sec-weekly">${lucideIcon("calendar", { size: 14 })} Haftalık Şema</button>
         <button type="button" class="summary-quick-chip" data-scroll-target="summary-day-day-1">1. Gün</button>
         <button type="button" class="summary-quick-chip" data-scroll-target="summary-day-day-2">2. Gün</button>
         <button type="button" class="summary-quick-chip" data-scroll-target="summary-day-day-3">3. Gün</button>
         <button type="button" class="summary-quick-chip" data-scroll-target="summary-day-day-4">4. Gün</button>
-        <button type="button" class="summary-quick-chip" data-scroll-target="summary-sec-core">🔥 21'ler Core</button>
-        <button type="button" class="summary-quick-chip" data-scroll-target="summary-sec-nutrition">🥗 Beslenme</button>
+        <button type="button" class="summary-quick-chip" data-scroll-target="summary-sec-core">${lucideIcon("flame", { size: 14 })} 21'ler Core</button>
+        <button type="button" class="summary-quick-chip" data-scroll-target="summary-sec-nutrition">${lucideIcon("utensils", { size: 14 })} Beslenme</button>
       </div>
 
       <!-- Bölüm 1: Sistem Özeti, Profil Hedefleri & Haftalık Şema -->
@@ -578,7 +579,7 @@ export function renderFullSummaryTab() {
 
         <div class="summary-prose-grid">
           <article class="summary-prose-card">
-            <h4>🎯 Sistemin 3 Altın Kuralı (Yazılı Özet)</h4>
+            <h4>${lucideIcon("target", { size: 16 })} Sistemin 3 Altın Kuralı (Yazılı Özet)</h4>
             <ul class="table-bullets">
               ${SYSTEM_PILLARS.map(
                 (p) =>
@@ -594,7 +595,7 @@ export function renderFullSummaryTab() {
                 ? "Kayıtlı Profilin"
                 : "Örnek Profil (Profilim formundan özelleştir)";
               return `
-                <h4>📊 Profil Başlangıç → Hedef Özeti</h4>
+                <h4>${lucideIcon("trending-up", { size: 16 })} Profil Başlangıç → Hedef Özeti</h4>
                 <p class="summary-prose-lead">
                   <strong>${escapeHtml(label)}:</strong> ${escapeHtml(profile.age)} yaş ·
                   Hedef: <strong>${escapeHtml(profile.targetStyle)}</strong>
@@ -615,7 +616,7 @@ export function renderFullSummaryTab() {
         <div class="summary-table-card">
           <div class="summary-table-header compact">
             <div>
-              <h3>🗓️ Haftalık Antrenman Günleri Şeması (3 veya 4 Gün)</h3>
+              <h3>${lucideIcon("calendar", { size: 18 })} Haftalık Antrenman Günleri Şeması (3 veya 4 Gün)</h3>
             </div>
           </div>
           <div class="table-responsive">
@@ -675,7 +676,7 @@ export function renderFullSummaryTab() {
         <div class="summary-table-card finisher-summary-card">
           <div class="summary-table-header compact">
             <div>
-              <h3>🏃 Bitiriş Kardiyosu (Core Listesinden Ayrı · Seans Sonu)</h3>
+              <h3>${lucideIcon("zap", { size: 18 })} Bitiriş Kardiyosu (Core Listesinden Ayrı · Seans Sonu)</h3>
               <p>${escapeHtml(CARDIO_FINISHER.turkishName)} (${escapeHtml(CARDIO_FINISHER.reps)}) — ${escapeHtml(CARDIO_FINISHER.macfitTip)}</p>
             </div>
             <button type="button" class="table-video-btn" data-open-core="${escapeHtml(CARDIO_FINISHER.id)}">Form &amp; Alternatifler</button>
@@ -692,7 +693,7 @@ export function renderFullSummaryTab() {
         <div class="summary-table-card">
           <div class="summary-table-header compact">
             <div>
-              <h3>🥗 Günlük Makro &amp; Kalori Hedef Tablosu</h3>
+              <h3>${lucideIcon("utensils", { size: 18 })} Günlük Makro &amp; Kalori Hedef Tablosu</h3>
             </div>
           </div>
           <div class="table-responsive">
@@ -714,7 +715,7 @@ export function renderFullSummaryTab() {
         <div class="summary-table-card">
           <div class="summary-table-header compact">
             <div>
-              <h3>🕒 Saat Saat Günlük Öğün Tablosu</h3>
+              <h3>${lucideIcon("clock", { size: 18 })} Saat Saat Günlük Öğün Tablosu</h3>
             </div>
           </div>
           <div class="table-responsive">
@@ -735,7 +736,7 @@ export function renderFullSummaryTab() {
 
         <div class="summary-prose-grid">
           <article class="summary-prose-card">
-            <h4>⏱️ İsteğe Bağlı Öğün Zamanlaması (Aralıklı Oruç) &amp; Sabah Notları</h4>
+            <h4>${lucideIcon("clock", { size: 16 })} İsteğe Bağlı Öğün Zamanlaması (Aralıklı Oruç) &amp; Sabah Notları</h4>
             <ul class="table-bullets">
               ${fastingWindows
                 .map(
@@ -753,7 +754,7 @@ export function renderFullSummaryTab() {
           </article>
 
           <article class="summary-prose-card">
-            <h4>📌 Vücut Kompozisyonu İçin 3 Temel Kural</h4>
+            <h4>${lucideIcon("target", { size: 16 })} Vücut Kompozisyonu İçin 3 Temel Kural</h4>
             <ul class="table-bullets">
               ${waistRules
                 .map(
@@ -793,7 +794,7 @@ export function renderCoreGuide(filteredItems = null) {
         </p>
       </div>
       <div class="day-meta-badges">
-        <span class="meta-pill">🎯 Hedef: Gövde Stabilitesi &amp; Core Kuvveti</span>
+        <span class="meta-pill">${lucideIcon("target", { size: 14 })} Hedef: Gövde Stabilitesi &amp; Core Kuvveti</span>
       </div>
     </div>
     <div class="core-grid">${cardsHtml}</div>
@@ -839,8 +840,8 @@ export function renderNutritionProtocol() {
           </p>
         </div>
         <div class="day-meta-badges">
-          <span class="meta-pill">🎯 Kişisel Kalori Hedefi: ${escapeHtml(profileTargets.targetCalories)} kcal</span>
-          <span class="meta-pill">📉 Örnek Plan: ${escapeHtml(trainingDayTotals.kcal)} / ${escapeHtml(restDayTotals.kcal)} kcal</span>
+          <span class="meta-pill">${lucideIcon("target", { size: 14 })} Kişisel Kalori Hedefi: ${escapeHtml(profileTargets.targetCalories)} kcal</span>
+          <span class="meta-pill">${lucideIcon("trending-down", { size: 14 })} Örnek Plan: ${escapeHtml(trainingDayTotals.kcal)} / ${escapeHtml(restDayTotals.kcal)} kcal</span>
         </div>
       </div>
 
@@ -874,7 +875,7 @@ export function renderNutritionProtocol() {
 
       <div class="two-col-grid">
         <article class="info-panel">
-          <h3>⏱️ İsteğe Bağlı Öğün Zamanlaması (Aralıklı Oruç)</h3>
+          <h3>${lucideIcon("clock", { size: 18 })} İsteğe Bağlı Öğün Zamanlaması (Aralıklı Oruç)</h3>
           ${fastingWindows
             .map(
               (win) => `
@@ -890,7 +891,7 @@ export function renderNutritionProtocol() {
         </article>
 
         <article class="info-panel">
-          <h3>☕ Sabah Saatleri &amp; İçecek Rehberi</h3>
+          <h3>${lucideIcon("coffee", { size: 18 })} Sabah Saatleri &amp; İçecek Rehberi</h3>
           <ul>
             ${morningFastRules.map((rule) => `<li>${escapeHtml(rule)}</li>`).join("")}
           </ul>
@@ -899,11 +900,11 @@ export function renderNutritionProtocol() {
 
       <div class="daily-totals-bar">
         <div class="daily-total-pill">
-          <strong>🏋️ Antrenman Günü Toplamı:</strong>
+          <strong>${lucideIcon("dumbbell", { size: 15 })} Antrenman Günü Toplamı:</strong>
           <span>${escapeHtml(trainingDayTotals.kcal)} kcal · P ${escapeHtml(trainingDayTotals.protein)} g · K ${escapeHtml(trainingDayTotals.carbs)} g · Y ${escapeHtml(trainingDayTotals.fat)} g</span>
         </div>
         <div class="daily-total-pill is-rest">
-          <strong>🛌 Dinlenme Günü Toplamı:</strong>
+          <strong>${lucideIcon("moon", { size: 15 })} Dinlenme Günü Toplamı:</strong>
           <span>${escapeHtml(restDayTotals.kcal)} kcal · P ${escapeHtml(restDayTotals.protein)} g · K ${escapeHtml(restDayTotals.carbs)} g · Y ${escapeHtml(restDayTotals.fat)} g</span>
         </div>
       </div>
@@ -933,7 +934,7 @@ export function renderNutritionProtocol() {
           .map(
             (rule) => `
           <article class="info-panel">
-            <h3>📌 ${escapeHtml(rule.title)}</h3>
+            <h3>${lucideIcon("target", { size: 18 })} ${escapeHtml(rule.title)}</h3>
             <p class="muted-text">${escapeHtml(rule.text)}</p>
           </article>
         `
@@ -1003,7 +1004,7 @@ export function renderSearchResults(query) {
     matchedCore.length > 0
       ? `
       <div style="margin-top: 26px;">
-        <h3 style="font-family: Oswald, sans-serif; margin-bottom: 14px;">Eşleşen Core (21'ler) ve Alternatif Hareketler</h3>
+        <h3 class="search-subhead display-type">Eşleşen Core (21'ler) ve Alternatif Hareketler</h3>
         <div class="core-grid">
           ${matchedCore
             .map(({ core, initialVariantIndex }) => createCoreCardHtml(core, initialVariantIndex))

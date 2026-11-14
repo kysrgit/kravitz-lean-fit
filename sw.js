@@ -5,24 +5,30 @@
  * üçüncü taraf veya lisanssız medya dosyalarını kesinlikle önbelleğe almaz.
  */
 
-const SHELL_CACHE = "klf-shell-v1";
-const DATA_CACHE = "klf-data-v1";
+const SHELL_CACHE = "klf-shell-v2";
+const DATA_CACHE = "klf-data-v2";
 
 const APP_SHELL_URLS = [
   "./",
   "./index.html",
   "./styles.css",
+  "./styles/tokens.css",
+  "./styles/base.css",
+  "./styles/legacy-bridge.css",
+  "./styles/motion.css",
   "./app.js",
   "./src/state.js",
   "./src/media.js",
   "./src/modal.js",
+  "./src/render/icons.js",
   "./src/render/cards.js",
   "./src/render/sections.js",
   "./src/render/index.js",
+  "./assets/noise.svg",
   "./assets/fonts/inter-latin.woff2",
   "./assets/fonts/inter-latin-ext.woff2",
-  "./assets/fonts/oswald-latin.woff2",
-  "./assets/fonts/oswald-latin-ext.woff2",
+  "./assets/fonts/big-shoulders-display-latin.woff2",
+  "./assets/fonts/big-shoulders-display-latin-ext.woff2",
   "./manifest.webmanifest",
   "./icons/icon.svg",
 ];
