@@ -2,13 +2,13 @@
 
 # Kravitz Lean & Fit — MACFit Antrenman ve Beslenme Rehberi
 
-Bu web uygulaması, **MACFit Tanita ölçüm verilerinize** ve **Lenny Kravitz / Dodd Romero** tarafından uygulanan **Piramit (30 → 15 → 10 → 5) + 21'ler Aktif Core Dinlenmesi** sistemine göre hazırlanmış, takip karmaşası olmayan, doğrudan **reklamsız yerel HTML5 video ve görsel destekli** mobil uyumlu antrenman rehberidir.
+Bu web uygulaması, **MACFit Tanita ölçüm verilerinize** ve **Lenny Kravitz / Dodd Romero** tarafından uygulanan **Piramit (30 → 15 → 10 → 5) + 21'ler Aktif Core Dinlenmesi** sistemine göre hazırlanmış, takip karmaşası olmayan, doğrudan **reklamsız HD/Full HD/4K yerel video ve görsel destekli** mobil uyumlu antrenman rehberidir.
 
 ## Özellikler
 
-- **Sıfır Reklamlı Yerel Egzersiz Videoları (`assets/videos/*.mp4`):** Açık kaynaklı `hasaneyldrm/exercises-dataset` ve `free-exercise-db` veri setlerinden indirilen 32 hareket animasyonu, `ffmpeg` ile H.264 `.mp4` videolarına dönüştürülerek doğrudan proje içine gömülmüştür. YouTube veya reklamlı üçüncü parti oynatıcı kullanmaz.
-- **Canlı Video + Başlangıç/Bitiş Form Kareleri:** Her hareket kartında doğrudan dönen MP4 videosunun yanı sıra `1. Başlangıç` ve `2. Bitiş` gerçek salon fotoğrafları arasında tek tıkla geçiş yapılabilir.
-- **0.5× Yavaş Çekim & İndirme Destekli Detay Modalı:** Her hareket ve aktif dinlenme core egzersizi için tam kontrollü yerel HTML5 oynatıcı (`0.5× Yavaş Çekim` / `1.0× Normal`) ve MP4 indirme bağlantısı.
+- **Yüksek Çözünürlüklü Çift Kamera Açılı Stüdyo Videoları (`assets/videos/*-front.mp4` ve `*-side.mp4`):** 32 egzersizin her biri için **1280×720 HD**, **1920×1080 Full HD** veya **3840×2160 4K** stüdyo çekimleri doğrudan proje içine indirilmiştir. YouTube veya reklamlı oynatıcı içermez.
+- **Ön Açı, Yan Açı ve HD Form Kareleri:** Her hareket kartında **`Ön Açı (HD)`**, **`Yan Açı (HD)`** videoları ve **`Fotoğraf (HD)`** (`assets/images/<key>/start.jpg`, `end.jpg`) arasında tek tıkla geçiş yapılabilir.
+- **0.5× Yavaş Çekim & Çift Kamera Destekli Detay Modalı:** Her hareket ve aktif dinlenme core egzersizi için tam kontrollü yerel HTML5 oynatıcı (`Ön Açı` / `Yan Açı`, `0.5×` / `1.0×` hız, `HD MP4 İndir ↓` bağlantısı).
 - **4 Günlük MACFit Antrenman Programı:**
   - **1. Gün:** Üst Vücut İtiş & V-Taper (Göğüs + Omuz + Triceps)
   - **2. Gün:** Atletik Alt Vücut & Metabolik Ateşleme (Bacak + Kalça)

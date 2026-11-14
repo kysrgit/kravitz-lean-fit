@@ -1,7 +1,7 @@
 /**
  * Dosya: app.js
  * Açıklama: Kravitz Lean & Fit uygulamasının arayüz oluşturma, sekme yönetimi,
- * egzersiz arama, reklamsız yerel MP4 video sahneleri, fotoğraf geçişleri ve hız kontrollü video modalını yürütür.
+ * egzersiz arama, çift kamera açılı (Ön/Yan) HD/Full HD MP4 video sahneleri ve hız kontrollü video modalını yürütür.
  */
 
 import {
@@ -17,6 +17,7 @@ import {
 const state = {
   activeTab: "day-1",
   searchQuery: "",
+  photoTimers: [],
 };
 
 // Sekme tanımları
@@ -71,6 +72,12 @@ function escapeHtml(text) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+// Aktif fotoğraf döngü zamanlayıcılarını temizler
+function clearPhotoTimers() {
+  state.photoTimers.forEach((timerId) => window.clearInterval(timerId));
+  state.photoTimers = [];
 }
 
 // Sistem temel kurallarını (3 sütun) render eder
@@ -136,40 +143,42 @@ function renderTabs() {
   });
 }
 
-// Medya sahnesi HTML'ini (yerel MP4 video + başlangıç/bitiş fotoğrafları) üretir
-function createMediaStageHtml({ badgeText, name, videoKey, imageId, triggerAttr }) {
-  const media = getExerciseMedia(videoKey, imageId);
+// Medya sahnesi HTML'ini (Ön/Yan Açı HD MP4 videolar + HD form fotoğrafları) üretir
+function createMediaStageHtml({ badgeText, name, videoKey, triggerAttr }) {
+  const media = getExerciseMedia(videoKey);
 
   return `
-    <div class="media-stage" data-media-mode="video">
+    <div class="media-stage" data-media-mode="front">
       <video
         class="media-video"
-        src="${escapeHtml(media.mp4)}"
-        poster="${escapeHtml(media.gif || media.start || "")}"
+        src="${escapeHtml(media.frontMp4)}"
+        poster="${escapeHtml(media.startImg || "")}"
+        data-front-src="${escapeHtml(media.frontMp4)}"
+        data-side-src="${escapeHtml(media.sideMp4)}"
         autoplay
         loop
         muted
         playsinline
         preload="metadata"
-        aria-label="${escapeHtml(name)} hareket videosu"
+        aria-label="${escapeHtml(name)} HD hareket videosu"
       ></video>
 
       ${
-        media.start
+        media.startImg
           ? `<img
               class="media-frame frame-start is-hidden"
-              src="${escapeHtml(media.start)}"
-              alt="${escapeHtml(name)} başlangıç pozisyonu"
+              src="${escapeHtml(media.startImg)}"
+              alt="${escapeHtml(name)} ön açı HD karesi"
               loading="lazy"
             />`
           : ""
       }
       ${
-        media.end
+        media.endImg
           ? `<img
               class="media-frame frame-end is-hidden"
-              src="${escapeHtml(media.end)}"
-              alt="${escapeHtml(name)} bitiş pozisyonu"
+              src="${escapeHtml(media.endImg)}"
+              alt="${escapeHtml(name)} yan açı HD karesi"
               loading="lazy"
             />`
           : ""
@@ -177,14 +186,14 @@ function createMediaStageHtml({ badgeText, name, videoKey, imageId, triggerAttr 
 
       <div class="media-overlay-top">
         <span class="order-badge">${escapeHtml(badgeText)}</span>
-        <span class="pose-indicator">Canlı Video</span>
+        <span class="pose-indicator">Ön Açı · HD Video</span>
       </div>
 
       <div class="media-controls-bar">
-        <div class="pose-toggle-group" role="group" aria-label="Görünüm seçici">
-          <button type="button" class="pose-btn active" data-pose="video">Canlı Video</button>
-          <button type="button" class="pose-btn" data-pose="start">1. Başlangıç</button>
-          <button type="button" class="pose-btn" data-pose="end">2. Bitiş</button>
+        <div class="pose-toggle-group" role="group" aria-label="Kamera ve görünüm seçici">
+          <button type="button" class="pose-btn active" data-mode="front">Ön Açı (HD)</button>
+          <button type="button" class="pose-btn" data-mode="side">Yan Açı (HD)</button>
+          <button type="button" class="pose-btn" data-mode="photo">Fotoğraf (HD)</button>
         </div>
 
         <button
@@ -205,7 +214,7 @@ function createMediaStageHtml({ badgeText, name, videoKey, imageId, triggerAttr 
 // Tekil egzersiz kartı HTML'ini üretir
 function createExerciseCardHtml(exercise, badgeText) {
   const coreItem = CORE_LIBRARY[exercise.coreRestId];
-  const coreMedia = coreItem ? getExerciseMedia(coreItem.videoKey, coreItem.imageId) : null;
+  const coreMedia = coreItem ? getExerciseMedia(coreItem.videoKey) : null;
   const maxSets = exercise.pyramidSets.length;
 
   const pyramidHtml = exercise.pyramidSets
@@ -230,7 +239,6 @@ function createExerciseCardHtml(exercise, badgeText) {
     badgeText,
     name: exercise.name,
     videoKey: exercise.videoKey,
-    imageId: exercise.imageId,
     triggerAttr: `data-open-exercise="${escapeHtml(exercise.id)}"`,
   });
 
@@ -264,15 +272,15 @@ function createExerciseCardHtml(exercise, badgeText) {
             data-open-core="${escapeHtml(coreItem.id)}"
           >
             ${
-              coreMedia && (coreMedia.gif || coreMedia.start)
-                ? `<img class="core-thumb" src="${escapeHtml(coreMedia.gif || coreMedia.start)}" alt="${escapeHtml(coreItem.name)}" loading="lazy" />`
+              coreMedia && coreMedia.startImg
+                ? `<img class="core-thumb" src="${escapeHtml(coreMedia.startImg)}" alt="${escapeHtml(coreItem.name)}" loading="lazy" />`
                 : ""
             }
             <div class="core-rest-copy">
               <span class="core-rest-kicker">Set Arası Aktif Dinlenme</span>
               <span class="core-rest-text">${escapeHtml(exercise.coreRestLabel)}</span>
             </div>
-            <span class="core-rest-action">Video &amp; Form →</span>
+            <span class="core-rest-action">HD Video &amp; Form →</span>
           </button>
         `
             : ""
@@ -289,7 +297,6 @@ function createCoreCardHtml(core) {
     badgeText: isVacuum ? "SABAH RUTİNİ" : "21× AKTİF DİNLENME",
     name: core.name,
     videoKey: core.videoKey,
-    imageId: core.imageId,
     triggerAttr: `data-open-core="${escapeHtml(core.id)}"`,
   });
 
@@ -530,52 +537,67 @@ function renderSearchResults(query) {
   bindCardInteractions();
 }
 
-// Kartlardaki Canlı Video / Başlangıç / Bitiş geçişlerini ve modal butonlarını bağlar
+// Kartlardaki Ön Açı / Yan Açı / Fotoğraf geçişlerini ve modal butonlarını bağlar
 function bindCardInteractions() {
+  clearPhotoTimers();
+
   document.querySelectorAll(".media-stage").forEach((stage) => {
     const videoEl = stage.querySelector(".media-video");
     const startImg = stage.querySelector(".frame-start");
     const endImg = stage.querySelector(".frame-end");
     const indicator = stage.querySelector(".pose-indicator");
-    const poseButtons = stage.querySelectorAll(".pose-btn");
+    const modeButtons = stage.querySelectorAll(".pose-btn");
+    let photoLoopTimer = null;
 
-    // Seçilen moda göre video ve fotoğraf görünürlüğünü değiştirir
-    const applyMode = (mode) => {
-      if (mode === "video") {
-        stage.classList.remove("is-photo-mode");
-        if (videoEl) {
-          videoEl.classList.remove("is-hidden");
-          videoEl.play().catch(() => {});
-        }
-        if (startImg) startImg.classList.add("is-hidden");
-        if (endImg) endImg.classList.add("is-hidden");
-        indicator.textContent = "Canlı Video";
-      } else if (mode === "start") {
-        stage.classList.add("is-photo-mode");
-        if (videoEl) {
-          videoEl.classList.add("is-hidden");
-          videoEl.pause();
-        }
-        if (startImg) startImg.classList.remove("is-hidden");
-        if (endImg) endImg.classList.add("is-hidden");
-        indicator.textContent = "1. Başlangıç";
-      } else {
-        stage.classList.add("is-photo-mode");
-        if (videoEl) {
-          videoEl.classList.add("is-hidden");
-          videoEl.pause();
-        }
-        if (startImg) startImg.classList.add("is-hidden");
-        if (endImg) endImg.classList.remove("is-hidden");
-        indicator.textContent = "2. Bitiş / Kasılma";
+    const stopPhotoLoop = () => {
+      if (photoLoopTimer) {
+        window.clearInterval(photoLoopTimer);
+        photoLoopTimer = null;
       }
     };
 
-    poseButtons.forEach((btn) => {
+    // Seçilen görünüme göre video açısını veya HD fotoğraf karesini uygular
+    const applyMode = (mode) => {
+      stopPhotoLoop();
+
+      if (mode === "front" || mode === "side") {
+        const targetSrc = mode === "front" ? videoEl.dataset.frontSrc : videoEl.dataset.sideSrc;
+        if (videoEl.getAttribute("src") !== targetSrc) {
+          videoEl.setAttribute("src", targetSrc);
+          videoEl.load();
+        }
+        videoEl.classList.remove("is-hidden");
+        videoEl.play().catch(() => {});
+        if (startImg) startImg.classList.add("is-hidden");
+        if (endImg) endImg.classList.add("is-hidden");
+        indicator.textContent = mode === "front" ? "Ön Açı · HD Video" : "Yan Açı · HD Video";
+        return;
+      }
+
+      // Fotoğraf (HD) modu: Ön ve yan açı HD kareleri arasında akıcı geçiş
+      videoEl.classList.add("is-hidden");
+      videoEl.pause();
+
+      let showEnd = false;
+      const showFrame = (isEnd) => {
+        if (startImg) startImg.classList.toggle("is-hidden", isEnd);
+        if (endImg) endImg.classList.toggle("is-hidden", !isEnd);
+        indicator.textContent = isEnd ? "HD Kare · Yan Açı" : "HD Kare · Ön Açı";
+      };
+
+      showFrame(false);
+      photoLoopTimer = window.setInterval(() => {
+        showEnd = !showEnd;
+        showFrame(showEnd);
+      }, 1700);
+      state.photoTimers.push(photoLoopTimer);
+    };
+
+    modeButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
-        poseButtons.forEach((b) => b.classList.remove("active"));
+        modeButtons.forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
-        applyMode(btn.dataset.pose);
+        applyMode(btn.dataset.mode);
       });
     });
   });
@@ -590,7 +612,6 @@ function bindCardInteractions() {
         title: exercise.name,
         subtitle: exercise.turkishName,
         videoKey: exercise.videoKey,
-        imageId: exercise.imageId,
         tips: exercise.tips,
       });
     });
@@ -606,7 +627,6 @@ function bindCardInteractions() {
         title: core.name,
         subtitle: core.turkishName,
         videoKey: core.videoKey,
-        imageId: core.imageId,
         tips: [core.formCue, `MACFit İpucu: ${core.macfitTip}`],
       });
     });
@@ -622,21 +642,23 @@ function findExerciseById(exerciseId) {
   return null;
 }
 
-// Reklamsız yerel HTML5 MP4 Video & Form Görselleri modalını açar
-function openMediaModal({ badge, title, subtitle, videoKey, imageId, tips }) {
-  const media = getExerciseMedia(videoKey, imageId);
+// Reklamsız yerel HD HTML5 MP4 Video & Stüdyo Kareleri modalını açar
+function openMediaModal({ badge, title, subtitle, videoKey, tips }) {
+  const media = getExerciseMedia(videoKey);
 
   elements.modalBadge.textContent = badge;
   elements.modalTitle.textContent = title;
   elements.modalSubtitle.textContent = subtitle;
 
-  // Yerel HTML5 video oynatıcı
-  if (media.mp4) {
+  let currentCamera = "front";
+  let currentSpeed = 1;
+
+  if (media.frontMp4) {
     elements.modalVideoContainer.innerHTML = `
       <video
         id="modal-video-player"
-        src="${escapeHtml(media.mp4)}"
-        poster="${escapeHtml(media.gif || media.start || "")}"
+        src="${escapeHtml(media.frontMp4)}"
+        poster="${escapeHtml(media.startImg || "")}"
         controls
         autoplay
         loop
@@ -645,31 +667,55 @@ function openMediaModal({ badge, title, subtitle, videoKey, imageId, tips }) {
       ></video>
     `;
 
-    // Hız kontrol butonlarını sıfırla ve bağla
-    const speedBtns = elements.modalPlaybackBar.querySelectorAll(".speed-btn");
     const player = document.getElementById("modal-video-player");
+    const cameraBtns = elements.modalPlaybackBar.querySelectorAll(".camera-btn");
+    const speedBtns = elements.modalPlaybackBar.querySelectorAll(".speed-btn");
+
+    // İndirme bağlantısını seçili kamera açısına göre günceller
+    const updateDownloadLink = () => {
+      const targetUrl = currentCamera === "front" ? media.frontMp4 : media.sideMp4;
+      elements.modalExternalActions.innerHTML = `
+        <a
+          href="${escapeHtml(targetUrl)}"
+          download="${escapeHtml(videoKey)}-${currentCamera}.mp4"
+          class="download-mp4-link"
+        >
+          HD MP4 İndir ↓
+        </a>
+      `;
+    };
+
+    cameraBtns.forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.camera === "front");
+      btn.onclick = () => {
+        currentCamera = btn.dataset.camera;
+        cameraBtns.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        if (player) {
+          player.src = currentCamera === "front" ? media.frontMp4 : media.sideMp4;
+          player.poster = currentCamera === "front" ? media.startImg : media.endImg;
+          player.load();
+          player.playbackRate = currentSpeed;
+          player.play().catch(() => {});
+        }
+        updateDownloadLink();
+      };
+    });
 
     speedBtns.forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.speed === "1");
       btn.onclick = () => {
-        const rate = parseFloat(btn.dataset.speed);
+        currentSpeed = parseFloat(btn.dataset.speed);
         if (player) {
-          player.playbackRate = rate;
+          player.playbackRate = currentSpeed;
         }
         speedBtns.forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
       };
     });
 
-    elements.modalExternalActions.innerHTML = `
-      <a
-        href="${escapeHtml(media.mp4)}"
-        download="${escapeHtml(videoKey)}.mp4"
-        class="download-mp4-link"
-      >
-        MP4 İndir ↓
-      </a>
-    `;
+    updateDownloadLink();
     elements.modalPlaybackBar.hidden = false;
   } else {
     elements.modalVideoContainer.innerHTML = "";
@@ -677,11 +723,11 @@ function openMediaModal({ badge, title, subtitle, videoKey, imageId, tips }) {
     elements.modalExternalActions.innerHTML = "";
   }
 
-  // Başlangıç ve Bitiş kareleri
-  if (media.start && media.end) {
+  // Ön ve Yan Açı HD Stüdyo Kareleri
+  if (media.startImg && media.endImg) {
     elements.modalFramesSection.hidden = false;
-    elements.modalImgStart.src = media.start;
-    elements.modalImgEnd.src = media.end;
+    elements.modalImgStart.src = media.startImg;
+    elements.modalImgEnd.src = media.endImg;
   } else {
     elements.modalFramesSection.hidden = true;
   }

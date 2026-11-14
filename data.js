@@ -1,16 +1,19 @@
 /**
  * Dosya: data.js
- * Açıklama: Kravitz Lean & Fit (MACFit) antrenman programı, reklamsız yerel açık kaynak
- * video/GIF/görsel yolları, Tanita vücut analizi özeti, 21'ler Core rehberi ve beslenme protokolünü içerir.
+ * Açıklama: Kravitz Lean & Fit (MACFit) antrenman programı, reklamsız yerel HD/Full HD/4K
+ * stüdyo video/fotoğraf yolları, Tanita vücut analizi özeti, 21'ler Core rehberi ve beslenme protokolünü içerir.
  */
 
-// Yardımcı fonksiyon: Egzersizin yerel MP4 videosu, GIF animasyonu ve başlangıç/bitiş fotoğraflarını döndürür
-export function getExerciseMedia(videoKey, imageId) {
+// Yardımcı fonksiyon: Egzersizin yerel HD/Full HD Ön ve Yan Açı MP4 videoları ile HD fotoğraf karelerini döndürür
+export function getExerciseMedia(videoKey) {
+  if (!videoKey) {
+    return { frontMp4: null, sideMp4: null, startImg: null, endImg: null };
+  }
   return {
-    mp4: videoKey ? `./assets/videos/${videoKey}.mp4` : null,
-    gif: videoKey ? `./assets/gifs/${videoKey}.gif` : null,
-    start: imageId ? `./assets/images/${imageId}/0.jpg` : null,
-    end: imageId ? `./assets/images/${imageId}/1.jpg` : null,
+    frontMp4: `./assets/videos/${videoKey}-front.mp4`,
+    sideMp4: `./assets/videos/${videoKey}-side.mp4`,
+    startImg: `./assets/images/${videoKey}/start.jpg`,
+    endImg: `./assets/images/${videoKey}/end.jpg`,
   };
 }
 

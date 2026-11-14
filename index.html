@@ -36,7 +36,7 @@
     <header class="top-header">
       <div class="container header-inner">
         <div class="brand">
-          <div class="brand-badge">MACFIT · REKLAMSIZ VİDEO &amp; GÖRSEL</div>
+          <div class="brand-badge">MACFIT · HD STÜDYO VİDEO &amp; GÖRSEL</div>
           <h1 class="brand-title">KRAVITZ SİSTEMİ</h1>
         </div>
 
@@ -142,8 +142,8 @@
           Dinlenmesi · Denzel kuralı: <em>"Pantolonlar yalan söylemez."</em>
         </p>
         <p class="footer-sub">
-          Tüm egzersiz videoları ve görselleri açık kaynak <code>exercises-dataset</code> ve
-          <code>free-exercise-db</code> üzerinden site içine indirilmiş olup reklamsız yerel HTML5
+          Tüm egzersiz videoları ve kareleri açık kaynaklı 16:9 HD / Full HD / 4K stüdyo
+          çekimlerinden site içine indirilmiş olup sıfır reklamla yerel HTML5
           <code>.mp4</code> olarak sunulmaktadır.
         </p>
       </div>
@@ -176,29 +176,36 @@
         </div>
 
         <div class="modal-body">
-          <!-- Yerel HTML5 MP4 Oynatıcı + Oynatma Hızı Kontrolleri -->
-          <div id="modal-video-container" class="modal-video-container is-video-stage"></div>
+          <!-- Yerel HTML5 HD MP4 Oynatıcı + Kamera Açısı ve Hız Kontrolleri -->
+          <div id="modal-video-container" class="modal-video-container"></div>
 
           <div id="modal-playback-bar" class="modal-playback-bar">
+            <div class="camera-group" role="group" aria-label="Kamera açısı seçimi">
+              <span class="speed-label">Kamera:</span>
+              <button type="button" class="camera-btn active" data-camera="front">Ön Açı (HD)</button>
+              <button type="button" class="camera-btn" data-camera="side">Yan Açı (HD)</button>
+            </div>
+
             <div class="speed-group" role="group" aria-label="Video oynatma hızı">
               <span class="speed-label">Hız:</span>
               <button type="button" class="speed-btn" data-speed="0.5">0.5× Yavaş Çekim</button>
               <button type="button" class="speed-btn active" data-speed="1">1.0× Normal</button>
             </div>
+
             <div id="modal-external-actions" class="modal-external-actions"></div>
           </div>
 
-          <!-- Başlangıç ve Bitiş Pozisyonu Karşılaştırması -->
+          <!-- Yüksek Çözünürlüklü Ön ve Yan Açı Form Kareleri -->
           <div id="modal-frames-section" class="modal-frames-section">
-            <h4>Başlangıç &amp; Bitiş Form Kareleri</h4>
+            <h4>Yüksek Çözünürlüklü (HD) Stüdyo Form Kareleri</h4>
             <div class="modal-frames-grid">
               <figure class="frame-box">
-                <img id="modal-img-start" src="" alt="Başlangıç pozisyonu" loading="lazy" />
-                <figcaption>1. Başlangıç Pozisyonu</figcaption>
+                <img id="modal-img-start" src="" alt="Ön açı HD form karesi" loading="lazy" />
+                <figcaption>Ön Açı · Başlangıç / Form Karesi</figcaption>
               </figure>
               <figure class="frame-box">
-                <img id="modal-img-end" src="" alt="Bitiş pozisyonu" loading="lazy" />
-                <figcaption>2. Bitiş / Kasılma Noktası</figcaption>
+                <img id="modal-img-end" src="" alt="Yan açı HD form karesi" loading="lazy" />
+                <figcaption>Yan Açı · Kasılma / Duruş Karesi</figcaption>
               </figure>
             </div>
           </div>
