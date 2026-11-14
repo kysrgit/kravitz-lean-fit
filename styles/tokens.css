@@ -97,27 +97,6 @@
     --z-mobile-nav: 60;
     --z-timer: 65;
     --z-modal: 100;
-
-    /* Faz 1-2 geçiş uyumluluk takma adları (Faz 2 sonunda kaldırılacaktır) */
-    --bg-main: var(--void);
-    --bg-surface: var(--stage-1);
-    --bg-surface-2: var(--stage-2);
-    --bg-glass: var(--stage-1-glass);
-    --border-subtle: var(--line);
-    --border-accent: var(--accent-border);
-    --bg-card: var(--stage-1);
-    --text-primary: var(--text-1);
-    --text-secondary: var(--text-2);
-    --text-muted: var(--text-2);
-    --accent-soft: var(--day-accent);
-    --amber: var(--day-accent);
-    --amber-soft: var(--accent-wash);
-    --emerald: var(--set-core);
-    --emerald-soft: var(--core-wash);
-    --radius-sm: var(--radius-cut);
-    --radius-md: var(--radius-cut);
-    --radius-lg: var(--radius-cut);
-    --shadow-card: 0 18px 40px -18px var(--shadow-deep);
   }
 
   /* Aktif gün vurgusunu kapsayıcı üzerinden otomatik türet */

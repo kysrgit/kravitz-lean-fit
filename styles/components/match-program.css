@@ -1,0 +1,1380 @@
+/**
+ * Dosya: styles/components/match-program.css
+ * Açıklama: Tüm programın yazılı & tablo özeti (match tickets + özet tablolar),
+ * 21'ler core kart ızgarası, beslenme zaman çizelgesi ve SVG dairesel makro göstergeleri,
+ * ilerleme/kaynak/uyarı/altbilgi panelleri ve A4 yazdırma (@media print) kuralları.
+ */
+
+@layer components {
+  /* ==========================================================================
+     1. Core Rehberi Izgarası & Arama Sonuç Başlığı
+     ========================================================================== */
+  .core-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .core-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--stage-1);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--set-core);
+    border-radius: var(--radius-sharp);
+    overflow: hidden;
+    box-shadow: 0 18px 40px -18px var(--shadow-deep);
+    transition:
+      border-color var(--dur-micro) var(--ease-out),
+      transform var(--dur-micro) var(--ease-out);
+  }
+
+  .core-card:hover {
+    border-color: var(--core-border);
+  }
+
+  .search-subhead {
+    margin: 0 0 14px;
+    font-size: var(--fs-25);
+    letter-spacing: 0.02em;
+    color: var(--text-1);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    background: var(--stage-1);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius-sharp);
+    color: var(--text-2);
+  }
+
+  .empty-state h3 {
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-size: var(--fs-25);
+    color: var(--text-1);
+    text-transform: uppercase;
+  }
+
+  /* ==========================================================================
+     2. Beslenme Zaman Çizelgesi & Dairesel SVG Makro Göstergeleri
+     ========================================================================== */
+  .nutrition-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .macro-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .macro-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    background: var(--stage-1);
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--day-accent);
+    border-radius: var(--radius-sharp);
+    padding: 14px 16px;
+  }
+
+  .macro-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .macro-card-meta {
+    min-width: 0;
+  }
+
+  .macro-label {
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+
+  .macro-val {
+    margin-top: 6px;
+    font-family: var(--font-display);
+    font-size: var(--fs-25);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--day-accent);
+  }
+
+  .macro-sub {
+    font-size: var(--fs-12);
+    color: var(--text-2);
+    line-height: 1.4;
+  }
+
+  /* Dairesel SVG makro ilerleme halkası (4 DOM düğümü / gösterge) */
+  .macro-gauge {
+    position: relative;
+    flex: 0 0 56px;
+    width: 56px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+  }
+
+  .macro-gauge-svg {
+    width: 56px;
+    height: 56px;
+    display: block;
+  }
+
+  .macro-gauge-track {
+    fill: none;
+    stroke: var(--stage-3);
+    stroke-width: 5;
+  }
+
+  .macro-gauge-fill {
+    fill: none;
+    stroke: var(--volt);
+    stroke-width: 5;
+    stroke-linecap: butt;
+    transition: stroke-dashoffset var(--dur-transition) var(--ease-out);
+  }
+
+  .macro-gauge.tone-core .macro-gauge-fill {
+    stroke: var(--set-core);
+  }
+
+  .macro-gauge.tone-blaze .macro-gauge-fill {
+    stroke: var(--blaze);
+  }
+
+  .macro-gauge-pct {
+    position: absolute;
+    font-size: var(--fs-12);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text-1);
+    letter-spacing: 0.02em;
+  }
+
+  .two-col-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .three-col-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .nutrition-timeline {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .info-panel {
+    background: var(--stage-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sharp);
+    padding: 20px;
+  }
+
+  .meal-timeline-card {
+    border-top: 3px solid var(--volt);
+    background:
+      radial-gradient(80% 90% at 100% 0%, var(--volt-wash), transparent 65%), var(--stage-1);
+  }
+
+  .meal-timeline-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .meal-time-display {
+    font-size: var(--fs-25);
+    line-height: 1;
+    color: var(--volt);
+    letter-spacing: 0.02em;
+  }
+
+  .meal-time-kicker {
+    padding: 3px 8px;
+    border-radius: var(--radius-cut);
+    background: var(--stage-2);
+    border: 1px solid var(--line);
+    font-size: var(--fs-12);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--text-2);
+    text-transform: uppercase;
+  }
+
+  .info-panel h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 12px;
+    font-family: var(--font-display);
+    font-size: var(--fs-20);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--text-1);
+  }
+
+  .info-panel h3 .icon {
+    color: var(--day-accent);
+  }
+
+  .info-panel ul {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--text-2);
+    font-size: var(--fs-14);
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .daily-totals-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+  }
+
+  .daily-total-pill {
+    padding: 12px 16px;
+    border-radius: var(--radius-cut);
+    background: var(--accent-wash);
+    border: 1px solid var(--accent-border);
+    border-left: 3px solid var(--day-accent);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: var(--fs-14);
+    color: var(--text-1);
+  }
+
+  .daily-total-pill strong {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .daily-total-pill.is-rest {
+    background: var(--core-wash);
+    border-color: var(--core-border);
+    border-left-color: var(--set-core);
+  }
+
+  .meal-macros-summary {
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius-cut);
+    background: var(--stage-1-glass);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: var(--fs-12);
+    color: var(--text-2);
+  }
+
+  .meal-macro-line.rest,
+  .meal-totals-chip.rest {
+    color: var(--set-core);
+  }
+
+  .meal-totals-chip {
+    margin-top: 5px;
+    font-size: var(--fs-12);
+    color: var(--day-accent);
+    font-weight: 600;
+  }
+
+  .meals-total-row td {
+    background: var(--accent-wash);
+    font-size: var(--fs-14);
+  }
+
+  .meal-time-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: var(--radius-cut);
+    background: var(--core-wash);
+    border: 1px solid var(--core-border);
+    color: var(--set-core);
+    font-size: var(--fs-12);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .fasting-window-box {
+    padding: 12px 14px;
+    border-radius: var(--radius-cut);
+    background: var(--void);
+    border: 1px solid var(--line);
+    margin-bottom: 10px;
+  }
+
+  .fasting-window-box:last-child {
+    margin-bottom: 0;
+  }
+
+  .fasting-window-box strong {
+    display: block;
+    color: var(--day-accent);
+    font-size: var(--fs-14);
+    margin-bottom: 3px;
+  }
+
+  .fasting-window-time {
+    font-size: var(--fs-14);
+    font-weight: 700;
+    color: var(--text-1);
+    margin-bottom: 4px;
+  }
+
+  .fasting-window-box p {
+    margin: 0;
+    font-size: var(--fs-14);
+    color: var(--text-2);
+    line-height: 1.45;
+  }
+
+  /* ==========================================================================
+     3. Özet Sayfası: Maç Bileti Kartları (CSS Mask), Hızlı Atlama & Tablolar
+     ========================================================================== */
+  .summary-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .summary-section-block {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .summary-section-title-row h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-25);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--day-accent);
+  }
+
+  .summary-prose-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .summary-prose-card {
+    background: var(--stage-1);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--day-accent);
+    border-radius: var(--radius-sharp);
+    padding: 18px 22px;
+    box-shadow: 0 18px 40px -18px var(--shadow-deep);
+  }
+
+  /* Kertikli maç bileti maskesi + kesikli perforasyon çizgisi */
+  .match-ticket {
+    -webkit-mask-image:
+      radial-gradient(circle 8px at 0 58px, oklch(0 0 0 / 0) 94%, oklch(0 0 0 / 1) 100%),
+      radial-gradient(circle 8px at 100% 58px, oklch(0 0 0 / 0) 94%, oklch(0 0 0 / 1) 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      radial-gradient(circle 8px at 0 58px, oklch(0 0 0 / 0) 94%, oklch(0 0 0 / 1) 100%),
+      radial-gradient(circle 8px at 100% 58px, oklch(0 0 0 / 0) 94%, oklch(0 0 0 / 1) 100%);
+    mask-composite: intersect;
+  }
+
+  .summary-prose-card h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--line);
+    font-family: var(--font-display);
+    font-size: var(--fs-20);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--text-1);
+  }
+
+  .summary-prose-card h4 .icon {
+    color: var(--day-accent);
+  }
+
+  .summary-prose-lead,
+  .summary-prose-subhead {
+    margin: 0 0 8px;
+    font-size: var(--fs-14);
+    color: var(--text-2);
+  }
+
+  .summary-prose-subhead {
+    font-weight: 700;
+    color: var(--set-core);
+  }
+
+  .summary-divider {
+    border: none;
+    border-top: 1px dashed var(--line);
+    margin: 14px 0;
+  }
+
+  .summary-tables-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .summary-table-card {
+    background: var(--stage-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sharp);
+    overflow: hidden;
+    box-shadow: 0 18px 40px -18px var(--shadow-deep);
+    margin-bottom: 22px;
+  }
+
+  .summary-layout .summary-table-card {
+    margin-bottom: 0;
+  }
+
+  .summary-table-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--accent-wash), var(--core-wash));
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .summary-table-header.compact {
+    padding: 12px 18px;
+  }
+
+  .summary-table-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-20);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--text-1);
+  }
+
+  .summary-table-header p {
+    margin: 4px 0 0;
+    font-size: var(--fs-14);
+    color: var(--text-2);
+  }
+
+  .summary-table-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .workout-summary-table {
+    width: 100%;
+    min-width: 780px;
+    border-collapse: collapse;
+    font-size: var(--fs-14);
+    text-align: left;
+  }
+
+  .workout-summary-table thead th {
+    padding: 11px 14px;
+    background: var(--stage-2);
+    color: var(--text-2);
+    font-size: var(--fs-12);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  .workout-summary-table tbody td {
+    padding: 13px 14px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--line);
+    color: var(--text-1);
+  }
+
+  .workout-summary-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .workout-summary-table tbody tr:hover {
+    background: var(--stage-2);
+  }
+
+  .col-order {
+    width: 44px;
+    text-align: center;
+  }
+
+  .col-main {
+    min-width: 210px;
+  }
+
+  .col-pyramid {
+    min-width: 210px;
+  }
+
+  .col-core {
+    min-width: 175px;
+  }
+
+  .col-alts {
+    min-width: 240px;
+  }
+
+  .col-cue {
+    min-width: 250px;
+    color: var(--text-2);
+    line-height: 1.45;
+  }
+
+  .table-order-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-cut);
+    background: var(--accent-wash);
+    border: 1px solid var(--accent-border);
+    color: var(--day-accent);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--fs-16);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .table-ex-name {
+    font-weight: 700;
+    font-size: var(--fs-14);
+    color: var(--text-1);
+    margin-bottom: 2px;
+  }
+
+  .table-ex-tr {
+    font-size: var(--fs-14);
+    color: var(--text-2);
+    margin-bottom: 8px;
+  }
+
+  .table-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .table-video-btn,
+  .table-jump-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 32px;
+    padding: 4px 10px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--core-border);
+    background: var(--core-wash);
+    color: var(--set-core);
+    font-size: var(--fs-12);
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+      background-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out);
+  }
+
+  .table-video-btn:hover,
+  .table-jump-btn:hover {
+    background: var(--set-core);
+    color: var(--text-on-accent);
+  }
+
+  .table-pyramid-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .table-pyramid-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+    padding: 5px 8px;
+    border-radius: var(--radius-cut);
+    background: var(--stage-1-glass);
+    border: 1px solid var(--line);
+    font-size: var(--fs-12);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .table-pyramid-item.is-warmup {
+    background: var(--accent-wash);
+    border-left: 3px solid var(--day-accent);
+    padding-left: 6px;
+  }
+
+  .table-set-num {
+    font-weight: 600;
+    color: var(--day-accent);
+  }
+
+  .table-pyramid-item.is-warmup .table-set-num {
+    color: var(--volt);
+  }
+
+  .table-set-reps {
+    font-weight: 700;
+    color: var(--text-1);
+  }
+
+  .table-set-load {
+    color: var(--text-2);
+  }
+
+  .table-rest-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 6px;
+    padding: 3px 9px;
+    border-radius: var(--radius-cut);
+    font-size: var(--fs-12);
+    font-weight: 700;
+    color: var(--text-1);
+    background: var(--accent-wash);
+    border: 1px solid var(--accent-border);
+  }
+
+  .table-core-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--core-border);
+    background: var(--core-wash);
+    color: var(--set-core);
+    text-align: left;
+    font-size: var(--fs-12);
+    cursor: pointer;
+    transition:
+      border-color var(--dur-micro) var(--ease-out),
+      background-color var(--dur-micro) var(--ease-out);
+  }
+
+  .table-core-btn:hover {
+    border-color: var(--set-core);
+    background: var(--stage-2);
+  }
+
+  .table-core-btn span {
+    font-size: var(--fs-12);
+    color: var(--text-1);
+    font-weight: 600;
+  }
+
+  .table-core-note {
+    margin-top: 6px;
+    font-size: var(--fs-12);
+    color: var(--text-2);
+    line-height: 1.4;
+  }
+
+  .table-alt-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .table-alt-item {
+    padding: 7px 9px;
+    border-radius: var(--radius-cut);
+    background: var(--stage-1-glass);
+    border: 1px solid var(--line);
+  }
+
+  .table-alt-btn {
+    display: inline-block;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--day-accent);
+    font-size: var(--fs-14);
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .table-alt-btn:hover {
+    text-decoration: underline;
+  }
+
+  .table-alt-meta {
+    margin-top: 2px;
+    font-size: var(--fs-12);
+    color: var(--text-2);
+  }
+
+  .table-alt-when {
+    margin-top: 4px;
+    font-size: var(--fs-12);
+    color: var(--text-2);
+    line-height: 1.35;
+  }
+
+  .table-alt-when strong {
+    color: var(--text-1);
+  }
+
+  .table-macro-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: var(--radius-cut);
+    background: var(--accent-wash);
+    border: 1px solid var(--accent-border);
+    color: var(--day-accent);
+    font-weight: 700;
+    font-size: var(--fs-12);
+  }
+
+  .table-bullets {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--text-2);
+    font-size: var(--fs-14);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    line-height: 1.45;
+  }
+
+  .table-bullets li strong {
+    color: var(--text-1);
+  }
+
+  .btn-print-summary {
+    border-color: var(--accent-border);
+    color: var(--day-accent);
+  }
+
+  /* Özet Sayfası İçi Hızlı Bölüm Atlama Çubuğu */
+  .summary-quick-nav {
+    position: sticky;
+    top: 138px;
+    z-index: var(--z-header);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 8px 10px;
+    background: var(--stage-1-glass);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sharp);
+  }
+
+  .summary-quick-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .summary-quick-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+    min-height: 36px;
+    padding: 7px 12px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--line);
+    background: var(--stage-2);
+    color: var(--text-2);
+    font-size: var(--fs-12);
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      border-color var(--dur-micro) var(--ease-out),
+      background-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out);
+  }
+
+  .summary-quick-chip:hover,
+  .summary-quick-chip:focus-visible {
+    border-color: var(--volt);
+    background: var(--volt-wash);
+    color: var(--volt);
+  }
+
+  .summary-section-block,
+  .summary-table-card[id],
+  #content-area {
+    scroll-margin-top: 204px;
+  }
+
+  /* ==========================================================================
+     4. Ortak Paneller (İlerleme, Finisher, Yaşam Tarzı, Kaynaklar, Uyarı, Footer)
+     ========================================================================== */
+  .finisher-section {
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px dashed var(--line);
+  }
+
+  .finisher-section-header {
+    margin-bottom: 14px;
+  }
+
+  .finisher-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    padding: 4px 10px;
+    border-radius: var(--radius-cut);
+    font-size: var(--fs-12);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--set-core);
+    background: var(--core-wash);
+    border: 1px solid var(--core-border);
+  }
+
+  .finisher-section-header h3 {
+    margin: 0 0 6px;
+    font-family: var(--font-display);
+    font-size: var(--fs-25);
+    text-transform: uppercase;
+    color: var(--text-1);
+  }
+
+  .finisher-summary-card {
+    margin-top: 14px;
+    border-color: var(--core-border);
+    border-top: 3px solid var(--set-core);
+  }
+
+  .progression-section {
+    margin-top: 22px;
+  }
+
+  .templates-stack {
+    display: grid;
+    gap: 10px;
+  }
+
+  .template-subcard {
+    background: var(--stage-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-cut);
+    padding: 12px 14px;
+  }
+
+  .template-subhead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .lifestyle-target {
+    font-family: var(--font-display);
+    font-size: var(--fs-20);
+    font-weight: 700;
+    color: var(--day-accent);
+    margin: 4px 0 8px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .sources-panel {
+    margin-top: 20px;
+    background: var(--stage-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sharp);
+    padding: 20px;
+  }
+
+  .sources-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-size: var(--fs-25);
+    text-transform: uppercase;
+    color: var(--text-1);
+  }
+
+  .sources-header h3 .icon {
+    color: var(--day-accent);
+  }
+
+  .sources-list {
+    list-style: none;
+    margin: 14px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  .source-item {
+    background: var(--stage-2);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--day-accent);
+    border-radius: var(--radius-cut);
+    padding: 12px 14px;
+  }
+
+  .source-topic {
+    font-weight: 700;
+    font-size: var(--fs-14);
+    color: var(--text-1);
+  }
+
+  .source-citation {
+    margin-top: 4px;
+    font-size: var(--fs-14);
+    color: var(--day-accent);
+    word-break: break-word;
+  }
+
+  .source-note {
+    margin: 6px 0 0;
+    font-size: var(--fs-14);
+    color: var(--text-2);
+  }
+
+  .disclaimer-banner {
+    margin-bottom: 18px;
+    padding: 12px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--blaze-wash);
+    border: 1px solid var(--blaze-border);
+    border-left: 3px solid var(--blaze);
+    border-radius: var(--radius-sharp);
+  }
+
+  .disclaimer-copy {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    flex: 1 1 240px;
+    font-size: var(--fs-14);
+    color: var(--text-1);
+    line-height: 1.45;
+  }
+
+  .disclaimer-copy .icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--blaze);
+  }
+
+  .disclaimer-copy strong {
+    color: var(--blaze);
+  }
+
+  .disclaimer-btn {
+    padding: 8px 16px;
+    min-height: 44px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--blaze-border);
+    background: var(--blaze-wash);
+    color: var(--text-1);
+    font-weight: 700;
+    font-size: var(--fs-14);
+    cursor: pointer;
+    transition: background-color var(--dur-micro) var(--ease-out);
+  }
+
+  .disclaimer-btn:hover {
+    background: var(--blaze-border);
+  }
+
+  .site-footer {
+    border-top: 1px solid var(--line);
+    padding: 26px 0 38px;
+    background: var(--stage-1);
+    color: var(--text-2);
+    font-size: var(--fs-14);
+  }
+
+  .footer-inner p {
+    margin: 5px 0;
+  }
+
+  .site-footer a {
+    color: var(--volt);
+    text-decoration: underline;
+  }
+
+  .footer-medical-disclaimer {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 10px 0;
+    font-size: var(--fs-14);
+    font-weight: 600;
+    color: var(--blaze);
+  }
+
+  .footer-medical-disclaimer .icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .footer-sub {
+    color: var(--text-2);
+    font-size: var(--fs-12);
+    line-height: 1.5;
+  }
+
+  /* ==========================================================================
+     5. Responsive Uyumluluk
+     ========================================================================== */
+  @media (max-width: 1024px) {
+    .core-grid,
+    .three-col-grid,
+    .nutrition-timeline {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .macro-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 768px) {
+    .core-grid,
+    .two-col-grid,
+    .three-col-grid,
+    .nutrition-timeline,
+    .macro-grid,
+    .summary-prose-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .match-ticket {
+      padding: 16px;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+
+    .summary-quick-nav {
+      top: 8px;
+      padding: 7px 8px;
+    }
+
+    .summary-quick-chip {
+      min-height: 40px;
+      padding: 7px 12px;
+    }
+
+    .summary-section-block,
+    .summary-table-card[id],
+    #content-area {
+      scroll-margin-top: 120px;
+    }
+
+    /* Sıfır Yatay Kaydırmalı Mobil Kart-Tablo Görünümü */
+    .table-responsive {
+      overflow-x: visible;
+    }
+
+    .workout-summary-table {
+      min-width: 0;
+      width: 100%;
+      display: block;
+    }
+
+    .workout-summary-table thead {
+      display: none;
+    }
+
+    .workout-summary-table tbody {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .workout-summary-table tbody tr {
+      display: flex;
+      flex-direction: column;
+      background: var(--void);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sharp);
+      padding: 12px;
+      gap: 10px;
+    }
+
+    .workout-summary-table tbody td {
+      display: block;
+      width: 100%;
+      min-width: 0 !important;
+      padding: 0 0 10px 0;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+    }
+
+    .workout-summary-table tbody td:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .workout-summary-table tbody td[data-label]::before {
+      content: attr(data-label);
+      display: block;
+      font-size: var(--fs-12);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--day-accent);
+      margin-bottom: 5px;
+    }
+
+    .table-video-btn,
+    .table-jump-btn {
+      min-height: 44px;
+      padding: 8px 12px;
+    }
+
+    .table-alt-btn {
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .table-core-btn {
+      padding: 10px 12px;
+      min-height: 44px;
+    }
+  }
+
+  /* ==========================================================================
+     6. A4 Yazdırma (@media print) — Sade, Yüksek Kontrastlı Şema
+     ========================================================================== */
+  @page {
+    size: A4;
+    margin: 10mm 12mm;
+  }
+
+  @media print {
+    html,
+    body {
+      background: var(--print-bg) !important;
+      color: var(--print-ink) !important;
+      padding-bottom: 0 !important;
+      font-size: var(--fs-12);
+    }
+
+    .top-header,
+    .hero-section,
+    .pillars-grid,
+    .arena-spotlight,
+    .arena-noise,
+    .controls-bar,
+    .view-mode-bar,
+    .mobile-bottom-nav,
+    .summary-quick-nav,
+    .disclaimer-banner,
+    .site-footer,
+    .rest-timer-bar,
+    .table-video-btn,
+    .table-jump-btn,
+    .view-card-details-btn,
+    .alt-pills-row,
+    .card-action-row,
+    .day-poster-num,
+    #print-summary-btn,
+    #tanita-drawer,
+    dialog.modal-backdrop {
+      display: none !important;
+    }
+
+    .main-content {
+      padding-top: 0 !important;
+    }
+
+    .summary-layout {
+      gap: 14px;
+    }
+
+    .summary-table-card,
+    .summary-prose-card,
+    .finisher-summary-card,
+    .info-panel,
+    .template-subcard,
+    .day-banner,
+    .macro-card,
+    .sources-panel,
+    .source-item {
+      background: var(--print-bg) !important;
+      color: var(--print-ink) !important;
+      border: 1px solid var(--print-line) !important;
+      box-shadow: none !important;
+      -webkit-mask-image: none !important;
+      mask-image: none !important;
+      padding: 10px 12px !important;
+    }
+
+    .summary-prose-card,
+    .finisher-summary-card,
+    .info-panel,
+    .template-subcard,
+    .day-banner,
+    .workout-summary-table tbody tr {
+      break-inside: avoid;
+    }
+
+    .day-banner h2,
+    .summary-section-title-row h3,
+    .summary-prose-card h4,
+    .summary-table-header h3,
+    .info-panel h3,
+    .macro-val {
+      color: var(--print-ink) !important;
+      font-size: var(--fs-20) !important;
+    }
+
+    .day-poster-kicker,
+    .day-banner p,
+    .summary-prose-lead,
+    .summary-prose-subhead,
+    .summary-table-header p,
+    .table-alt-meta,
+    .table-alt-when,
+    .table-core-note,
+    .table-set-load,
+    .macro-label,
+    .macro-sub,
+    .muted-text,
+    .source-note {
+      color: var(--print-muted) !important;
+    }
+
+    .summary-table-header {
+      background: var(--print-bg) !important;
+      border-bottom: 1px solid var(--print-line) !important;
+      padding: 8px 12px !important;
+    }
+
+    .table-responsive {
+      overflow: visible !important;
+    }
+
+    .workout-summary-table {
+      min-width: 100% !important;
+      width: 100% !important;
+      font-size: var(--fs-12) !important;
+      color: var(--print-ink) !important;
+    }
+
+    .workout-summary-table thead th {
+      background: var(--print-bg) !important;
+      color: var(--print-ink) !important;
+      border-bottom: 2px solid var(--print-ink) !important;
+      padding: 6px 8px !important;
+    }
+
+    .workout-summary-table tbody td {
+      padding: 6px 8px !important;
+      border-bottom: 1px solid var(--print-line) !important;
+      color: var(--print-ink) !important;
+    }
+
+    .col-main,
+    .col-pyramid,
+    .col-core,
+    .col-alts,
+    .col-cue {
+      min-width: 0 !important;
+    }
+
+    .table-order-badge,
+    .table-macro-badge,
+    .table-rest-pill,
+    .table-core-btn,
+    .table-pyramid-item,
+    .table-alt-item,
+    .meta-pill,
+    .tag-chip {
+      background: var(--print-bg) !important;
+      border-color: var(--print-line) !important;
+      color: var(--print-ink) !important;
+    }
+
+    .table-ex-name,
+    .table-set-num,
+    .table-set-reps,
+    .table-alt-btn,
+    .table-core-btn strong,
+    .table-core-btn span,
+    .table-bullets li,
+    .table-bullets li strong,
+    .source-citation,
+    svg.icon {
+      color: var(--print-ink) !important;
+    }
+  }
+}

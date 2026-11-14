@@ -593,12 +593,16 @@ export function renderFullSummaryTab() {
   elements.contentArea.innerHTML = `
     <div class="summary-layout">
       <div class="day-banner">
-        <div>
-          <h2>${lucideIcon("clipboard-list", { size: 22 })} Kravitz Lean &amp; Fit — Tüm Programın Yazılı &amp; Tablo Özeti</h2>
-          <p>
-            Kartlar arasında gezinmeden; tüm antrenman günlerini, piramit set/tekrarlarını,
-            set arası 21'ler core hareketlerini, alternatifleri ve beslenme protokolünü tek sayfada gör.
-          </p>
+        <div class="day-poster-lead">
+          <span class="day-poster-num display-type tabular" aria-hidden="true">00</span>
+          <div class="day-poster-copy">
+            <span class="day-poster-kicker">TAM MAÇ PROGRAMI · TEK SAYFA ÖZET</span>
+            <h2>Kravitz Lean &amp; Fit — Program Özeti</h2>
+            <p>
+              Kartlar arasında gezinmeden; tüm antrenman günlerini, piramit set/tekrarlarını,
+              set arası 21'ler core hareketlerini, alternatifleri ve beslenme protokolünü tek sayfada gör.
+            </p>
+          </div>
         </div>
         <div class="day-meta-badges">
           <button type="button" id="print-summary-btn" class="btn-outline btn-print-summary">
@@ -625,7 +629,7 @@ export function renderFullSummaryTab() {
         </div>
 
         <div class="summary-prose-grid">
-          <article class="summary-prose-card">
+          <article class="summary-prose-card match-ticket">
             <h4>${lucideIcon("target", { size: 16 })} Sistemin 3 Altın Kuralı (Yazılı Özet)</h4>
             <ul class="table-bullets">
               ${SYSTEM_PILLARS.map(
@@ -635,7 +639,7 @@ export function renderFullSummaryTab() {
             </ul>
           </article>
 
-          <article class="summary-prose-card">
+          <article class="summary-prose-card match-ticket">
             ${(() => {
               const profile = getActiveProfileTargets();
               const label = profile.isCustom
@@ -782,7 +786,7 @@ export function renderFullSummaryTab() {
         </div>
 
         <div class="summary-prose-grid">
-          <article class="summary-prose-card">
+          <article class="summary-prose-card match-ticket">
             <h4>${lucideIcon("clock", { size: 16 })} İsteğe Bağlı Öğün Zamanlaması (Aralıklı Oruç) &amp; Sabah Notları</h4>
             <ul class="table-bullets">
               ${fastingWindows
@@ -800,7 +804,7 @@ export function renderFullSummaryTab() {
             </ul>
           </article>
 
-          <article class="summary-prose-card">
+          <article class="summary-prose-card match-ticket">
             <h4>${lucideIcon("target", { size: 16 })} Vücut Kompozisyonu İçin 3 Temel Kural</h4>
             <ul class="table-bullets">
               ${waistRules
@@ -833,12 +837,16 @@ export function renderCoreGuide(filteredItems = null) {
 
   elements.contentArea.innerHTML = `
     <div class="day-banner">
-      <div>
-        <h2>21’ler Aktif Core Dinlenmesi &amp; Sabah Mide Vakumu Rehberi</h2>
-        <p>
-          Core çalışmaları bölgesel yağ eritmez (Ramirez-Campillo R. ve ark., Human Movement 2022;23, DOI: 10.5114/hm.2022.110373);
-          gövde stabilitesi, postür farkındalığı ve karın kaslarının kuvvet/hipertrofi gelişimi için uygulanır.
-        </p>
+      <div class="day-poster-lead">
+        <span class="day-poster-num display-type tabular" aria-hidden="true">21</span>
+        <div class="day-poster-copy">
+          <span class="day-poster-kicker">AKTİF DİNLENME · SABAH VAKUMU</span>
+          <h2>21’ler Aktif Core &amp; Mide Vakumu</h2>
+          <p>
+            Core çalışmaları bölgesel yağ eritmez (Ramirez-Campillo R. ve ark., Human Movement 2022;23, DOI: 10.5114/hm.2022.110373);
+            gövde stabilitesi, postür farkındalığı ve karın kaslarının kuvvet/hipertrofi gelişimi için uygulanır.
+          </p>
+        </div>
       </div>
       <div class="day-meta-badges">
         <span class="meta-pill">${lucideIcon("target", { size: 14 })} Hedef: Gövde Stabilitesi &amp; Core Kuvveti</span>
@@ -846,6 +854,30 @@ export function renderCoreGuide(filteredItems = null) {
     </div>
     <div class="core-grid">${cardsHtml}</div>
     ${createCardioFinisherSectionHtml()}
+  `;
+}
+
+// Dairesel SVG makro ilerleme halkasını üretir (stroke-dasharray/dashoffset)
+function createMacroGaugeSvgHtml(ratio, labelText, toneClass = "") {
+  const circumference = 157.08;
+  const clamped = Math.max(0.05, Math.min(1, Number(ratio) || 0.05));
+  const dashoffset = (circumference * (1 - clamped)).toFixed(1);
+  return `
+    <div class="macro-gauge ${escapeHtml(toneClass)}" aria-hidden="true">
+      <svg class="macro-gauge-svg" viewBox="0 0 64 64" width="56" height="56">
+        <circle class="macro-gauge-track" cx="32" cy="32" r="25" />
+        <circle
+          class="macro-gauge-fill"
+          cx="32"
+          cy="32"
+          r="25"
+          stroke-dasharray="${circumference}"
+          stroke-dashoffset="${dashoffset}"
+          transform="rotate(-90 32 32)"
+        />
+      </svg>
+      <span class="macro-gauge-pct display-type tabular">${escapeHtml(labelText)}</span>
+    </div>
   `;
 }
 
@@ -876,15 +908,28 @@ export function renderNutritionProtocol() {
     { kcal: 0, protein: 0, carbs: 0, fat: 0 }
   );
 
+  const kcalRatio =
+    profileTargets.estimatedTdeeKcal > 0
+      ? summary.targetKcal / profileTargets.estimatedTdeeKcal
+      : 0.85;
+  const proteinRatio = (summary.proteinG * 4) / summary.targetKcal;
+  const carbsRatio = (summary.carbsG * 4) / summary.targetKcal;
+  const fatRatio = (summary.fatG * 9) / summary.targetKcal;
+  const waterRatio = 0.88;
+
   elements.contentArea.innerHTML = `
     <div class="nutrition-layout">
       <div class="day-banner">
-        <div>
-          <h2>Kravitz'ten Esinlenilmiş Uyarlama — Beslenme ve Enerji Dengesi</h2>
-          <p>
-            Profil BMR değerin (${escapeHtml(profileTargets.bmrKcal)} kcal) ve günlük ~${escapeHtml(profileTargets.proteinTargetG)} g protein hedefinle
-            mevcut kas kütleni (%${escapeHtml(profileTargets.targetBodyFatPct)} hedef yağ oranı) koruyarak haftalık %0,5-%1 kilo kaybı (genel öneri) hedeflenir.
-          </p>
+        <div class="day-poster-lead">
+          <span class="day-poster-num display-type tabular" aria-hidden="true">06</span>
+          <div class="day-poster-copy">
+            <span class="day-poster-kicker">BESLENME PROTOKOLÜ · ENERJİ DENGESİ</span>
+            <h2>Kravitz Uyarlaması — Beslenme</h2>
+            <p>
+              Profil BMR değerin (${escapeHtml(profileTargets.bmrKcal)} kcal) ve günlük ~${escapeHtml(profileTargets.proteinTargetG)} g protein hedefinle
+              mevcut kas kütleni (%${escapeHtml(profileTargets.targetBodyFatPct)} hedef yağ oranı) koruyarak haftalık %0,5-%1 kilo kaybı (genel öneri) hedeflenir.
+            </p>
+          </div>
         </div>
         <div class="day-meta-badges">
           <span class="meta-pill">${lucideIcon("target", { size: 14 })} Kişisel Kalori Hedefi: ${escapeHtml(profileTargets.targetCalories)} kcal</span>
@@ -894,28 +939,53 @@ export function renderNutritionProtocol() {
 
       <div class="macro-grid">
         <article class="macro-card">
-          <div class="macro-label">Ortalama Kalori Hedefi</div>
-          <div class="macro-val">${escapeHtml(summary.targetKcal)} kcal</div>
+          <div class="macro-card-top">
+            <div class="macro-card-meta">
+              <div class="macro-label">Ortalama Kalori Hedefi</div>
+              <div class="macro-val tabular">${escapeHtml(summary.targetKcal)} kcal</div>
+            </div>
+            ${createMacroGaugeSvgHtml(kcalRatio, `%${Math.round(kcalRatio * 100)}`, "tone-volt")}
+          </div>
           <div class="macro-sub">Antrenman: ${escapeHtml(trainingDayTotals.kcal)} · Dinlenme: ${escapeHtml(restDayTotals.kcal)} kcal</div>
         </article>
         <article class="macro-card">
-          <div class="macro-label">Günlük Protein</div>
-          <div class="macro-val">${escapeHtml(summary.proteinG)} g</div>
-          <div class="macro-sub">${escapeHtml(summary.proteinG * 4)} kcal (%${Math.round(((summary.proteinG * 4) / summary.targetKcal) * 100)})</div>
+          <div class="macro-card-top">
+            <div class="macro-card-meta">
+              <div class="macro-label">Günlük Protein</div>
+              <div class="macro-val tabular">${escapeHtml(summary.proteinG)} g</div>
+            </div>
+            ${createMacroGaugeSvgHtml(proteinRatio, `%${Math.round(proteinRatio * 100)}`, "tone-volt")}
+          </div>
+          <div class="macro-sub">${escapeHtml(summary.proteinG * 4)} kcal (%${Math.round(proteinRatio * 100)})</div>
         </article>
         <article class="macro-card">
-          <div class="macro-label">Karbonhidrat</div>
-          <div class="macro-val">${escapeHtml(summary.carbsG)} g</div>
+          <div class="macro-card-top">
+            <div class="macro-card-meta">
+              <div class="macro-label">Karbonhidrat</div>
+              <div class="macro-val tabular">${escapeHtml(summary.carbsG)} g</div>
+            </div>
+            ${createMacroGaugeSvgHtml(carbsRatio, `%${Math.round(carbsRatio * 100)}`, "tone-core")}
+          </div>
           <div class="macro-sub">Antr: ${escapeHtml(trainingDayTotals.carbs)} g · Dinl: ${escapeHtml(restDayTotals.carbs)} g</div>
         </article>
         <article class="macro-card">
-          <div class="macro-label">Sağlıklı Yağlar</div>
-          <div class="macro-val">${escapeHtml(summary.fatG)} g</div>
+          <div class="macro-card-top">
+            <div class="macro-card-meta">
+              <div class="macro-label">Sağlıklı Yağlar</div>
+              <div class="macro-val tabular">${escapeHtml(summary.fatG)} g</div>
+            </div>
+            ${createMacroGaugeSvgHtml(fatRatio, `%${Math.round(fatRatio * 100)}`, "tone-blaze")}
+          </div>
           <div class="macro-sub">${escapeHtml(summary.fatG * 9)} kcal (zeytinyağı, yumurta, badem)</div>
         </article>
         <article class="macro-card">
-          <div class="macro-label">Sıvı Tüketimi</div>
-          <div class="macro-val">${escapeHtml(summary.water)}</div>
+          <div class="macro-card-top">
+            <div class="macro-card-meta">
+              <div class="macro-label">Sıvı Tüketimi</div>
+              <div class="macro-val tabular">${escapeHtml(summary.water)}</div>
+            </div>
+            ${createMacroGaugeSvgHtml(waterRatio, "3.5L", "tone-core")}
+          </div>
           <div class="macro-sub">Hidrasyon &amp; mineral desteği</div>
         </article>
       </div>
@@ -956,12 +1026,15 @@ export function renderNutritionProtocol() {
         </div>
       </div>
 
-      <div class="three-col-grid">
+      <div class="nutrition-timeline">
         ${dailyMeals
           .map(
-            (meal) => `
-          <article class="info-panel">
-            <span class="meal-time-badge">${escapeHtml(meal.time)}</span>
+            (meal, idx) => `
+          <article class="info-panel meal-timeline-card">
+            <div class="meal-timeline-head">
+              <span class="meal-time-display display-type tabular">${escapeHtml(meal.time)}</span>
+              <span class="meal-time-kicker">ÖĞÜN ${String(idx + 1).padStart(2, "0")}</span>
+            </div>
             <h3>${escapeHtml(meal.title)}</h3>
             <div class="meal-macros-summary">
               <div class="meal-macro-line"><strong>Antrenman:</strong> ${escapeHtml(meal.totals.kcal)} kcal (P ${escapeHtml(meal.totals.protein)}g · K ${escapeHtml(meal.totals.carbs)}g · Y ${escapeHtml(meal.totals.fat)}g)</div>
@@ -1063,9 +1136,13 @@ export function renderSearchResults(query) {
 
   elements.contentArea.innerHTML = `
     <div class="day-banner">
-      <div>
-        <h2>Arama Sonuçları: "${escapeHtml(query)}"</h2>
-        <p>${matchedExercises.length} ana/alternatif hareket ve ${matchedCore.length} core hareketi bulundu.</p>
+      <div class="day-poster-lead">
+        <span class="day-poster-num display-type tabular" aria-hidden="true">${String(matchedExercises.length + matchedCore.length).padStart(2, "0")}</span>
+        <div class="day-poster-copy">
+          <span class="day-poster-kicker">ARAMA SONUÇLARI</span>
+          <h2>Arama: "${escapeHtml(query)}"</h2>
+          <p>${matchedExercises.length} ana/alternatif hareket ve ${matchedCore.length} core hareketi bulundu.</p>
+        </div>
       </div>
     </div>
     ${exercisesHtml ? `<div class="exercises-grid">${exercisesHtml}</div>` : ""}
