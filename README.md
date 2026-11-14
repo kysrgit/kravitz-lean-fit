@@ -2,7 +2,7 @@
 
 # Kravitz Lean & Fit — MACFit Antrenman ve Beslenme Rehberi
 
-Bu web uygulaması, **MACFit Tanita ölçüm verilerinize** ve **Lenny Kravitz / Dodd Romero** tarafından uygulanan **Piramit (30 → 15 → 10 → 5) + 21'ler Aktif Core Dinlenmesi** sistemine göre hazırlanmış, takip karmaşası olmayan, doğrudan **reklamsız egzersiz formu bağlantılı** mobil uyumlu antrenman rehberidir.
+Bu web uygulaması, yalnızca kendi tarayıcınızda saklanan kişisel **Profilim** ölçümlerinize ve **Lenny Kravitz / Dodd Romero** tarafından uygulanan **Piramit (30 → 15 → 10 → 5) + 21'ler Aktif Core Dinlenmesi** sistemine göre hazırlanmış, takip karmaşası olmayan, doğrudan **reklamsız egzersiz formu bağlantılı** mobil uyumlu antrenman rehberidir.
 
 ## Özellikler
 
@@ -17,7 +17,7 @@ Bu web uygulaması, **MACFit Tanita ölçüm verilerinize** ve **Lenny Kravitz /
   - **3. Gün:** Bruce Lee Sırt & Kol Detayı (Sırt + Arka Omuz + Biceps)
   - **4. Gün:** Full-Body Fonksiyonel Kondisyon & Göbek Yağı Yok Edici
 - **21'ler Core & Sabah Mide Vakumu Rehberi:** Set aralarında yapılacak tüm karın hareketleri ve alternatifleri, ayrıca sabah aç karnına uygulanacak *Stomach Vacuum & Hollow Core Hold* protokolü.
-- **Beslenme & Göbek Eritme Protokolü:** 1970 kcal BMR baz alınarak 2.050-2.150 kcal / 170-180 g protein hedefli 18:6 ve 16:8 Aralıklı Oruç planı.
+- **Beslenme & Aralıklı Öğün Planı:** Kişisel Profilim verilerinize göre hesaplanan kalori ve ~2 g/kg protein hedefli esnek 18:6 ve 16:8 öğün penceresi.
 
 ## Yerel Çalıştırma
 

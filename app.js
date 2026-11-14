@@ -9,12 +9,15 @@
 import {
   CORE_LIBRARY,
   MUSCLEWIKI_LICENSE_URL,
+  DEFAULT_PROFILE,
   NUTRITION_PROTOCOL,
   SYSTEM_PILLARS,
-  TANITA_PROFILE,
   WORKOUT_DAYS,
+  calculateProfileTargets,
   getExerciseMedia,
 } from "./data.js";
+
+const PROFILE_STORAGE_KEY = "klf:v1:profile";
 
 // Uygulama durumu
 const state = {
@@ -67,6 +70,10 @@ const elements = {
   tanitaDrawer: document.getElementById("tanita-drawer"),
   tanitaMeta: document.getElementById("tanita-meta"),
   tanitaGrid: document.getElementById("tanita-grid"),
+  profileTargetChip: document.getElementById("profile-target-chip"),
+  profileForm: document.getElementById("profile-form"),
+  resetProfileBtn: document.getElementById("reset-profile-btn"),
+  profileSaveStatus: document.getElementById("profile-save-status"),
   tabsNav: document.getElementById("tabs-nav"),
   mobileBottomNav: document.getElementById("mobile-bottom-nav"),
   searchInput: document.getElementById("exercise-search"),
@@ -195,10 +202,75 @@ function renderSystemPillars() {
   ).join("");
 }
 
-// Tanita ölçüm röntgenini render eder
+// localStorage üzerinden kayıtlı profili güvenli (try/catch) biçimde okur
+function loadStoredProfile() {
+  try {
+    const raw = window.localStorage.getItem(PROFILE_STORAGE_KEY);
+    if (!raw) return DEFAULT_PROFILE;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? { ...DEFAULT_PROFILE, ...parsed, isCustom: true } : DEFAULT_PROFILE;
+  } catch {
+    return DEFAULT_PROFILE;
+  }
+}
+
+// Kullanıcı profilini yalnızca localStorage'a güvenli biçimde kaydeder
+function saveStoredProfile(profile) {
+  try {
+    window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify({ ...profile, isCustom: true }));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Kişisel profil verisini sıfırlar
+function clearStoredProfile() {
+  try {
+    window.localStorage.removeItem(PROFILE_STORAGE_KEY);
+  } catch {
+    // localStorage kullanılamıyorsa sessizce atla
+  }
+}
+
+// Aktif profil hedeflerini hesaplayıp döndürür
+function getActiveProfileTargets() {
+  return calculateProfileTargets(loadStoredProfile());
+}
+
+// Profil formunu mevcut veya örnek değerlerle doldurur
+function syncProfileForm(profileTargets) {
+  if (!elements.profileForm) return;
+  const fieldNames = [
+    "age",
+    "weightKg",
+    "bodyFatPct",
+    "muscleMassKg",
+    "bmrKcal",
+    "waistCm",
+    "activityMultiplier",
+    "targetBodyFatPct",
+  ];
+  fieldNames.forEach((name) => {
+    const input = elements.profileForm.elements.namedItem(name);
+    if (input) {
+      input.value = String(profileTargets[name]);
+    }
+  });
+}
+
+// Profilim & hedefler bölümünü render eder
 function renderTanitaSection() {
-  elements.tanitaMeta.textContent = `Son Ölçüm: ${TANITA_PROFILE.date} · Yaş: ${TANITA_PROFILE.age} · Hedef: ${TANITA_PROFILE.targetStyle}`;
-  elements.tanitaGrid.innerHTML = TANITA_PROFILE.metrics
+  const profile = getActiveProfileTargets();
+  syncProfileForm(profile);
+
+  const sourceLabel = profile.isCustom ? "Kayıtlı Profilin (Bu Cihazda)" : "Örnek Değerler";
+  elements.tanitaMeta.textContent = `${sourceLabel} · Yaş: ${profile.age} · Hedef: ${profile.targetStyle}`;
+  if (elements.profileTargetChip) {
+    elements.profileTargetChip.textContent = `Hedef: %${profile.targetBodyFatPct} Yağ · ~${profile.targetWeightKg} kg · ${profile.targetCalories} kcal`;
+  }
+
+  elements.tanitaGrid.innerHTML = profile.metrics
     .map(
       (item) => `
       <article class="tanita-card ${item.highlight ? "highlight" : ""}">
@@ -880,13 +952,18 @@ function renderFullSummaryTab() {
     .join("");
 
   const { summary, fastingWindows, morningFastRules, dailyMeals, waistRules } = NUTRITION_PROTOCOL;
+  const profileTargets = getActiveProfileTargets();
 
   const macroRowsHtml = [
-    ["Günlük Kalori Hedefi", summary.calories, "1970 kcal BMR altına inmeden kontrollü yağ yakım açığı"],
-    ["Günlük Protein", summary.protein, "62,9 kg kas kütleni korur ve tokluk sağlar"],
+    [
+      "Günlük Kalori Hedefi",
+      `${profileTargets.targetCalories} kcal (Örnek Bant: ${summary.calories})`,
+      `Profil BMR (${profileTargets.bmrKcal} kcal) ve TDEE (${profileTargets.estimatedTdeeKcal} kcal) baz alınarak hesaplanır`,
+    ],
+    ["Günlük Protein", summary.protein, `${profileTargets.muscleMassKg.toFixed(1)} kg kas kütleni korumaya ve tokluğa destek olur (~${profileTargets.proteinTargetG} g/gün)`],
     ["Temiz Karbonhidrat", summary.carbs, "Ağırlıklı olarak antrenman çevresinde tüket"],
     ["Sağlıklı Yağlar", summary.fats, "Hormon dengesi ve uzun süreli enerji"],
-    ["Sıvı Tüketimi", summary.water, "Hedef vücut su oranı: %55,8 → %60+"],
+    ["Sıvı Tüketimi", summary.water, "Gün boyu dengeli hidrasyon ve elektrolit desteği"],
   ]
     .map(
       ([label, value, note]) => `
@@ -943,10 +1020,10 @@ function renderFullSummaryTab() {
         <button type="button" class="summary-quick-chip" data-scroll-target="summary-sec-nutrition">🥗 Beslenme</button>
       </div>
 
-      <!-- Bölüm 1: Sistem Özeti, Tanita Özeti & Haftalık Şema -->
+      <!-- Bölüm 1: Sistem Özeti, Profil Hedefleri & Haftalık Şema -->
       <section id="summary-sec-weekly" class="summary-section-block">
         <div class="summary-section-title-row">
-          <h3>1. Sistem Özeti, Tanita Analizi &amp; Haftalık MACFit Şeması</h3>
+          <h3>1. Sistem Özeti, Profil Hedefleri &amp; Haftalık MACFit Şeması</h3>
         </div>
 
         <div class="summary-prose-grid">
@@ -960,18 +1037,24 @@ function renderFullSummaryTab() {
           </article>
 
           <article class="summary-prose-card">
-            <h4>📊 Tanita Başlangıç → Hedef Özeti</h4>
-            <p class="summary-prose-lead">
-              <strong>Ölçüm (${escapeHtml(TANITA_PROFILE.date)}):</strong> ${escapeHtml(TANITA_PROFILE.age)} yaş ·
-              Hedef: <strong>${escapeHtml(TANITA_PROFILE.targetStyle)}</strong>
-            </p>
-            <ul class="table-bullets">
-              ${TANITA_PROFILE.metrics
-                .map(
-                  (m) => `<li><strong>${escapeHtml(m.label)}:</strong> ${escapeHtml(m.current)} → <strong>${escapeHtml(m.target)}</strong> (${escapeHtml(m.note)})</li>`
-                )
-                .join("")}
-            </ul>
+            ${(() => {
+              const profile = getActiveProfileTargets();
+              const label = profile.isCustom ? "Kayıtlı Profilin" : "Örnek Profil (Profilim formundan özelleştir)";
+              return `
+                <h4>📊 Profil Başlangıç → Hedef Özeti</h4>
+                <p class="summary-prose-lead">
+                  <strong>${escapeHtml(label)}:</strong> ${escapeHtml(profile.age)} yaş ·
+                  Hedef: <strong>${escapeHtml(profile.targetStyle)}</strong>
+                </p>
+                <ul class="table-bullets">
+                  ${profile.metrics
+                    .map(
+                      (m) => `<li><strong>${escapeHtml(m.label)}:</strong> ${escapeHtml(m.current)} → <strong>${escapeHtml(m.target)}</strong> (${escapeHtml(m.note)})</li>`
+                    )
+                    .join("")}
+                </ul>
+              `;
+            })()}
           </article>
         </div>
 
@@ -1133,7 +1216,7 @@ function renderCoreGuide(filteredItems = null) {
         </p>
       </div>
       <div class="day-meta-badges">
-        <span class="meta-pill">🎯 Hedef: 10,6 kg Gövde Yağını Eritme</span>
+        <span class="meta-pill">🎯 Hedef: Gövde Stabilitesi &amp; Core Kuvveti</span>
       </div>
     </div>
     <div class="core-grid">${cardsHtml}</div>
@@ -1145,19 +1228,20 @@ function renderCoreGuide(filteredItems = null) {
 // Beslenme ve göbek eritme protokolü sekmesini render eder
 function renderNutritionProtocol() {
   const { summary, fastingWindows, morningFastRules, dailyMeals, waistRules } = NUTRITION_PROTOCOL;
+  const profileTargets = getActiveProfileTargets();
 
   elements.contentArea.innerHTML = `
     <div class="nutrition-layout">
       <div class="day-banner">
         <div>
-          <h2>Göbek Yağını (%23,1 → %11) Eriten Kravitz Beslenme Protokolü</h2>
+          <h2>Yağsız &amp; Fit Silüet İçin Kravitz Beslenme Protokolü</h2>
           <p>
-            BMR değerin 1970 kcal olduğu için aç kalmadan, günde 170-180 g proteinle 62,9 kg kas
-            kütleni koruyarak net yağ yakımı sağlarsın.
+            Profil BMR değerin (${escapeHtml(profileTargets.bmrKcal)} kcal) ve günlük ~${escapeHtml(profileTargets.proteinTargetG)} g protein hedefinle
+            mevcut kas kütleni (%${escapeHtml(profileTargets.targetBodyFatPct)} hedef yağ oranı) koruyarak kontrollü açık oluşturabilirsin.
           </p>
         </div>
         <div class="day-meta-badges">
-          <span class="meta-pill">💧 Hedef Su Oranı: %55,8 → %60+</span>
+          <span class="meta-pill">🎯 Kişisel Kalori Hedefi: ${escapeHtml(profileTargets.targetCalories)} kcal</span>
         </div>
       </div>
 
@@ -1783,12 +1867,50 @@ function initEventListeners() {
     });
   }
 
-  // Tanita çekmecesi aç/kapa
+  // Profilim çekmecesi aç/kapa
   elements.tanitaToggleBtn.addEventListener("click", () => {
     const isExpanded = elements.tanitaToggleBtn.getAttribute("aria-expanded") === "true";
     elements.tanitaToggleBtn.setAttribute("aria-expanded", String(!isExpanded));
     elements.tanitaDrawer.hidden = isExpanded;
   });
+
+  // Profilim formu kaydetme ve sıfırlama
+  if (elements.profileForm) {
+    elements.profileForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const formData = new FormData(elements.profileForm);
+      const nextProfile = {
+        isCustom: true,
+        age: Number(formData.get("age")),
+        weightKg: Number(formData.get("weightKg")),
+        bodyFatPct: Number(formData.get("bodyFatPct")),
+        muscleMassKg: Number(formData.get("muscleMassKg")),
+        bmrKcal: Number(formData.get("bmrKcal")),
+        waistCm: Number(formData.get("waistCm")),
+        activityMultiplier: Number(formData.get("activityMultiplier")),
+        targetBodyFatPct: Number(formData.get("targetBodyFatPct")),
+      };
+      const saved = saveStoredProfile(nextProfile);
+      renderTanitaSection();
+      renderMainContent();
+      if (elements.profileSaveStatus) {
+        elements.profileSaveStatus.textContent = saved
+          ? "Kaydedildi — hedefler tarayıcı hafızasından güncellendi."
+          : "Hedefler geçici olarak güncellendi (tarayıcı depolaması kapalı).";
+      }
+    });
+  }
+
+  if (elements.resetProfileBtn) {
+    elements.resetProfileBtn.addEventListener("click", () => {
+      clearStoredProfile();
+      renderTanitaSection();
+      renderMainContent();
+      if (elements.profileSaveStatus) {
+        elements.profileSaveStatus.textContent = "Örnek profil değerlerine dönüldü.";
+      }
+    });
+  }
 
   // Arama alanı
   elements.searchInput.addEventListener("input", (event) => {

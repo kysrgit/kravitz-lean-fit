@@ -13,7 +13,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta
       name="description"
-      content="MACFit Tanita ölçüm verilerine özel Lenny Kravitz (Dodd Romero) Piramit 30-15-10-5 + 21'ler Core antrenman ve göbek yağı eritme rehberi."
+      content="Kişisel profil hedeflerine göre uyarlanabilen, Lenny Kravitz (Dodd Romero) esinli Piramit 30-15-10-5 + 21'ler Core antrenman ve beslenme rehberi."
     />
     <meta name="theme-color" content="#090b10" />
     <title>Kravitz Lean &amp; Fit | MACFit Antrenman Rehberi</title>
@@ -59,7 +59,7 @@
             aria-expanded="false"
             aria-controls="tanita-drawer"
           >
-            <span>Tanita Verilerim</span>
+            <span>Profilim</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M6 9l6 6 6-6" />
             </svg>
@@ -78,8 +78,8 @@
             <span class="text-gradient">Piramit + 21’ler Core</span>
           </h2>
           <p class="hero-subtitle">
-            25 yaş · <strong>62,9 kg kas kütleni</strong> koruyarak gövdede toplanan
-            <strong>10,6 kg (%23,1) yağı</strong> eritmek için tasarlanmış, reklamsız ve doğrulanmış
+            <strong>Profilim</strong> alanına girdiğin kişisel ölçümlerine göre hedef kilo ve kalorini
+            hesaplayan (yalnızca kendi tarayıcında saklanan), reklamsız ve doğrulanmış
             harici MuscleWiki form referanslı MACFit salon rehberin.
           </p>
         </div>
@@ -88,15 +88,63 @@
         <div id="pillars-grid" class="pillars-grid"></div>
       </section>
 
-      <!-- Açılır/Kapanır Tanita Röntgeni Bölümü -->
+      <!-- Açılır/Kapanır Profilim & Hedef Hesaplama Bölümü (Yalnızca localStorage) -->
       <section id="tanita-drawer" class="tanita-section" hidden>
         <div class="section-header-inline">
           <div>
-            <h3>MACFit Tanita Ölçüm Analizi &amp; Hedeflerin</h3>
+            <h3>Profilim &amp; Kişisel Hedeflerim</h3>
             <p id="tanita-meta" class="muted-text"></p>
           </div>
-          <span class="status-chip">Hedef: %11-12 Yağ · ~75 kg</span>
+          <span id="profile-target-chip" class="status-chip">Örnek Değerler · Tarayıcı İçi Kayıt</span>
         </div>
+
+        <form id="profile-form" class="profile-form">
+          <div class="profile-form-grid">
+            <label class="profile-field">
+              <span>Yaş</span>
+              <input type="number" name="age" min="16" max="85" step="1" required />
+            </label>
+            <label class="profile-field">
+              <span>Kilo (kg)</span>
+              <input type="number" name="weightKg" min="40" max="200" step="0.1" required />
+            </label>
+            <label class="profile-field">
+              <span>Yağ Oranı (%)</span>
+              <input type="number" name="bodyFatPct" min="5" max="55" step="0.1" required />
+            </label>
+            <label class="profile-field">
+              <span>Kas Kütlesi (kg)</span>
+              <input type="number" name="muscleMassKg" min="25" max="120" step="0.1" required />
+            </label>
+            <label class="profile-field">
+              <span>BMR (kcal/gün)</span>
+              <input type="number" name="bmrKcal" min="1000" max="3500" step="10" required />
+            </label>
+            <label class="profile-field">
+              <span>Bel Çevresi (cm)</span>
+              <input type="number" name="waistCm" min="55" max="160" step="0.5" required />
+            </label>
+            <label class="profile-field">
+              <span>Aktivite Çarpanı</span>
+              <select name="activityMultiplier">
+                <option value="1.35">1.35 · Hafif Aktif (3 Gün)</option>
+                <option value="1.45">1.45 · Orta Aktif (3-4 Gün)</option>
+                <option value="1.55">1.55 · Yüksek Aktif (4 Gün + Yürüyüş)</option>
+                <option value="1.65">1.65 · Çok Aktif</option>
+              </select>
+            </label>
+            <label class="profile-field">
+              <span>Hedef Yağ Oranı (%)</span>
+              <input type="number" name="targetBodyFatPct" min="8" max="30" step="0.5" required />
+            </label>
+          </div>
+          <div class="profile-form-actions">
+            <button type="submit" class="btn-primary-small">Profili Kaydet (Bu Cihazda)</button>
+            <button type="button" id="reset-profile-btn" class="btn-outline">Örnek Veriye Dön</button>
+            <span id="profile-save-status" class="muted-text" aria-live="polite"></span>
+          </div>
+        </form>
+
         <div id="tanita-grid" class="tanita-grid"></div>
       </section>
 

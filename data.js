@@ -93,56 +93,115 @@ export function getExerciseMedia(keyOrItem) {
   };
 }
 
-// Kullanıcının MACFit Tanita ölçüm verileri ve hedef özeti
-export const TANITA_PROFILE = {
-  date: "22.05.2026 - MACFit Kulüp",
-  age: 25,
-  targetStyle: "Spider-Man & Bruce Lee (Lean / Fit Vücut)",
-  metrics: [
-    {
-      label: "Mevcut Kilo",
-      current: "84,4 kg",
-      target: "~75,0 kg",
-      note: "Kası koruyarak ~9 kg saf yağ kaybı",
-      highlight: false,
-    },
-    {
-      label: "Toplam Yağ Oranı",
-      current: "%21,7 (18,3 kg)",
-      target: "%11 - %12",
-      note: "Karın çizgileri ve V-üçgeni görünümü",
-      highlight: false,
-    },
-    {
-      label: "Gövde (Bel/Karın) Yağı",
-      current: "%23,1 (10,6 kg)",
-      target: "< 5,0 kg",
-      note: "Toplam yağın %58'i gövdede — Ana hedef!",
-      highlight: true,
-    },
-    {
-      label: "Toplam Kas Kütlesi",
-      current: "62,9 kg",
-      target: "62,5+ kg Koru",
-      note: "Güçlü temel — Piramidin 5 tekrar seti kası korur",
-      highlight: false,
-    },
-    {
-      label: "Bazal Metabolizma (BMR)",
-      current: "1970 kcal/gün",
-      target: "2050-2150 kcal Alım",
-      note: "1900 kcal altına düşmeden kontrollü açık",
-      highlight: false,
-    },
-    {
-      label: "Vücut Su Oranı",
-      current: "%55,8 (47,1 kg)",
-      target: "%60 - %65",
-      note: "Günde en az 3 - 3,5 L su + 1-2 maden suyu",
-      highlight: false,
-    },
-  ],
+// Varsayılan anonim örnek profil (Kullanıcı kendi verisini tarayıcıdaki "Profilim" formundan girer; yalnızca localStorage'da saklanır)
+export const DEFAULT_PROFILE = {
+  isCustom: false,
+  age: 28,
+  weightKg: 80,
+  bodyFatPct: 18,
+  muscleMassKg: 62,
+  bmrKcal: 1800,
+  waistCm: 86,
+  activityMultiplier: 1.45,
+  targetBodyFatPct: 12,
+  targetStyle: "Atletik & Fit Silüet (Lean / Fit Vücut)",
 };
+
+// Profil verilerinden hedef kilo, tahmini TDEE, günlük kalori ve protein hedeflerini hesaplar
+export function calculateProfileTargets(profile = DEFAULT_PROFILE) {
+  const safe = { ...DEFAULT_PROFILE, ...(profile || {}) };
+  const age = Math.max(16, Math.min(85, Number(safe.age) || DEFAULT_PROFILE.age));
+  const weightKg = Math.max(40, Math.min(200, Number(safe.weightKg) || DEFAULT_PROFILE.weightKg));
+  const bodyFatPct = Math.max(5, Math.min(55, Number(safe.bodyFatPct) || DEFAULT_PROFILE.bodyFatPct));
+  const muscleMassKg = Math.max(
+    25,
+    Math.min(120, Number(safe.muscleMassKg) || DEFAULT_PROFILE.muscleMassKg)
+  );
+  const bmrKcal = Math.max(1000, Math.min(3500, Number(safe.bmrKcal) || DEFAULT_PROFILE.bmrKcal));
+  const waistCm = Math.max(55, Math.min(160, Number(safe.waistCm) || DEFAULT_PROFILE.waistCm));
+  const activityMultiplier = Math.max(
+    1.2,
+    Math.min(2.0, Number(safe.activityMultiplier) || DEFAULT_PROFILE.activityMultiplier)
+  );
+  const targetBodyFatPct = Math.max(
+    8,
+    Math.min(30, Number(safe.targetBodyFatPct) || DEFAULT_PROFILE.targetBodyFatPct)
+  );
+
+  const leanMassKg = Number((weightKg * (1 - bodyFatPct / 100)).toFixed(1));
+  const fatMassKg = Number((weightKg - leanMassKg).toFixed(1));
+  const targetWeightKg = Number((leanMassKg / (1 - targetBodyFatPct / 100)).toFixed(1));
+  const estimatedTdeeKcal = Math.round(bmrKcal * activityMultiplier);
+  const rawDeficit = Math.round(estimatedTdeeKcal * 0.18);
+  const targetCalories = Math.max(
+    bmrKcal,
+    Math.round((estimatedTdeeKcal - Math.max(300, Math.min(550, rawDeficit))) / 10) * 10
+  );
+  const proteinTargetG = Math.round(weightKg * 2.0);
+
+  return {
+    ...safe,
+    isCustom: Boolean(safe.isCustom),
+    age,
+    weightKg,
+    bodyFatPct,
+    muscleMassKg,
+    bmrKcal,
+    waistCm,
+    activityMultiplier,
+    targetBodyFatPct,
+    leanMassKg,
+    fatMassKg,
+    targetWeightKg,
+    estimatedTdeeKcal,
+    targetCalories,
+    proteinTargetG,
+    metrics: [
+      {
+        label: "Mevcut → Hedef Kilo",
+        current: `${weightKg.toFixed(1)} kg`,
+        target: `~${targetWeightKg.toFixed(1)} kg`,
+        note: "Kas kütlesini koruyarak kademeli yağ kaybı",
+        highlight: false,
+      },
+      {
+        label: "Vücut Yağ Oranı",
+        current: `%${bodyFatPct.toFixed(1)} (${fatMassKg.toFixed(1)} kg)`,
+        target: `%${targetBodyFatPct.toFixed(0)}`,
+        note: "Yağsız kütle korunarak atletik definisyon",
+        highlight: false,
+      },
+      {
+        label: "Bel Çevresi (Ana Metrik)",
+        current: `${waistCm.toFixed(0)} cm`,
+        target: "İstikrarlı Düşüş",
+        note: "Haftalık sabah aç karnına göbek deliği hizasından ölçüm",
+        highlight: true,
+      },
+      {
+        label: "Kas Kütlesi / Yağsız Kütle",
+        current: `${muscleMassKg.toFixed(1)} kg`,
+        target: "Mevcudu Koru",
+        note: `Günlük ~${proteinTargetG} g protein (~2 g/kg) ile desteklenir`,
+        highlight: false,
+      },
+      {
+        label: "BMR & Kalori Hedefi",
+        current: `${bmrKcal} kcal BMR`,
+        target: `${targetCalories} kcal/gün`,
+        note: `Tahmini TDEE: ${estimatedTdeeKcal} kcal (Çarpan: ${activityMultiplier})`,
+        highlight: false,
+      },
+      {
+        label: "Haftalık Hız (Genel Öneri)",
+        current: `%${(0.5).toFixed(1)} - %1,0 / hafta`,
+        target: `${(weightKg * 0.005).toFixed(2)} - ${(weightKg * 0.01).toFixed(2)} kg`,
+        note: "Örnek veri (kendi verini Profilim formundan girebilirsin)",
+        highlight: false,
+      },
+    ],
+  };
+}
 
 // Dodd Romero & Lenny Kravitz antrenman sisteminin 3 temel kuralı
 export const SYSTEM_PILLARS = [
@@ -150,7 +209,7 @@ export const SYSTEM_PILLARS = [
     badge: "01 · PİRAMİT MERDİVENİ",
     title: "30 → 15 → 10 → 5 Tekrar",
     description:
-      "Hafif ağırlıkla 30 tekrar başla: kasa kan pompalar, glikojeni boşaltır ve eklemleri ısıtır. Sonra ağırlığı kademeli artırıp 5 tekrarla bitirerek 62,9 kg kasını koru.",
+      "Hafif ağırlıkla 30 tekrar başla: kasa kan pompalar, glikojeni boşaltır ve eklemleri ısıtır. Sonra ağırlığı kademeli artırıp 5 tekrarla bitirerek mevcut kas kütleni koru.",
   },
   {
     badge: "02 · AKTİF DİNLENME",
@@ -953,7 +1012,7 @@ export const WORKOUT_DAYS = [
     fullTitle: "2. GÜN: Atletik Alt Vücut & Metabolik Ateşleme (Bacak + Kalça + Core)",
     duration: "50 - 60 Dakika",
     targetGoal:
-      "Vücudundaki en büyük kas grubunu (~21 kg bacak kasını) çalıştırarak metabolizma hızını ve doğal büyüme hormonu salınımını zirveye çıkarmak.",
+      "Vücudundaki en büyük kas grubu olan alt vücut kaslarını çalıştırarak kuvvet, iş kapasitesi ve genel enerji harcamasını artırmak.",
     scheduleNote: "Haftada 3 gün gidiyorsan Çarşamba · 4 gün gidiyorsan Salı/Çarşamba",
     exercises: [
       {
@@ -1758,7 +1817,7 @@ export const NUTRITION_PROTOCOL = {
       name: "Seçenek A: Kravitz Modu (18:6)",
       window: "İlk Öğün: 14:30 - 15:00  |  Son Öğün: 20:30",
       description:
-        "Lenny Kravitz protokolüne en yakın düzen. Öğlene kadar insülini sıfırda tutarak göbek yağını (10,6 kg) hızlıca enerjiye çevirir.",
+        "Lenny Kravitz düzenine yakın zamanlama penceresi. Öğlene kadar insülini sıfırda tutarak yağ yakımına odaklanmayı hedefler.",
     },
     {
       name: "Seçenek B: Standart Mod (16:8)",
@@ -1813,7 +1872,7 @@ export const NUTRITION_PROTOCOL = {
     },
     {
       title: "1900 Kalorinin Altına Düşme",
-      text: "BMR değerin 1970 kcal. Çok az yersen metabolizman kendini koruma moduna alıp yavaşlar; kalorini 2050-2150 bandında tutup antrenmanla açık yarat.",
+      text: "BMR değerinin çok altına düşmek metabolizman kendini koruma moduna alıp yavaşlayabileceği için önerilmez; kalorini hesaplanan hedef bandında tutup aktiviteyle açık yarat.",
     },
   ],
 };
