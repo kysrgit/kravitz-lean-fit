@@ -6,6 +6,7 @@ Bu web uygulaması, **MACFit Tanita ölçüm verilerinize** ve **Lenny Kravitz /
 
 ## Özellikler
 
+- **Yazılı & Tablo Özeti (Tek Bakışta Tüm Program + Gün İçi Tablo Görünümü):** Her antrenman gününün üstünde **Tablo + Video Kartları / Sadece Yazılı-Tablo Özeti / Sadece Video Kartları** arasında geçiş yapabilir; üst bardaki **`📋 Yazılı & Tablo Özet`** veya **`📋 Hızlı Bakış`** sekmesiyle 4 günlük programın, piramit set/tekrarlarının, 21'ler core rehberinin, alternatiflerin ve beslenme protokolünün tüm özetini tek sayfada (yazdırılabilir / PDF uyumlu) görüntüleyebilirsiniz.
 - **Görsel Doğrulamalı 65 Egzersizlik Çift Kamera Açılı Stüdyo Kütüphanesi (`assets/videos/*-front.mp4` ve `*-side.mp4`):** 20 ana egzersiz, 13 aktif dinlenme core hareketi ve tüm alternatif hareketler için toplam **130 adet HD/Full HD stüdyo MP4 videosu** + **130 adet yüksek çözünürlüklü `.jpg` kare** doğrudan proje içine indirilmiştir. YouTube veya reklamlı oynatıcı içermez.
 - **Etkileşimli Alternatif Hareketler (Makine Doluysa / Yapılamıyorsa):** Her ana hareketin (20 hareket) ve her aktif dinlenme/core hareketinin (13 hareket) altında ve detay modalında **2'şer adet doğrulanmış alternatif hareket** bulunur. Tıklandığında video, ekipman bilgisi, "Ne Zaman Yapılır?" rehberi ve ipuçları anında güncellenir.
 - **Ön Açı, Yan Açı ve HD Form Kareleri:** Her hareket kartında **`Ön Açı (HD)`**, **`Yan Açı (HD)`** videoları ve **`Fotoğraf (HD)`** (`assets/images/<key>/start.jpg`, `end.jpg`) arasında tek tıkla geçiş yapılabilir.

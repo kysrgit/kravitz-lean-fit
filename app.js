@@ -1,6 +1,7 @@
 /**
  * Dosya: app.js
  * Açıklama: Kravitz Lean & Fit uygulamasının arayüz oluşturma, sekme yönetimi,
+ * gün içi ve tam sayfa yazılı/tablolu program özeti görünümü,
  * ana + alternatif hareket arama, kart ve modal içi etkileşimli Alternatif Hareketler seçicisi,
  * çift kamera açılı (Ön/Yan) HD/Full HD MP4 video sahneleri ve hız kontrollü detay modalını yürütür.
  */
@@ -17,6 +18,7 @@ import {
 // Uygulama durumu
 const state = {
   activeTab: "day-1",
+  viewMode: "both", // "both" | "table-only" | "cards-only"
   searchQuery: "",
   photoTimers: [],
 };
@@ -38,11 +40,17 @@ const TABS = [
     top: "Protokol",
     sub: "Beslenme & Göbek Eritme",
   },
+  {
+    id: "summary",
+    top: "📋 Hızlı Bakış",
+    sub: "Yazılı & Tablo Özet",
+  },
 ];
 
 // DOM referansları
 const elements = {
   pillarsGrid: document.getElementById("pillars-grid"),
+  openSummaryBtn: document.getElementById("open-summary-btn"),
   tanitaToggleBtn: document.getElementById("toggle-tanita-btn"),
   tanitaDrawer: document.getElementById("tanita-drawer"),
   tanitaMeta: document.getElementById("tanita-meta"),
@@ -205,6 +213,13 @@ function renderTabs() {
       </button>
     `
   ).join("");
+
+  if (elements.openSummaryBtn) {
+    elements.openSummaryBtn.classList.toggle(
+      "active",
+      state.activeTab === "summary" && !state.searchQuery
+    );
+  }
 
   elements.tabsNav.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -454,11 +469,192 @@ function createCoreCardHtml(core, initialVariantIndex = 0) {
   `;
 }
 
-// Antrenman günü görünümünü render eder
-function renderWorkoutDay(day) {
-  const cardsHtml = day.exercises
-    .map((exercise) => createExerciseCardHtml(exercise, `${day.tabLabel} · Hareket ${exercise.order}`))
+// Seçilen antrenman günü için okunaklı ve etkileşimli tablo özeti üretir
+function createDaySummaryTableHtml(day, { showDayHeader = false, showJumpBtn = false } = {}) {
+  const rowsHtml = (day.exercises || [])
+    .map((exercise) => {
+      const coreItem = CORE_LIBRARY[exercise.coreRestId];
+      const pyramidHtml = (exercise.pyramidSets || [])
+        .map(
+          (step) => `
+          <div class="table-pyramid-item">
+            <span class="table-set-num">${escapeHtml(step.set)}. Set</span>
+            <span class="table-set-reps">${escapeHtml(step.reps)}</span>
+            <span class="table-set-load">${escapeHtml(step.load)}</span>
+          </div>
+        `
+        )
+        .join("");
+
+      const altsHtml = (exercise.alternatives || [])
+        .map(
+          (alt, idx) => `
+          <div class="table-alt-item">
+            <button
+              type="button"
+              class="table-alt-btn"
+              data-open-exercise="${escapeHtml(exercise.id)}"
+              data-open-variant="${idx + 1}"
+            >
+              <strong>Alt ${idx + 1}:</strong> ${escapeHtml(alt.name)}
+            </button>
+            <div class="table-alt-meta">
+              ${escapeHtml(alt.turkishName)}${alt.equipment ? ` · ${escapeHtml(alt.equipment)}` : ""}${
+                alt.reps ? ` · ${escapeHtml(alt.reps)}` : ""
+              }
+            </div>
+            ${
+              alt.whenToUse
+                ? `<div class="table-alt-when"><strong>Ne zaman:</strong> ${escapeHtml(alt.whenToUse)}</div>`
+                : ""
+            }
+          </div>
+        `
+        )
+        .join("");
+
+      return `
+        <tr>
+          <td class="col-order"><span class="table-order-badge">${escapeHtml(exercise.order)}</span></td>
+          <td class="col-main">
+            <div class="table-ex-name">${escapeHtml(exercise.name)}</div>
+            <div class="table-ex-tr">${escapeHtml(exercise.turkishName)}</div>
+            <div class="table-meta-row">
+              <span class="tag-chip">${escapeHtml(exercise.muscleGroup)}</span>
+              <span class="tag-chip equipment">${escapeHtml(exercise.equipment)}</span>
+              <button
+                type="button"
+                class="table-video-btn"
+                data-open-exercise="${escapeHtml(exercise.id)}"
+                data-open-variant="0"
+              >
+                ▶ HD Video
+              </button>
+            </div>
+          </td>
+          <td class="col-pyramid">
+            <div class="table-pyramid-list">${pyramidHtml}</div>
+          </td>
+          <td class="col-core">
+            ${
+              coreItem
+                ? `
+              <button
+                type="button"
+                class="table-core-btn"
+                data-open-core="${escapeHtml(coreItem.id)}"
+                data-open-variant="0"
+              >
+                <strong>${escapeHtml(coreItem.name)}</strong>
+                <span>${escapeHtml(coreItem.reps)}</span>
+              </button>
+              <div class="table-core-note">${escapeHtml(exercise.coreRestLabel)}</div>
+            `
+                : `<span>${escapeHtml(exercise.coreRestLabel)}</span>`
+            }
+          </td>
+          <td class="col-alts">
+            <div class="table-alt-list">${altsHtml}</div>
+          </td>
+        </tr>
+      `;
+    })
     .join("");
+
+  const headerHtml = showDayHeader
+    ? `
+      <div class="summary-table-header">
+        <div>
+          <h3>${escapeHtml(day.fullTitle)}</h3>
+          <p>${escapeHtml(day.targetGoal)}</p>
+        </div>
+        <div class="summary-table-header-actions">
+          <span class="meta-pill">⏱ ${escapeHtml(day.duration)}</span>
+          <span class="meta-pill">📅 ${escapeHtml(day.scheduleNote)}</span>
+          ${
+            showJumpBtn
+              ? `<button type="button" class="table-jump-btn" data-jump-day="${escapeHtml(day.id)}">Videolu Günü Aç →</button>`
+              : ""
+          }
+        </div>
+      </div>
+    `
+    : `
+      <div class="summary-table-header compact">
+        <div>
+          <h3>📋 ${escapeHtml(day.tabLabel)} Hızlı Tablo Özeti</h3>
+          <p>Hareket, piramit set/tekrarları, set arası 21'ler core ve alternatiflere tek bakışta göz at.</p>
+        </div>
+      </div>
+    `;
+
+  return `
+    <div class="summary-table-card">
+      ${headerHtml}
+      <div class="table-responsive">
+        <table class="workout-summary-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Ana Hareket &amp; Ekipman</th>
+              <th>Piramit Set &amp; Tekrarlar</th>
+              <th>Set Arası (21'ler Core)</th>
+              <th>Alternatif Hareketler (1 &amp; 2)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// Antrenman günü görünümünü (Tablo + Video Kartları seçicisi ile) render eder
+function renderWorkoutDay(day) {
+  const viewModeBarHtml = `
+    <div class="view-mode-bar" role="group" aria-label="Görünüm modu seçici">
+      <span class="view-mode-label">Görünüm Modu:</span>
+      <div class="view-mode-buttons">
+        <button
+          type="button"
+          class="view-mode-btn ${state.viewMode === "both" ? "active" : ""}"
+          data-view-mode="both"
+        >
+          📋 Tablo + Video Kartları
+        </button>
+        <button
+          type="button"
+          class="view-mode-btn ${state.viewMode === "table-only" ? "active" : ""}"
+          data-view-mode="table-only"
+        >
+          📊 Sadece Yazılı / Tablo Özeti
+        </button>
+        <button
+          type="button"
+          class="view-mode-btn ${state.viewMode === "cards-only" ? "active" : ""}"
+          data-view-mode="cards-only"
+        >
+          🎬 Sadece Video Kartları
+        </button>
+      </div>
+    </div>
+  `;
+
+  const tableHtml =
+    state.viewMode !== "cards-only"
+      ? createDaySummaryTableHtml(day, { showDayHeader: false, showJumpBtn: false })
+      : "";
+
+  const cardsSectionHtml =
+    state.viewMode !== "table-only"
+      ? `<div class="exercises-grid">${day.exercises
+          .map((exercise) =>
+            createExerciseCardHtml(exercise, `${day.tabLabel} · Hareket ${exercise.order}`)
+          )
+          .join("")}</div>`
+      : "";
 
   elements.contentArea.innerHTML = `
     <div class="day-banner">
@@ -471,7 +667,312 @@ function renderWorkoutDay(day) {
         <span class="meta-pill">📅 ${escapeHtml(day.scheduleNote)}</span>
       </div>
     </div>
-    <div class="exercises-grid">${cardsHtml}</div>
+    ${viewModeBarHtml}
+    ${tableHtml}
+    ${cardsSectionHtml}
+  `;
+
+  bindCardInteractions();
+}
+
+// Tüm programın yazılı ve tablolu özetini tek sayfada render eder
+function renderFullSummaryTab() {
+  const weeklyScheduleRowsHtml = WORKOUT_DAYS.map(
+    (day) => `
+      <tr>
+        <td><strong>${escapeHtml(day.tabLabel)}</strong><div class="table-alt-meta">${escapeHtml(day.shortTitle)}</div></td>
+        <td>${escapeHtml(day.fullTitle.replace(/^\d+\.\s*GÜN:\s*/i, ""))}</td>
+        <td><span class="tag-chip equipment">${escapeHtml(day.duration)}</span></td>
+        <td>${escapeHtml(day.scheduleNote)}</td>
+        <td>
+          <button type="button" class="table-jump-btn" data-jump-day="${escapeHtml(day.id)}">
+            Videolu Günü Aç →
+          </button>
+        </td>
+      </tr>
+    `
+  ).join("");
+
+  const allDaysTablesHtml = WORKOUT_DAYS.map((day) =>
+    createDaySummaryTableHtml(day, { showDayHeader: true, showJumpBtn: true })
+  ).join("");
+
+  const coreRowsHtml = Object.values(CORE_LIBRARY)
+    .map((core) => {
+      const altsHtml = (core.alternatives || [])
+        .map(
+          (alt, idx) => `
+          <div class="table-alt-item">
+            <button
+              type="button"
+              class="table-alt-btn"
+              data-open-core="${escapeHtml(core.id)}"
+              data-open-variant="${idx + 1}"
+            >
+              <strong>Alt ${idx + 1}:</strong> ${escapeHtml(alt.name)}
+            </button>
+            <div class="table-alt-meta">${escapeHtml(alt.turkishName)}${alt.reps ? ` · ${escapeHtml(alt.reps)}` : ""}</div>
+            ${
+              alt.whenToUse
+                ? `<div class="table-alt-when"><strong>Ne zaman:</strong> ${escapeHtml(alt.whenToUse)}</div>`
+                : ""
+            }
+          </div>
+        `
+        )
+        .join("");
+
+      return `
+        <tr>
+          <td class="col-main">
+            <div class="table-ex-name">${escapeHtml(core.name)}</div>
+            <div class="table-ex-tr">${escapeHtml(core.turkishName)}</div>
+            <div class="table-meta-row">
+              <button
+                type="button"
+                class="table-video-btn"
+                data-open-core="${escapeHtml(core.id)}"
+                data-open-variant="0"
+              >
+                ▶ HD Video
+              </button>
+            </div>
+          </td>
+          <td><span class="tag-chip">${escapeHtml(core.target)}</span></td>
+          <td><strong>${escapeHtml(core.reps)}</strong></td>
+          <td class="col-cue">
+            <div>${escapeHtml(core.formCue)}</div>
+            ${core.macfitTip ? `<div class="table-alt-when"><strong>MACFit İpucu:</strong> ${escapeHtml(core.macfitTip)}</div>` : ""}
+          </td>
+          <td class="col-alts"><div class="table-alt-list">${altsHtml}</div></td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  const { summary, fastingWindows, morningFastRules, dailyMeals, waistRules } = NUTRITION_PROTOCOL;
+
+  const macroRowsHtml = [
+    ["Günlük Kalori Hedefi", summary.calories, "1970 kcal BMR altına inmeden kontrollü yağ yakım açığı"],
+    ["Günlük Protein", summary.protein, "62,9 kg kas kütleni korur ve tokluk sağlar"],
+    ["Temiz Karbonhidrat", summary.carbs, "Ağırlıklı olarak antrenman çevresinde tüket"],
+    ["Sağlıklı Yağlar", summary.fats, "Hormon dengesi ve uzun süreli enerji"],
+    ["Sıvı Tüketimi", summary.water, "Hedef vücut su oranı: %55,8 → %60+"],
+  ]
+    .map(
+      ([label, value, note]) => `
+      <tr>
+        <td><strong>${escapeHtml(label)}</strong></td>
+        <td><span class="table-macro-badge">${escapeHtml(value)}</span></td>
+        <td>${escapeHtml(note)}</td>
+      </tr>
+    `
+    )
+    .join("");
+
+  const mealsRowsHtml = dailyMeals
+    .map(
+      (meal) => `
+      <tr>
+        <td><span class="meal-time-badge">${escapeHtml(meal.time)}</span></td>
+        <td><strong>${escapeHtml(meal.title)}</strong></td>
+        <td>
+          <ul class="table-bullets">
+            ${meal.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+          </ul>
+        </td>
+      </tr>
+    `
+    )
+    .join("");
+
+  elements.contentArea.innerHTML = `
+    <div class="summary-layout">
+      <div class="day-banner">
+        <div>
+          <h2>📋 Kravitz Lean &amp; Fit — Tüm Programın Yazılı &amp; Tablo Özeti</h2>
+          <p>
+            Video kartları arasında gezinmeden; tüm antrenman günlerini, piramit set/tekrarlarını,
+            set arası 21'ler core hareketlerini, alternatifleri ve beslenme protokolünü tek sayfada gör.
+          </p>
+        </div>
+        <div class="day-meta-badges">
+          <button type="button" id="print-summary-btn" class="btn-outline btn-print-summary">
+            🖨️ Yazdır / PDF Kaydet
+          </button>
+        </div>
+      </div>
+
+      <!-- Bölüm 1: Sistem Özeti, Tanita Özeti & Haftalık Şema -->
+      <section class="summary-section-block">
+        <div class="summary-section-title-row">
+          <h3>1. Sistem Özeti, Tanita Analizi &amp; Haftalık MACFit Şeması</h3>
+        </div>
+
+        <div class="summary-prose-grid">
+          <article class="summary-prose-card">
+            <h4>🎯 Sistemin 3 Altın Kuralı (Yazılı Özet)</h4>
+            <ul class="table-bullets">
+              ${SYSTEM_PILLARS.map(
+                (p) => `<li><strong>${escapeHtml(p.badge)} (${escapeHtml(p.title)}):</strong> ${escapeHtml(p.description)}</li>`
+              ).join("")}
+            </ul>
+          </article>
+
+          <article class="summary-prose-card">
+            <h4>📊 Tanita Başlangıç → Hedef Özeti</h4>
+            <p class="summary-prose-lead">
+              <strong>Ölçüm (${escapeHtml(TANITA_PROFILE.date)}):</strong> ${escapeHtml(TANITA_PROFILE.age)} yaş ·
+              Hedef: <strong>${escapeHtml(TANITA_PROFILE.targetStyle)}</strong>
+            </p>
+            <ul class="table-bullets">
+              ${TANITA_PROFILE.metrics
+                .map(
+                  (m) => `<li><strong>${escapeHtml(m.label)}:</strong> ${escapeHtml(m.current)} → <strong>${escapeHtml(m.target)}</strong> (${escapeHtml(m.note)})</li>`
+                )
+                .join("")}
+            </ul>
+          </article>
+        </div>
+
+        <div class="summary-table-card">
+          <div class="summary-table-header compact">
+            <div>
+              <h3>🗓️ Haftalık Antrenman Günleri Şeması (3 veya 4 Gün)</h3>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="workout-summary-table">
+              <thead>
+                <tr>
+                  <th>Gün</th>
+                  <th>Odak Bölgeler</th>
+                  <th>Süre</th>
+                  <th>Haftalık Takvim Notu</th>
+                  <th>Hızlı Geçiş</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${weeklyScheduleRowsHtml}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bölüm 2: 4 Günlük Antrenman Programı Tam Tablosu -->
+      <section class="summary-section-block">
+        <div class="summary-section-title-row">
+          <h3>2. 4 Günlük Antrenman Programı Tam Tablosu (1. Gün – 4. Gün)</h3>
+        </div>
+        <div class="summary-tables-stack">
+          ${allDaysTablesHtml}
+        </div>
+      </section>
+
+      <!-- Bölüm 3: 21'ler Aktif Core & Sabah Mide Vakumu Tam Tablosu -->
+      <section class="summary-section-block">
+        <div class="summary-section-title-row">
+          <h3>3. 21'ler Aktif Core &amp; Sabah Mide Vakumu Tam Tablosu</h3>
+        </div>
+        <div class="summary-table-card">
+          <div class="table-responsive">
+            <table class="workout-summary-table">
+              <thead>
+                <tr>
+                  <th>Core Hareketi</th>
+                  <th>Hedef Bölge</th>
+                  <th>Tekrar / Süre</th>
+                  <th>Nasıl Yapılır (Kısa Özet)</th>
+                  <th>Alternatif 1 &amp; Alternatif 2</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${coreRowsHtml}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bölüm 4: Beslenme, Oruç Saatleri & Göbek Eritme Özeti -->
+      <section class="summary-section-block">
+        <div class="summary-section-title-row">
+          <h3>4. Beslenme, Aralıklı Oruç Saatleri &amp; Göbek Eritme Protokolü</h3>
+        </div>
+
+        <div class="summary-table-card">
+          <div class="summary-table-header compact">
+            <div>
+              <h3>🥗 Günlük Makro &amp; Kalori Hedef Tablosu</h3>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="workout-summary-table">
+              <thead>
+                <tr>
+                  <th>Kalem</th>
+                  <th>Günlük Hedef</th>
+                  <th>Amaç / Not</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${macroRowsHtml}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="summary-table-card">
+          <div class="summary-table-header compact">
+            <div>
+              <h3>🕒 Saat Saat Günlük Öğün Tablosu</h3>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="workout-summary-table">
+              <thead>
+                <tr>
+                  <th>Saat</th>
+                  <th>Öğün</th>
+                  <th>İçerik ve Porsiyon Özeti</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${mealsRowsHtml}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="summary-prose-grid">
+          <article class="summary-prose-card">
+            <h4>⏱️ Aralıklı Oruç Pencereleri &amp; Sabah Açlık Kuralları</h4>
+            <ul class="table-bullets">
+              ${fastingWindows
+                .map(
+                  (win) => `<li><strong>${escapeHtml(win.name)} (${escapeHtml(win.window)}):</strong> ${escapeHtml(win.description)}</li>`
+                )
+                .join("")}
+            </ul>
+            <hr class="summary-divider" />
+            <p class="summary-prose-subhead">Sabah Açlık Penceresinde Serbest Olanlar:</p>
+            <ul class="table-bullets">
+              ${morningFastRules.map((rule) => `<li>${escapeHtml(rule)}</li>`).join("")}
+            </ul>
+          </article>
+
+          <article class="summary-prose-card">
+            <h4>📌 Göbek Yağı Eritme İçin 3 Altın Kural</h4>
+            <ul class="table-bullets">
+              ${waistRules
+                .map((rule) => `<li><strong>${escapeHtml(rule.title)}:</strong> ${escapeHtml(rule.text)}</li>`)
+                .join("")}
+            </ul>
+          </article>
+        </div>
+      </section>
+    </div>
   `;
 
   bindCardInteractions();
@@ -846,13 +1347,18 @@ function bindCardInteractions() {
     });
   });
 
-  // Ana egzersiz detaylı video modalı butonları (kartta seçili olan alternatifle açılır)
+  // Ana egzersiz detaylı video modalı butonları (kartta seçili veya tabloda tıklanan alternatifle açılır)
   document.querySelectorAll("[data-open-exercise]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const exercise = findExerciseById(btn.dataset.openExercise);
       if (!exercise) return;
       const cardEl = btn.closest("[data-variant-kind]");
-      const activeIdx = cardEl ? Number(cardEl.dataset.activeVariantIndex || 0) : 0;
+      const activeIdx =
+        btn.dataset.openVariant !== undefined
+          ? Number(btn.dataset.openVariant)
+          : cardEl
+            ? Number(cardEl.dataset.activeVariantIndex || 0)
+            : 0;
       const variants = getExerciseVariants(exercise, "exercise");
       openMediaModal({ variants, initialVariantIndex: activeIdx });
     });
@@ -864,11 +1370,49 @@ function bindCardInteractions() {
       const core = CORE_LIBRARY[btn.dataset.openCore];
       if (!core) return;
       const parentCoreCard = btn.closest('.core-card[data-variant-kind="core"]');
-      const activeIdx = parentCoreCard ? Number(parentCoreCard.dataset.activeVariantIndex || 0) : 0;
+      const activeIdx =
+        btn.dataset.openVariant !== undefined
+          ? Number(btn.dataset.openVariant)
+          : parentCoreCard
+            ? Number(parentCoreCard.dataset.activeVariantIndex || 0)
+            : 0;
       const variants = getExerciseVariants(core, "core");
       openMediaModal({ variants, initialVariantIndex: activeIdx });
     });
   });
+
+  // Gün içi görünüm modu seçici (Tablo + Kartlar / Sadece Tablo / Sadece Kartlar)
+  document.querySelectorAll("[data-view-mode]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const nextMode = btn.dataset.viewMode;
+      if (!nextMode || nextMode === state.viewMode) return;
+      state.viewMode = nextMode;
+      renderMainContent();
+    });
+  });
+
+  // Özet sayfasından ilgili videolu güne hızlı geçiş
+  document.querySelectorAll("[data-jump-day]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetDayId = btn.dataset.jumpDay;
+      if (!targetDayId) return;
+      state.activeTab = targetDayId;
+      state.searchQuery = "";
+      elements.searchInput.value = "";
+      elements.clearSearchBtn.hidden = true;
+      renderTabs();
+      renderMainContent();
+      elements.contentArea.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+
+  // Yazdır / PDF Kaydet butonu
+  const printBtn = document.getElementById("print-summary-btn");
+  if (printBtn) {
+    printBtn.addEventListener("click", () => {
+      window.print();
+    });
+  }
 }
 
 // ID üzerinden egzersiz kaydını bulur
@@ -1039,12 +1583,32 @@ function renderMainContent() {
     return;
   }
 
+  if (state.activeTab === "summary") {
+    renderFullSummaryTab();
+    return;
+  }
+
   const selectedDay = WORKOUT_DAYS.find((d) => d.id === state.activeTab) || WORKOUT_DAYS[0];
   renderWorkoutDay(selectedDay);
 }
 
 // Olay dinleyicilerini başlatır
 function initEventListeners() {
+  // Üst bar "Yazılı & Tablo Özet" kısayol butonu
+  if (elements.openSummaryBtn) {
+    elements.openSummaryBtn.addEventListener("click", () => {
+      state.activeTab = "summary";
+      if (state.searchQuery) {
+        state.searchQuery = "";
+        elements.searchInput.value = "";
+        elements.clearSearchBtn.hidden = true;
+      }
+      renderTabs();
+      renderMainContent();
+      elements.contentArea.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
   // Tanita çekmecesi aç/kapa
   elements.tanitaToggleBtn.addEventListener("click", () => {
     const isExpanded = elements.tanitaToggleBtn.getAttribute("aria-expanded") === "true";
