@@ -150,8 +150,8 @@ const elements = {
   modalVideoContainer: document.getElementById("modal-video-container"),
   modalPlaybackBar: document.getElementById("modal-playback-bar"),
   modalFramesSection: document.getElementById("modal-frames-section"),
-  modalImgStart: document.getElementById("modal-img-start"),
-  modalImgEnd: document.getElementById("modal-img-end"),
+  modalImgFront: document.getElementById("modal-img-front"),
+  modalImgSide: document.getElementById("modal-img-side"),
   modalTipsList: document.getElementById("modal-tips-list"),
   modalExternalActions: document.getElementById("modal-external-actions"),
 };
@@ -880,7 +880,7 @@ function createMediaStageHtml({
         <video
           class="media-video"
           src="${escapeHtml(media.frontMp4)}"
-          poster="${escapeHtml(media.startImg || "")}"
+          poster="${escapeHtml(media.frontImg || "")}"
           data-front-src="${escapeHtml(media.frontMp4)}"
           data-side-src="${escapeHtml(media.sideMp4 || "")}"
           ${shouldDisableAutoplay() ? "controls" : ""}
@@ -892,20 +892,20 @@ function createMediaStageHtml({
         ></video>
 
         ${
-          media.startImg
+          media.frontImg
             ? `<img
-                class="media-frame frame-start is-hidden"
-                src="${escapeHtml(media.startImg)}"
+                class="media-frame frame-front is-hidden"
+                src="${escapeHtml(media.frontImg)}"
                 alt="${escapeHtml(name)} ön açı karesi"
                 loading="lazy"
               />`
             : ""
         }
         ${
-          media.endImg
+          media.sideImg
             ? `<img
-                class="media-frame frame-end is-hidden"
-                src="${escapeHtml(media.endImg)}"
+                class="media-frame frame-side is-hidden"
+                src="${escapeHtml(media.sideImg)}"
                 alt="${escapeHtml(name)} yan açı karesi"
                 loading="lazy"
               />`
@@ -2228,8 +2228,8 @@ function applyVariantToCard(cardEl, variants, variantIndex) {
 
   // Lisanslı medya sahnesi varsa video ve kareleri güncelle
   const videoEl = cardEl.querySelector(".media-video");
-  const startImg = cardEl.querySelector(".frame-start");
-  const endImg = cardEl.querySelector(".frame-end");
+  const frontImg = cardEl.querySelector(".frame-front");
+  const sideImg = cardEl.querySelector(".frame-side");
   const activeModeBtn = cardEl.querySelector(".pose-btn.active");
   const activeMode = activeModeBtn ? activeModeBtn.dataset.mode : "front";
 
@@ -2237,7 +2237,7 @@ function applyVariantToCard(cardEl, variants, variantIndex) {
     videoEl.dataset.frontSrc = media.frontMp4 || "";
     videoEl.dataset.sideSrc = media.sideMp4 || "";
     videoEl.setAttribute("aria-label", `${variant.name} hareket videosu`);
-    videoEl.poster = media.startImg || "";
+    videoEl.poster = media.frontImg || "";
 
     if (activeMode === "front" || activeMode === "side") {
       const targetSrc = activeMode === "front" ? media.frontMp4 : media.sideMp4;
@@ -2247,13 +2247,13 @@ function applyVariantToCard(cardEl, variants, variantIndex) {
     }
   }
 
-  if (startImg && media.startImg) {
-    startImg.src = media.startImg;
-    startImg.alt = `${variant.name} ön açı karesi`;
+  if (frontImg && media.frontImg) {
+    frontImg.src = media.frontImg;
+    frontImg.alt = `${variant.name} ön açı karesi`;
   }
-  if (endImg && media.endImg) {
-    endImg.src = media.endImg;
-    endImg.alt = `${variant.name} yan açı karesi`;
+  if (sideImg && media.sideImg) {
+    sideImg.src = media.sideImg;
+    sideImg.alt = `${variant.name} yan açı karesi`;
   }
 
   // Başlık, etiket ve ipuçlarını güncelle
@@ -2292,8 +2292,8 @@ function bindCardInteractions() {
 
   document.querySelectorAll(".media-stage").forEach((stage) => {
     const videoEl = stage.querySelector(".media-video");
-    const startImg = stage.querySelector(".frame-start");
-    const endImg = stage.querySelector(".frame-end");
+    const frontImg = stage.querySelector(".frame-front");
+    const sideImg = stage.querySelector(".frame-side");
     const indicator = stage.querySelector(".pose-indicator");
     const modeButtons = stage.querySelectorAll(".pose-btn");
     let photoLoopTimer = null;
@@ -2320,8 +2320,8 @@ function bindCardInteractions() {
         if (!shouldDisableAutoplay()) {
           videoEl.play().catch(() => {});
         }
-        if (startImg) startImg.classList.add("is-hidden");
-        if (endImg) endImg.classList.add("is-hidden");
+        if (frontImg) frontImg.classList.add("is-hidden");
+        if (sideImg) sideImg.classList.add("is-hidden");
         indicator.textContent = mode === "front" ? "Ön Açı · Video" : "Yan Açı · Video";
         return;
       }
@@ -2330,18 +2330,18 @@ function bindCardInteractions() {
       videoEl.classList.add("is-hidden");
       videoEl.pause();
 
-      let showEnd = false;
-      const showFrame = (isEnd) => {
-        if (startImg) startImg.classList.toggle("is-hidden", isEnd);
-        if (endImg) endImg.classList.toggle("is-hidden", !isEnd);
-        indicator.textContent = isEnd ? "Kare · Yan Açı" : "Kare · Ön Açı";
+      let showSide = false;
+      const showFrame = (isSide) => {
+        if (frontImg) frontImg.classList.toggle("is-hidden", isSide);
+        if (sideImg) sideImg.classList.toggle("is-hidden", !isSide);
+        indicator.textContent = isSide ? "Kare · Yan Açı" : "Kare · Ön Açı";
       };
 
       showFrame(false);
       if (!shouldDisableAutoplay()) {
         photoLoopTimer = window.setInterval(() => {
-          showEnd = !showEnd;
-          showFrame(showEnd);
+          showSide = !showSide;
+          showFrame(showSide);
         }, 1700);
         state.photoTimers.push(photoLoopTimer);
       }
@@ -2551,7 +2551,7 @@ function openMediaModal({ variants, initialVariantIndex = 0 }) {
       `;
       const player = document.getElementById("modal-video-player");
       player.src = currentCamera === "front" ? media.frontMp4 : media.sideMp4 || media.frontMp4;
-      player.poster = (currentCamera === "front" ? media.startImg : media.endImg) || "";
+      player.poster = (currentCamera === "front" ? media.frontImg : media.sideImg) || "";
       player.load();
       player.playbackRate = currentSpeed;
       if (!disableAutoplay) {
@@ -2590,12 +2590,12 @@ function openMediaModal({ variants, initialVariantIndex = 0 }) {
       `;
     }
 
-    if (media.startImg && media.endImg) {
+    if (media.frontImg && media.sideImg) {
       elements.modalFramesSection.hidden = false;
-      elements.modalImgStart.src = media.startImg;
-      elements.modalImgStart.alt = `${variant.name} ön açı karesi`;
-      elements.modalImgEnd.src = media.endImg;
-      elements.modalImgEnd.alt = `${variant.name} yan açı karesi`;
+      elements.modalImgFront.src = media.frontImg;
+      elements.modalImgFront.alt = `${variant.name} ön açı karesi`;
+      elements.modalImgSide.src = media.sideImg;
+      elements.modalImgSide.alt = `${variant.name} yan açı karesi`;
     } else {
       elements.modalFramesSection.hidden = true;
     }
@@ -2629,7 +2629,7 @@ function openMediaModal({ variants, initialVariantIndex = 0 }) {
       const player = document.getElementById("modal-video-player");
       if (player && media.frontMp4) {
         player.src = currentCamera === "front" ? media.frontMp4 : media.sideMp4 || media.frontMp4;
-        player.poster = (currentCamera === "front" ? media.startImg : media.endImg) || "";
+        player.poster = (currentCamera === "front" ? media.frontImg : media.sideImg) || "";
         player.load();
         player.playbackRate = currentSpeed;
         player.play().catch(() => {});

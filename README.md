@@ -28,3 +28,7 @@ npx serve .
 # veya
 python -m http.server 8080
 ```
+
+## Barındırma (GitHub Pages)
+
+Bu uygulama saf statik HTML/CSS/ES Modüllerden oluştuğu için ek platform yapılandırması (`vercel.json` vb.) olmadan doğrudan **GitHub Pages** üzerinden sunulur. Önceki `vercel.json` dosyası GitHub Pages ortamında işlevi bulunmadığı için kaldırılmıştır.

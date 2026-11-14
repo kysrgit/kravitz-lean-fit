@@ -89,8 +89,8 @@ export function getExerciseMedia(keyOrItem) {
     licenseUrl: MUSCLEWIKI_LICENSE_URL,
     frontMp4: null,
     sideMp4: null,
-    startImg: null,
-    endImg: null,
+    frontImg: null,
+    sideImg: null,
   };
 }
 
