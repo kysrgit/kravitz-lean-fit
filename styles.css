@@ -2728,3 +2728,225 @@ body {
   font-weight: 600;
   color: #fca5a5;
 }
+
+/* P2-3: Set günlüğü, dinlenme sayacı ve bel/kilo trend grafiği */
+.pyramid-step {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pyramid-step-main {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.set-log-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 4px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.06);
+}
+
+.set-prev-badge {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.set-log-inputs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.set-log-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.set-log-field input {
+  width: 62px;
+  min-height: 30px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(15, 23, 42, 0.75);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+}
+
+.rest-timer-trigger-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.start-rest-timer-btn,
+.timer-mini-btn {
+  padding: 5px 10px;
+  min-height: 32px;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  background: rgba(56, 189, 248, 0.14);
+  color: #e0f2fe;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.timer-mini-btn.is-stop {
+  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.16);
+  color: #fecaca;
+}
+
+.rest-timer-bar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 76px;
+  z-index: 65;
+  width: min(calc(100vw - 24px), 440px);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(10px);
+}
+
+.rest-timer-bar.is-finished {
+  border-color: rgba(34, 197, 94, 0.65);
+}
+
+.rest-timer-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.rest-timer-label {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rest-timer-clock {
+  font-family: Oswald, sans-serif;
+  font-size: 1.25rem;
+  color: #38bdf8;
+}
+
+.rest-timer-bar.is-finished .rest-timer-clock {
+  color: #4ade80;
+}
+
+.rest-timer-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.body-log-panel {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.body-log-panel h4 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+}
+
+.body-log-form {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+
+.body-log-submit-wrap {
+  display: flex;
+}
+
+.body-log-chart {
+  margin-top: 14px;
+}
+
+.svg-trend-legend {
+  display: flex;
+  gap: 14px;
+  font-size: 0.76rem;
+  margin-bottom: 6px;
+}
+
+.legend-waist {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.legend-weight {
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.body-trend-svg {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.body-log-items {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.body-log-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+  font-size: 0.8rem;
+}
+
+.body-log-del-btn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: transparent;
+  color: #fca5a5;
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+
+@media (max-width: 520px) {
+  .pyramid-step-main {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}

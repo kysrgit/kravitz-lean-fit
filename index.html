@@ -163,6 +163,37 @@
         </form>
 
         <div id="tanita-grid" class="tanita-grid"></div>
+
+        <!-- Haftalık Bel & Kilo Kaydı ve SVG Trend Grafiği (localStorage: klf:v1:body_logs) -->
+        <div class="body-log-panel">
+          <div class="section-header-inline">
+            <div>
+              <h4>📏 Haftalık Bel Çevresi &amp; Kilo Takibi</h4>
+              <p class="muted-text">Sabah aç karnına aldığın haftalık bel (birincil ölçüt) ve kilo verilerini cihazında sakla.</p>
+            </div>
+          </div>
+
+          <form id="body-log-form" class="body-log-form">
+            <label class="profile-field">
+              <span>Tarih</span>
+              <input type="date" name="date" required />
+            </label>
+            <label class="profile-field">
+              <span>Bel Çevresi (cm)</span>
+              <input type="number" name="waistCm" min="50" max="170" step="0.5" required placeholder="ör. 86" />
+            </label>
+            <label class="profile-field">
+              <span>Ağırlık (kg)</span>
+              <input type="number" name="weightKg" min="35" max="220" step="0.1" required placeholder="ör. 80.0" />
+            </label>
+            <div class="body-log-submit-wrap">
+              <button type="submit" class="btn-primary-small">Ölçüm Ekle</button>
+            </div>
+          </form>
+
+          <div id="body-log-chart" class="body-log-chart"></div>
+          <div id="body-log-list" class="body-log-list"></div>
+        </div>
       </section>
 
       <!-- Sekme Navigasyonu & Hızlı Arama -->
@@ -228,6 +259,18 @@
         </p>
       </div>
     </footer>
+
+    <!-- Salon İçi Dinlenme Geri Sayım Sayacı Çubuğu (klf:v1:timer) -->
+    <aside id="rest-timer-bar" class="rest-timer-bar" aria-live="polite" hidden>
+      <div class="rest-timer-info">
+        <span id="rest-timer-label" class="rest-timer-label">Dinlenme Sayacı</span>
+        <strong id="rest-timer-clock" class="rest-timer-clock">02:30</strong>
+      </div>
+      <div class="rest-timer-actions">
+        <button type="button" id="rest-timer-plus-btn" class="timer-mini-btn">+15 sn</button>
+        <button type="button" id="rest-timer-stop-btn" class="timer-mini-btn is-stop">Durdur</button>
+      </div>
+    </aside>
 
     <!-- Mobil Tek El (Thumb-Zone) Sabit Alt Navigasyon Barı -->
     <nav id="mobile-bottom-nav" class="mobile-bottom-nav" aria-label="Mobil Hızlı Sekmeler"></nav>

@@ -24,6 +24,9 @@ import {
 
 const PROFILE_STORAGE_KEY = "klf:v1:profile";
 const DISCLAIMER_ACK_KEY = "klf:v1:disclaimer_ack";
+const WORKOUT_LOGS_STORAGE_KEY = "klf:v1:workout_logs";
+const TIMER_STORAGE_KEY = "klf:v1:timer";
+const BODY_LOGS_STORAGE_KEY = "klf:v1:body_logs";
 
 // Uygulama durumu
 const state = {
@@ -290,6 +293,376 @@ function renderSystemPillars() {
 }
 
 // localStorage üzerinden kayıtlı profili güvenli (try/catch) biçimde okur
+// Güvenli tarih anahtarı (YYYY-AA-GG)
+function getTodayIsoDate() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+// localStorage'dan set günlüklerini okur
+function loadWorkoutLogs() {
+  try {
+    const raw = window.localStorage.getItem(WORKOUT_LOGS_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+// Belirli hareket ve set için ağırlık/tekrar kaydını localStorage'a kaydeder
+function saveSetLogEntry(exerciseId, setNum, kgVal, repsVal) {
+  const logs = loadWorkoutLogs();
+  const today = getTodayIsoDate();
+  const entry = logs[exerciseId] || { sessions: [] };
+  const sessions = Array.isArray(entry.sessions) ? [...entry.sessions] : [];
+
+  let todaySession = sessions.find((s) => s.date === today);
+  if (!todaySession) {
+    todaySession = { date: today, sets: {} };
+    sessions.push(todaySession);
+    sessions.sort((a, b) => String(a.date).localeCompare(String(b.date)));
+    // En fazla son 12 seansı sakla
+    if (sessions.length > 12) {
+      sessions.splice(0, sessions.length - 12);
+    }
+  }
+
+  todaySession.sets = todaySession.sets || {};
+  todaySession.sets[String(setNum)] = {
+    kg: kgVal === "" ? "" : Number(kgVal),
+    reps: repsVal === "" ? "" : Number(repsVal),
+  };
+
+  logs[exerciseId] = { sessions };
+  try {
+    window.localStorage.setItem(WORKOUT_LOGS_STORAGE_KEY, JSON.stringify(logs));
+  } catch {
+    // Depolama kotası veya gizli sekme engelinde sessizce devam et
+  }
+}
+
+// Hareketin bugünkü ve bir önceki seanstaki set değerlerini döndürür
+function getExerciseSetHistory(exerciseId) {
+  const logs = loadWorkoutLogs();
+  const entry = logs[exerciseId];
+  const sessions = Array.isArray(entry?.sessions) ? entry.sessions : [];
+  const today = getTodayIsoDate();
+  const todaySession = sessions.find((s) => s.date === today) || null;
+  const previousSessions = sessions.filter((s) => s.date !== today);
+  const previousSession =
+    previousSessions.length > 0 ? previousSessions[previousSessions.length - 1] : null;
+  return { todaySession, previousSession };
+}
+
+// Haftalık bel & kilo kayıtlarını okur
+function loadBodyLogs() {
+  try {
+    const raw = window.localStorage.getItem(BODY_LOGS_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((item) => item && item.date && Number.isFinite(Number(item.waistCm)) && Number.isFinite(Number(item.weightKg)))
+      .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  } catch {
+    return [];
+  }
+}
+
+// Haftalık bel & kilo kayıtlarını kaydeder
+function saveBodyLogs(logs) {
+  try {
+    window.localStorage.setItem(BODY_LOGS_STORAGE_KEY, JSON.stringify(logs));
+  } catch {
+    // Depolama erişilemiyorsa sessizce atla
+  }
+}
+
+// Bel ve kilo geçmişi için duyarlı SVG trend grafiği üretir
+function createBodyTrendSvgHtml(logs) {
+  if (!logs || logs.length === 0) {
+    return `<p class="muted-text">Henüz bel/kilo kaydı yok. Yukarıdan haftalık ölçüm eklediğinde trend grafiği burada oluşur.</p>`;
+  }
+
+  if (logs.length === 1) {
+    const single = logs[0];
+    return `<p class="muted-text">İlk kayıt alındı (${escapeHtml(single.date)} · Bel: ${escapeHtml(single.waistCm)} cm · Kilo: ${escapeHtml(single.weightKg)} kg). Trend çizgisi için en az 2 haftalık ölçüm ekle.</p>`;
+  }
+
+  const width = 340;
+  const height = 136;
+  const padX = 28;
+  const padY = 20;
+  const plotW = width - padX * 2;
+  const plotH = height - padY * 2;
+
+  const waists = logs.map((l) => Number(l.waistCm));
+  const weights = logs.map((l) => Number(l.weightKg));
+  const minWst = Math.min(...waists) - 1;
+  const maxWst = Math.max(...waists) + 1;
+  const minWgt = Math.min(...weights) - 1;
+  const maxWgt = Math.max(...weights) + 1;
+
+  const mapPoints = (vals, minVal, maxVal) => {
+    const span = Math.max(0.5, maxVal - minVal);
+    return vals.map((v, idx) => {
+      const x = padX + (idx / Math.max(1, vals.length - 1)) * plotW;
+      const y = padY + plotH - ((v - minVal) / span) * plotH;
+      return { x: Number(x.toFixed(1)), y: Number(y.toFixed(1)), v };
+    });
+  };
+
+  const waistPts = mapPoints(waists, minWst, maxWst);
+  const weightPts = mapPoints(weights, minWgt, maxWgt);
+  const toPolyline = (pts) => pts.map((p) => `${p.x},${p.y}`).join(" ");
+
+  return `
+    <div class="svg-trend-legend">
+      <span class="legend-waist">● Bel (cm)</span>
+      <span class="legend-weight">● Kilo (kg)</span>
+    </div>
+    <svg class="body-trend-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Haftalık bel çevresi ve kilo trend grafiği">
+      <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${height - padY}" stroke="#334155" stroke-width="1" />
+      <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="#334155" stroke-width="1" />
+      <polyline fill="none" stroke="#f59e0b" stroke-width="2.5" points="${escapeHtml(toPolyline(waistPts))}" />
+      <polyline fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-dasharray="4 3" points="${escapeHtml(toPolyline(weightPts))}" />
+      ${waistPts
+        .map(
+          (p) => `<circle cx="${p.x}" cy="${p.y}" r="3.5" fill="#f59e0b" />`
+        )
+        .join("")}
+      ${weightPts
+        .map(
+          (p) => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#38bdf8" />`
+        )
+        .join("")}
+      <text x="${padX}" y="${height - 4}" fill="#94a3b8" font-size="9">${escapeHtml(logs[0].date)}</text>
+      <text x="${width - padX}" y="${height - 4}" text-anchor="end" fill="#94a3b8" font-size="9">${escapeHtml(logs[logs.length - 1].date)}</text>
+    </svg>
+  `;
+}
+
+// Bel ve kilo günlük listesi + trend grafiğini render eder
+function renderBodyLogsSection() {
+  const chartEl = document.getElementById("body-log-chart");
+  const listEl = document.getElementById("body-log-list");
+  if (!chartEl || !listEl) return;
+
+  const logs = loadBodyLogs();
+  chartEl.innerHTML = createBodyTrendSvgHtml(logs);
+
+  if (logs.length === 0) {
+    listEl.innerHTML = "";
+    return;
+  }
+
+  const recentDesc = [...logs].reverse().slice(0, 8);
+  listEl.innerHTML = `
+    <ul class="body-log-items">
+      ${recentDesc
+        .map(
+          (entry) => `
+        <li class="body-log-row">
+          <span><strong>${escapeHtml(entry.date)}</strong> · Bel: <strong>${escapeHtml(entry.waistCm)} cm</strong> · Kilo: ${escapeHtml(entry.weightKg)} kg</span>
+          <button type="button" class="body-log-del-btn" data-del-body-date="${escapeHtml(entry.date)}">Sil</button>
+        </li>
+      `
+        )
+        .join("")}
+    </ul>
+  `;
+
+  listEl.querySelectorAll("[data-del-body-date]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetDate = btn.dataset.delBodyDate;
+      const updated = loadBodyLogs().filter((item) => item.date !== targetDate);
+      saveBodyLogs(updated);
+      renderBodyLogsSection();
+    });
+  });
+}
+
+// Dinlenme sayacı, Wake Lock ve ses/titreşim yönetimi
+let restTimerInterval = null;
+let wakeLockSentinel = null;
+
+async function acquireScreenWakeLock() {
+  try {
+    if (navigator.wakeLock && typeof navigator.wakeLock.request === "function" && !wakeLockSentinel) {
+      wakeLockSentinel = await navigator.wakeLock.request("screen");
+      wakeLockSentinel.addEventListener("release", () => {
+        wakeLockSentinel = null;
+      });
+    }
+  } catch {
+    // Tarayıcı izin vermezse veya desteklemiyorsa sessizce atla
+  }
+}
+
+function releaseScreenWakeLock() {
+  try {
+    if (wakeLockSentinel && typeof wakeLockSentinel.release === "function") {
+      wakeLockSentinel.release().catch(() => {});
+    }
+  } catch {
+    // Sessizce atla
+  } finally {
+    wakeLockSentinel = null;
+  }
+}
+
+function notifyRestTimerComplete() {
+  try {
+    if (navigator.vibrate && typeof navigator.vibrate === "function") {
+      navigator.vibrate([180, 90, 180]);
+    }
+  } catch {
+    // Titreşim desteklenmiyorsa atla
+  }
+
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx) {
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = 880;
+      gain.gain.value = 0.08;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.18);
+    }
+  } catch {
+    // Ses engellendiyse veya yoksa sessizce atla
+  }
+}
+
+function formatTimerClock(seconds) {
+  const safeSec = Math.max(0, Math.ceil(seconds));
+  const mins = Math.floor(safeSec / 60);
+  const secs = safeSec % 60;
+  return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+}
+
+function stopRestTimer({ clearStorage = true } = {}) {
+  if (restTimerInterval) {
+    window.clearInterval(restTimerInterval);
+    restTimerInterval = null;
+  }
+  releaseScreenWakeLock();
+  if (clearStorage) {
+    try {
+      window.localStorage.removeItem(TIMER_STORAGE_KEY);
+    } catch {
+      // Yoksay
+    }
+  }
+  const bar = document.getElementById("rest-timer-bar");
+  if (bar) {
+    bar.hidden = true;
+    bar.classList.remove("is-finished");
+  }
+}
+
+function startRestTimer(durationSeconds, label = "Set Arası Dinlenme", existingEndAt = null) {
+  const bar = document.getElementById("rest-timer-bar");
+  const clockEl = document.getElementById("rest-timer-clock");
+  const labelEl = document.getElementById("rest-timer-label");
+  if (!bar || !clockEl || !labelEl) return;
+
+  if (restTimerInterval) {
+    window.clearInterval(restTimerInterval);
+    restTimerInterval = null;
+  }
+
+  const endAt = existingEndAt || Date.now() + durationSeconds * 1000;
+  try {
+    window.localStorage.setItem(
+      TIMER_STORAGE_KEY,
+      JSON.stringify({ endAt, label })
+    );
+  } catch {
+    // Yoksay
+  }
+
+  bar.hidden = false;
+  bar.classList.remove("is-finished");
+  labelEl.textContent = label;
+  acquireScreenWakeLock();
+
+  const updateTick = () => {
+    const remainingSec = (endAt - Date.now()) / 1000;
+    if (remainingSec <= 0) {
+      clockEl.textContent = "00:00";
+      labelEl.textContent = `${label} · Süre doldu, ağır sete hazır!`;
+      bar.classList.add("is-finished");
+      window.clearInterval(restTimerInterval);
+      restTimerInterval = null;
+      releaseScreenWakeLock();
+      notifyRestTimerComplete();
+      try {
+        window.localStorage.removeItem(TIMER_STORAGE_KEY);
+      } catch {
+        // Yoksay
+      }
+      return;
+    }
+    clockEl.textContent = formatTimerClock(remainingSec);
+  };
+
+  updateTick();
+  restTimerInterval = window.setInterval(updateTick, 500);
+}
+
+function initRestTimerControls() {
+  const stopBtn = document.getElementById("rest-timer-stop-btn");
+  const plusBtn = document.getElementById("rest-timer-plus-btn");
+
+  if (stopBtn) {
+    stopBtn.addEventListener("click", () => stopRestTimer({ clearStorage: true }));
+  }
+
+  if (plusBtn) {
+    plusBtn.addEventListener("click", () => {
+      try {
+        const raw = window.localStorage.getItem(TIMER_STORAGE_KEY);
+        if (!raw) {
+          startRestTimer(15, "Ek Dinlenme");
+          return;
+        }
+        const saved = JSON.parse(raw);
+        const nextEndAt = Math.max(Date.now(), Number(saved.endAt || Date.now())) + 15000;
+        startRestTimer(15, saved.label || "Set Arası Dinlenme", nextEndAt);
+      } catch {
+        startRestTimer(15, "Ek Dinlenme");
+      }
+    });
+  }
+
+  // Yarım kalan sayaç varsa yenilemede devam ettir
+  try {
+    const raw = window.localStorage.getItem(TIMER_STORAGE_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      if (saved && Number(saved.endAt) > Date.now()) {
+        startRestTimer(
+          Math.ceil((Number(saved.endAt) - Date.now()) / 1000),
+          saved.label || "Set Arası Dinlenme",
+          Number(saved.endAt)
+        );
+      } else {
+        window.localStorage.removeItem(TIMER_STORAGE_KEY);
+      }
+    }
+  } catch {
+    // Yoksay
+  }
+}
+
+// localStorage'dan kayıtlı profili yükler
 function loadStoredProfile() {
   try {
     const raw = window.localStorage.getItem(PROFILE_STORAGE_KEY);
@@ -618,19 +991,64 @@ function createExerciseCardHtml(exercise, badgeText, initialVariantIndex = 0) {
   const restSeconds = exercise.restSeconds || 90;
   const restWindowLabel =
     restSeconds >= 120 ? `${restSeconds} sn (2-3 dk · Bileşik)` : `${restSeconds} sn (60-90 sn · İzolasyon)`;
+  const { todaySession, previousSession } = getExerciseSetHistory(exercise.id);
 
   const pyramidHtml = exercise.pyramidSets
     .map((step, index) => {
       const widthPercent = Math.max(36, Math.round(100 - (index * 52) / Math.max(1, maxSets - 1)));
       const setLabel = step.isWarmup ? `${step.set}. Set (Isınma Seti)` : `${step.set}. Set`;
+      const todaySet = todaySession?.sets?.[String(step.set)] || null;
+      const prevSet = previousSession?.sets?.[String(step.set)] || null;
+      const prevBadgeText =
+        prevSet && (prevSet.kg !== "" || prevSet.reps !== "")
+          ? `Önceki: ${prevSet.kg !== "" ? `${prevSet.kg} kg` : "-"} × ${prevSet.reps !== "" ? `${prevSet.reps} tek.` : "-"}`
+          : todaySet && (todaySet.kg !== "" || todaySet.reps !== "")
+            ? `Bugün: ${todaySet.kg !== "" ? `${todaySet.kg} kg` : "-"} × ${todaySet.reps !== "" ? `${todaySet.reps} tek.` : "-"}`
+            : "Önceki: Henüz kayıt yok";
+
       return `
         <div class="pyramid-step ${step.isWarmup ? "is-warmup" : ""}">
-          <span class="set-num">${escapeHtml(setLabel)}</span>
-          <div class="set-bar-wrap">
-            <span class="set-load">${escapeHtml(step.load)}</span>
-            <div class="set-bar ${step.isWarmup ? "is-warmup" : ""}" style="width: ${widthPercent}%"></div>
+          <div class="pyramid-step-main">
+            <span class="set-num">${escapeHtml(setLabel)}</span>
+            <div class="set-bar-wrap">
+              <span class="set-load">${escapeHtml(step.load)}</span>
+              <div class="set-bar ${step.isWarmup ? "is-warmup" : ""}" style="width: ${widthPercent}%"></div>
+            </div>
+            <span class="set-reps">${escapeHtml(step.reps)}</span>
           </div>
-          <span class="set-reps">${escapeHtml(step.reps)}</span>
+          <div class="set-log-controls" data-set-log-row data-log-ex="${escapeHtml(exercise.id)}" data-log-set="${escapeHtml(step.set)}">
+            <span class="set-prev-badge" data-set-prev>${escapeHtml(prevBadgeText)}</span>
+            <div class="set-log-inputs">
+              <label class="set-log-field">
+                <span>kg</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="500"
+                  step="0.5"
+                  inputmode="decimal"
+                  aria-label="${escapeHtml(exercise.name)} ${escapeHtml(step.set)}. set kg"
+                  data-log-field="kg"
+                  value="${escapeHtml(todaySet?.kg ?? "")}"
+                  placeholder="kg"
+                />
+              </label>
+              <label class="set-log-field">
+                <span>Tekrar</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="1"
+                  inputmode="numeric"
+                  aria-label="${escapeHtml(exercise.name)} ${escapeHtml(step.set)}. set tekrar"
+                  data-log-field="reps"
+                  value="${escapeHtml(todaySet?.reps ?? "")}"
+                  placeholder="tek."
+                />
+              </label>
+            </div>
+          </div>
         </div>
       `;
     })
@@ -676,7 +1094,17 @@ function createExerciseCardHtml(exercise, badgeText, initialVariantIndex = 0) {
         <div class="pyramid-box">
           <div class="pyramid-box-title-row">
             <span class="pyramid-box-title">Piramit Merdiveni (${maxSets} Set · 1. Set Isınma)</span>
-            <span class="rest-duration-badge">⏱️ Dinlenme: ${escapeHtml(restWindowLabel)}</span>
+            <div class="rest-timer-trigger-wrap">
+              <span class="rest-duration-badge">⏱️ Dinlenme: ${escapeHtml(restWindowLabel)}</span>
+              <button
+                type="button"
+                class="start-rest-timer-btn"
+                data-start-timer="${escapeHtml(restSeconds)}"
+                data-timer-label="${escapeHtml(activeVariant.name)} Dinlenme"
+              >
+                ▶ Sayacı Başlat
+              </button>
+            </div>
           </div>
           <p class="rest-strategy-note">21 core yap, kalan sürede dinlenerek çalışma setine toparlanmış gir (Schoenfeld ve ark., 2016).</p>
           <div class="pyramid-steps">${pyramidHtml}</div>
@@ -1962,6 +2390,36 @@ function bindCardInteractions() {
     });
   });
 
+  // Set günlüğü (kg / tekrar) canlı kayıt
+  document.querySelectorAll("[data-set-log-row]").forEach((rowEl) => {
+    const exId = rowEl.dataset.logEx;
+    const setNum = rowEl.dataset.logSet;
+    const kgInput = rowEl.querySelector('[data-log-field="kg"]');
+    const repsInput = rowEl.querySelector('[data-log-field="reps"]');
+    const badgeEl = rowEl.querySelector("[data-set-prev]");
+
+    const persistRow = () => {
+      const kgVal = kgInput ? kgInput.value.trim() : "";
+      const repsVal = repsInput ? repsInput.value.trim() : "";
+      saveSetLogEntry(exId, setNum, kgVal, repsVal);
+      if (badgeEl && (kgVal !== "" || repsVal !== "")) {
+        badgeEl.textContent = `Kaydedildi: ${kgVal || "-"} kg × ${repsVal || "-"} tek.`;
+      }
+    };
+
+    if (kgInput) kgInput.addEventListener("change", persistRow);
+    if (repsInput) repsInput.addEventListener("change", persistRow);
+  });
+
+  // Kart üzerindeki dinlenme geri sayım butonları
+  document.querySelectorAll("[data-start-timer]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const secs = Number(btn.dataset.startTimer) || 90;
+      const label = btn.dataset.timerLabel || "Set Arası Dinlenme";
+      startRestTimer(secs, label);
+    });
+  });
+
   // Özet sayfasından ilgili videolu güne hızlı geçiş
   document.querySelectorAll("[data-jump-day]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -2317,12 +2775,41 @@ function registerServiceWorker() {
   }
 }
 
+// Haftalık bel ve kilo takip formunu bağlar
+function initBodyLogForm() {
+  const bodyForm = document.getElementById("body-log-form");
+  if (!bodyForm) return;
+  const dateInput = bodyForm.elements.namedItem("date");
+  if (dateInput && !dateInput.value) {
+    dateInput.value = getTodayIsoDate();
+  }
+
+  bodyForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const formData = new FormData(bodyForm);
+    const dateVal = String(formData.get("date") || getTodayIsoDate());
+    const waistCm = Number(formData.get("waistCm"));
+    const weightKg = Number(formData.get("weightKg"));
+    if (!Number.isFinite(waistCm) || !Number.isFinite(weightKg)) return;
+
+    const existing = loadBodyLogs().filter((item) => item.date !== dateVal);
+    existing.push({ date: dateVal, waistCm, weightKg });
+    existing.sort((a, b) => String(a.date).localeCompare(String(b.date)));
+    saveBodyLogs(existing);
+    renderBodyLogsSection();
+  });
+
+  renderBodyLogsSection();
+}
+
 // Uygulama başlangıcı
 function bootstrap() {
   registerServiceWorker();
   initDisclaimerBanner();
   renderSystemPillars();
   renderTanitaSection();
+  initBodyLogForm();
+  initRestTimerControls();
   renderTabs();
   renderMainContent();
   initEventListeners();
