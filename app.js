@@ -1,7 +1,8 @@
 /**
  * Dosya: app.js
  * Açıklama: Kravitz Lean & Fit uygulamasının arayüz oluşturma, sekme yönetimi,
- * egzersiz arama, çift kamera açılı (Ön/Yan) HD/Full HD MP4 video sahneleri ve hız kontrollü video modalını yürütür.
+ * ana + alternatif hareket arama, kart ve modal içi etkileşimli Alternatif Hareketler seçicisi,
+ * çift kamera açılı (Ön/Yan) HD/Full HD MP4 video sahneleri ve hız kontrollü detay modalını yürütür.
  */
 
 import {
@@ -55,6 +56,7 @@ const elements = {
   modalBadge: document.getElementById("modal-badge"),
   modalTitle: document.getElementById("modal-title"),
   modalSubtitle: document.getElementById("modal-subtitle"),
+  modalVariantsBar: document.getElementById("modal-variants-bar"),
   modalVideoContainer: document.getElementById("modal-video-container"),
   modalPlaybackBar: document.getElementById("modal-playback-bar"),
   modalFramesSection: document.getElementById("modal-frames-section"),
@@ -66,7 +68,7 @@ const elements = {
 
 // HTML özel karakterlerini güvenli metne dönüştürür
 function escapeHtml(text) {
-  return String(text)
+  return String(text ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -78,6 +80,81 @@ function escapeHtml(text) {
 function clearPhotoTimers() {
   state.photoTimers.forEach((timerId) => window.clearInterval(timerId));
   state.photoTimers = [];
+}
+
+/**
+ * Ana hareketi ve alternatiflerini hem kartlar hem de modal için tek bir standart listeye çevirir.
+ * kind: "exercise" | "core"
+ */
+function getExerciseVariants(item, kind) {
+  if (!item) return [];
+
+  if (kind === "core") {
+    const primary = {
+      index: 0,
+      pillLabel: "Ana Core Hareketi",
+      isAlternative: false,
+      name: item.name,
+      turkishName: item.turkishName,
+      primaryTag: item.target,
+      secondaryTag: item.reps,
+      modalBadge: `Aktif Dinlenme Core · ${item.reps}`,
+      whenToUse: null,
+      videoKey: item.videoKey,
+      tips: [item.formCue, `MACFit İpucu: ${item.macfitTip}`],
+    };
+
+    const alts = (item.alternatives || []).map((alt, i) => ({
+      index: i + 1,
+      pillLabel: `Alt ${i + 1}: ${alt.name}`,
+      isAlternative: true,
+      name: alt.name,
+      turkishName: alt.turkishName,
+      primaryTag: item.target,
+      secondaryTag: alt.reps || item.reps,
+      modalBadge: `Alternatif Core · ${alt.reps || item.reps}`,
+      whenToUse: alt.whenToUse,
+      videoKey: alt.videoKey,
+      tips: [alt.formCue, `MACFit İpucu: ${alt.macfitTip}`],
+    }));
+
+    return [primary, ...alts];
+  }
+
+  const primary = {
+    index: 0,
+    pillLabel: "Ana Hareket",
+    isAlternative: false,
+    name: item.name,
+    turkishName: item.turkishName,
+    primaryTag: item.muscleGroup,
+    secondaryTag: item.equipment,
+    modalBadge: `${item.muscleGroup} · ${item.equipment}`,
+    whenToUse: null,
+    videoKey: item.videoKey,
+    tips: item.tips || [],
+  };
+
+  const alts = (item.alternatives || []).map((alt, i) => {
+    const secondaryTag = alt.equipment
+      ? `${alt.equipment}${alt.reps ? ` · ${alt.reps}` : ""}`
+      : item.equipment;
+    return {
+      index: i + 1,
+      pillLabel: `Alt ${i + 1}: ${alt.name}`,
+      isAlternative: true,
+      name: alt.name,
+      turkishName: alt.turkishName,
+      primaryTag: item.muscleGroup,
+      secondaryTag,
+      modalBadge: `Alternatif · ${secondaryTag}`,
+      whenToUse: alt.whenToUse,
+      videoKey: alt.videoKey,
+      tips: alt.tips || [],
+    };
+  });
+
+  return [primary, ...alts];
 }
 
 // Sistem temel kurallarını (3 sütun) render eder
@@ -211,11 +288,46 @@ function createMediaStageHtml({ badgeText, name, videoKey, triggerAttr }) {
   `;
 }
 
+// Kart ve modal içinde ortak kullanılan "Alternatif Hareketler" seçici kutusunu üretir
+function createAlternativesBoxHtml(variants, activeIndex = 0) {
+  if (!variants || variants.length <= 1) return "";
+
+  const activeVariant = variants[activeIndex] || variants[0];
+  const pillsHtml = variants
+    .map(
+      (variant) => `
+      <button
+        type="button"
+        class="alt-pill-btn ${variant.index === activeVariant.index ? "active" : ""}"
+        data-variant-index="${variant.index}"
+      >
+        ${escapeHtml(variant.pillLabel)}
+      </button>
+    `
+    )
+    .join("");
+
+  const reasonHtml = activeVariant.whenToUse
+    ? `<strong>Ne Zaman Yapılır:</strong> ${escapeHtml(activeVariant.whenToUse)}`
+    : "";
+
+  return `
+    <div class="alternatives-box">
+      <div class="alternatives-header">🔄 Alternatif Hareketler (Makine Doluysa / Yapılamıyorsa)</div>
+      <div class="alt-pills-row">${pillsHtml}</div>
+      <div class="alt-reason-banner" ${activeVariant.whenToUse ? "" : "hidden"}>${reasonHtml}</div>
+    </div>
+  `;
+}
+
 // Tekil egzersiz kartı HTML'ini üretir
-function createExerciseCardHtml(exercise, badgeText) {
+function createExerciseCardHtml(exercise, badgeText, initialVariantIndex = 0) {
   const coreItem = CORE_LIBRARY[exercise.coreRestId];
   const coreMedia = coreItem ? getExerciseMedia(coreItem.videoKey) : null;
   const maxSets = exercise.pyramidSets.length;
+
+  const variants = getExerciseVariants(exercise, "exercise");
+  const activeVariant = variants[initialVariantIndex] || variants[0];
 
   const pyramidHtml = exercise.pyramidSets
     .map((step, index) => {
@@ -233,28 +345,38 @@ function createExerciseCardHtml(exercise, badgeText) {
     })
     .join("");
 
-  const tipsHtml = exercise.tips.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("");
+  const tipsHtml = activeVariant.tips.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("");
 
   const stageHtml = createMediaStageHtml({
     badgeText,
-    name: exercise.name,
-    videoKey: exercise.videoKey,
+    name: activeVariant.name,
+    videoKey: activeVariant.videoKey,
     triggerAttr: `data-open-exercise="${escapeHtml(exercise.id)}"`,
   });
 
+  const alternativesHtml = createAlternativesBoxHtml(variants, activeVariant.index);
+
   return `
-    <article class="exercise-card" data-exercise-id="${escapeHtml(exercise.id)}">
+    <article
+      class="exercise-card"
+      data-exercise-id="${escapeHtml(exercise.id)}"
+      data-variant-kind="exercise"
+      data-item-id="${escapeHtml(exercise.id)}"
+      data-active-variant-index="${activeVariant.index}"
+    >
       ${stageHtml}
 
       <div class="card-body">
         <div class="exercise-header">
           <div class="exercise-tags">
-            <span class="tag-chip">${escapeHtml(exercise.muscleGroup)}</span>
-            <span class="tag-chip equipment">${escapeHtml(exercise.equipment)}</span>
+            <span class="tag-chip">${escapeHtml(activeVariant.primaryTag)}</span>
+            <span class="tag-chip equipment">${escapeHtml(activeVariant.secondaryTag)}</span>
           </div>
-          <h3 class="exercise-title">${escapeHtml(exercise.name)}</h3>
-          <p class="exercise-subtitle">${escapeHtml(exercise.turkishName)}</p>
+          <h3 class="exercise-title">${escapeHtml(activeVariant.name)}</h3>
+          <p class="exercise-subtitle">${escapeHtml(activeVariant.turkishName)}</p>
         </div>
+
+        ${alternativesHtml}
 
         <div class="pyramid-box">
           <div class="pyramid-box-title">Piramit Merdiveni (${maxSets} Set)</div>
@@ -280,7 +402,7 @@ function createExerciseCardHtml(exercise, badgeText) {
               <span class="core-rest-kicker">Set Arası Aktif Dinlenme</span>
               <span class="core-rest-text">${escapeHtml(exercise.coreRestLabel)}</span>
             </div>
-            <span class="core-rest-action">HD Video &amp; Form →</span>
+            <span class="core-rest-action">HD Video &amp; Alternatifler →</span>
           </button>
         `
             : ""
@@ -291,32 +413,42 @@ function createExerciseCardHtml(exercise, badgeText) {
 }
 
 // Core kartı HTML'ini üretir
-function createCoreCardHtml(core) {
+function createCoreCardHtml(core, initialVariantIndex = 0) {
   const isVacuum = core.id === "stomach_vacuum";
+  const variants = getExerciseVariants(core, "core");
+  const activeVariant = variants[initialVariantIndex] || variants[0];
+
   const stageHtml = createMediaStageHtml({
     badgeText: isVacuum ? "SABAH RUTİNİ" : "21× AKTİF DİNLENME",
-    name: core.name,
-    videoKey: core.videoKey,
+    name: activeVariant.name,
+    videoKey: activeVariant.videoKey,
     triggerAttr: `data-open-core="${escapeHtml(core.id)}"`,
   });
 
+  const alternativesHtml = createAlternativesBoxHtml(variants, activeVariant.index);
+  const tipsHtml = activeVariant.tips.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("");
+
   return `
-    <article class="core-card">
+    <article
+      class="core-card"
+      data-variant-kind="core"
+      data-item-id="${escapeHtml(core.id)}"
+      data-active-variant-index="${activeVariant.index}"
+    >
       ${stageHtml}
       <div class="card-body">
         <div class="exercise-header">
           <div class="exercise-tags">
-            <span class="tag-chip">${escapeHtml(core.target)}</span>
-            <span class="tag-chip equipment">${escapeHtml(core.reps)}</span>
+            <span class="tag-chip">${escapeHtml(activeVariant.primaryTag)}</span>
+            <span class="tag-chip equipment">${escapeHtml(activeVariant.secondaryTag)}</span>
           </div>
-          <h3 class="exercise-title">${escapeHtml(core.name)}</h3>
-          <p class="exercise-subtitle">${escapeHtml(core.turkishName)}</p>
+          <h3 class="exercise-title">${escapeHtml(activeVariant.name)}</h3>
+          <p class="exercise-subtitle">${escapeHtml(activeVariant.turkishName)}</p>
         </div>
 
-        <ul class="tips-list">
-          <li>${escapeHtml(core.formCue)}</li>
-          <li><strong>MACFit İpucu:</strong> ${escapeHtml(core.macfitTip)}</li>
-        </ul>
+        ${alternativesHtml}
+
+        <ul class="tips-list">${tipsHtml}</ul>
       </div>
     </article>
   `;
@@ -356,7 +488,7 @@ function renderCoreGuide(filteredItems = null) {
         <h2>21’ler Aktif Core Dinlenmesi &amp; Sabah Mide Vakumu Rehberi</h2>
         <p>
           Piramit setleri arasında oturmak yerine bu karın hareketlerinden birini 21 tekrar yap.
-          Ayrıca her sabah aç karnına 5×20 sn Mide Vakumu ile iç karın korseni sıkılaştır.
+          Ekipman doluysa her kartın içinden alternatif harekete geçebilirsin.
         </p>
       </div>
       <div class="day-meta-badges">
@@ -467,47 +599,74 @@ function renderNutritionProtocol() {
   `;
 }
 
-// Arama kutusuna göre tüm programdaki eşleşen hareketleri gösterir
+// Arama kutusuna göre ana ve alternatif hareketler arasında eşleşen ilk varyant indeksini bulur
+function findMatchingVariantIndex(item, kind, normalizedQuery) {
+  const variants = getExerciseVariants(item, kind);
+  for (const variant of variants) {
+    const searchable = [
+      variant.name,
+      variant.turkishName,
+      variant.primaryTag,
+      variant.secondaryTag,
+      variant.whenToUse,
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    if (searchable.includes(normalizedQuery)) {
+      return variant.index;
+    }
+  }
+  return -1;
+}
+
+// Arama kutusuna göre tüm programdaki (ana + alternatif) eşleşen hareketleri gösterir
 function renderSearchResults(query) {
   const normalized = query.trim().toLowerCase();
   const matchedExercises = [];
 
   WORKOUT_DAYS.forEach((day) => {
     day.exercises.forEach((ex) => {
-      const searchable = [
-        ex.name,
-        ex.turkishName,
-        ex.muscleGroup,
-        ex.equipment,
-        ex.coreRestLabel,
-      ]
-        .join(" ")
-        .toLowerCase();
-
-      if (searchable.includes(normalized)) {
-        matchedExercises.push({ dayLabel: day.tabLabel, exercise: ex });
+      const restText = (ex.coreRestLabel || "").toLowerCase();
+      let variantIdx = findMatchingVariantIndex(ex, "exercise", normalized);
+      if (variantIdx === -1 && restText.includes(normalized)) {
+        variantIdx = 0;
+      }
+      if (variantIdx !== -1) {
+        matchedExercises.push({
+          dayLabel: day.tabLabel,
+          exercise: ex,
+          initialVariantIndex: variantIdx,
+        });
       }
     });
   });
 
-  const matchedCore = Object.values(CORE_LIBRARY).filter((core) => {
-    const searchable = [core.name, core.turkishName, core.target].join(" ").toLowerCase();
-    return searchable.includes(normalized);
+  const matchedCore = [];
+  Object.values(CORE_LIBRARY).forEach((core) => {
+    const variantIdx = findMatchingVariantIndex(core, "core", normalized);
+    if (variantIdx !== -1) {
+      matchedCore.push({ core, initialVariantIndex: variantIdx });
+    }
   });
 
   if (matchedExercises.length === 0 && matchedCore.length === 0) {
     elements.contentArea.innerHTML = `
       <div class="empty-state">
         <h3>"${escapeHtml(query)}" için hareket bulunamadı</h3>
-        <p>Örnek aramalar: Biceps, Omuz, Sırt, Bacak, Karın, Plank, Squat</p>
+        <p>Örnek aramalar: Biceps, Arnold, Omuz, Sırt, Hack Squat, Dead Bug, Plank</p>
       </div>
     `;
     return;
   }
 
   const exercisesHtml = matchedExercises
-    .map(({ dayLabel, exercise }) =>
-      createExerciseCardHtml(exercise, `${dayLabel} · Hareket ${exercise.order}`)
+    .map(({ dayLabel, exercise, initialVariantIndex }) =>
+      createExerciseCardHtml(
+        exercise,
+        `${dayLabel} · Hareket ${exercise.order}`,
+        initialVariantIndex
+      )
     )
     .join("");
 
@@ -515,9 +674,11 @@ function renderSearchResults(query) {
     matchedCore.length > 0
       ? `
       <div style="margin-top: 26px;">
-        <h3 style="font-family: Oswald, sans-serif; margin-bottom: 14px;">Eşleşen Core (21'ler) Hareketleri</h3>
+        <h3 style="font-family: Oswald, sans-serif; margin-bottom: 14px;">Eşleşen Core (21'ler) ve Alternatif Hareketler</h3>
         <div class="core-grid">
-          ${matchedCore.map((core) => createCoreCardHtml(core)).join("")}
+          ${matchedCore
+            .map(({ core, initialVariantIndex }) => createCoreCardHtml(core, initialVariantIndex))
+            .join("")}
         </div>
       </div>
     `
@@ -527,7 +688,7 @@ function renderSearchResults(query) {
     <div class="day-banner">
       <div>
         <h2>Arama Sonuçları: "${escapeHtml(query)}"</h2>
-        <p>${matchedExercises.length} ana hareket ve ${matchedCore.length} core hareketi bulundu.</p>
+        <p>${matchedExercises.length} ana/alternatif hareket ve ${matchedCore.length} core hareketi bulundu.</p>
       </div>
     </div>
     ${exercisesHtml ? `<div class="exercises-grid">${exercisesHtml}</div>` : ""}
@@ -537,7 +698,75 @@ function renderSearchResults(query) {
   bindCardInteractions();
 }
 
-// Kartlardaki Ön Açı / Yan Açı / Fotoğraf geçişlerini ve modal butonlarını bağlar
+// Kart üzerindeki aktif varyantı (Ana Hareket veya Alt 1 / Alt 2) kart DOM'una uygular
+function applyVariantToCard(cardEl, variants, variantIndex) {
+  const variant = variants[variantIndex] || variants[0];
+  if (!variant) return;
+
+  const media = getExerciseMedia(variant.videoKey);
+  cardEl.dataset.activeVariantIndex = String(variant.index);
+
+  // Medya sahnesini yeni video ve karelerle güncelle
+  const videoEl = cardEl.querySelector(".media-video");
+  const startImg = cardEl.querySelector(".frame-start");
+  const endImg = cardEl.querySelector(".frame-end");
+  const activeModeBtn = cardEl.querySelector(".pose-btn.active");
+  const activeMode = activeModeBtn ? activeModeBtn.dataset.mode : "front";
+
+  if (videoEl) {
+    videoEl.dataset.frontSrc = media.frontMp4 || "";
+    videoEl.dataset.sideSrc = media.sideMp4 || "";
+    videoEl.setAttribute("aria-label", `${variant.name} HD hareket videosu`);
+    videoEl.poster = media.startImg || "";
+
+    if (activeMode === "front" || activeMode === "side") {
+      const targetSrc = activeMode === "front" ? media.frontMp4 : media.sideMp4;
+      videoEl.setAttribute("src", targetSrc);
+      videoEl.load();
+      videoEl.play().catch(() => {});
+    }
+  }
+
+  if (startImg && media.startImg) {
+    startImg.src = media.startImg;
+    startImg.alt = `${variant.name} ön açı HD karesi`;
+  }
+  if (endImg && media.endImg) {
+    endImg.src = media.endImg;
+    endImg.alt = `${variant.name} yan açı HD karesi`;
+  }
+
+  // Başlık, etiket ve ipuçlarını güncelle
+  const titleEl = cardEl.querySelector(".exercise-title");
+  const subtitleEl = cardEl.querySelector(".exercise-subtitle");
+  const equipmentChip = cardEl.querySelector(".tag-chip.equipment");
+  const tipsListEl = cardEl.querySelector(".tips-list");
+  const reasonBanner = cardEl.querySelector(".alt-reason-banner");
+
+  if (titleEl) titleEl.textContent = variant.name;
+  if (subtitleEl) subtitleEl.textContent = variant.turkishName;
+  if (equipmentChip) equipmentChip.textContent = variant.secondaryTag;
+  if (tipsListEl) {
+    tipsListEl.innerHTML = variant.tips.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("");
+  }
+
+  if (reasonBanner) {
+    if (variant.whenToUse) {
+      reasonBanner.innerHTML = `<strong>Ne Zaman Yapılır:</strong> ${escapeHtml(variant.whenToUse)}`;
+      reasonBanner.hidden = false;
+    } else {
+      reasonBanner.innerHTML = "";
+      reasonBanner.hidden = true;
+    }
+  }
+
+  // Alternatif hap butonlarının aktiflik durumunu güncelle
+  cardEl.querySelectorAll(".alt-pill-btn").forEach((btn) => {
+    btn.classList.toggle("active", Number(btn.dataset.variantIndex) === variant.index);
+  });
+}
+
+// Kartlardaki Ön Açı / Yan Açı / Fotoğraf geçişlerini, alternatif seçicileri ve modal butonlarını bağlar
 function bindCardInteractions() {
   clearPhotoTimers();
 
@@ -602,18 +831,30 @@ function bindCardInteractions() {
     });
   });
 
-  // Ana egzersiz detaylı video modalı butonları
+  // Kart içi Alternatif Hareketler seçicisi
+  document.querySelectorAll("[data-variant-kind]").forEach((cardEl) => {
+    const kind = cardEl.dataset.variantKind;
+    const itemId = cardEl.dataset.itemId;
+    const item = kind === "core" ? CORE_LIBRARY[itemId] : findExerciseById(itemId);
+    const variants = getExerciseVariants(item, kind);
+
+    cardEl.querySelectorAll(".alt-pill-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const idx = Number(btn.dataset.variantIndex);
+        applyVariantToCard(cardEl, variants, idx);
+      });
+    });
+  });
+
+  // Ana egzersiz detaylı video modalı butonları (kartta seçili olan alternatifle açılır)
   document.querySelectorAll("[data-open-exercise]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const exercise = findExerciseById(btn.dataset.openExercise);
       if (!exercise) return;
-      openMediaModal({
-        badge: `${exercise.muscleGroup} · ${exercise.equipment}`,
-        title: exercise.name,
-        subtitle: exercise.turkishName,
-        videoKey: exercise.videoKey,
-        tips: exercise.tips,
-      });
+      const cardEl = btn.closest("[data-variant-kind]");
+      const activeIdx = cardEl ? Number(cardEl.dataset.activeVariantIndex || 0) : 0;
+      const variants = getExerciseVariants(exercise, "exercise");
+      openMediaModal({ variants, initialVariantIndex: activeIdx });
     });
   });
 
@@ -622,13 +863,10 @@ function bindCardInteractions() {
     btn.addEventListener("click", () => {
       const core = CORE_LIBRARY[btn.dataset.openCore];
       if (!core) return;
-      openMediaModal({
-        badge: `Aktif Dinlenme Core · ${core.reps}`,
-        title: core.name,
-        subtitle: core.turkishName,
-        videoKey: core.videoKey,
-        tips: [core.formCue, `MACFit İpucu: ${core.macfitTip}`],
-      });
+      const parentCoreCard = btn.closest('.core-card[data-variant-kind="core"]');
+      const activeIdx = parentCoreCard ? Number(parentCoreCard.dataset.activeVariantIndex || 0) : 0;
+      const variants = getExerciseVariants(core, "core");
+      openMediaModal({ variants, initialVariantIndex: activeIdx });
     });
   });
 }
@@ -642,98 +880,130 @@ function findExerciseById(exerciseId) {
   return null;
 }
 
-// Reklamsız yerel HD HTML5 MP4 Video & Stüdyo Kareleri modalını açar
-function openMediaModal({ badge, title, subtitle, videoKey, tips }) {
-  const media = getExerciseMedia(videoKey);
+// Reklamsız yerel HD HTML5 MP4 Video, Alternatif Geçişi & Stüdyo Kareleri modalını açar
+function openMediaModal({ variants, initialVariantIndex = 0 }) {
+  if (!variants || variants.length === 0) return;
 
-  elements.modalBadge.textContent = badge;
-  elements.modalTitle.textContent = title;
-  elements.modalSubtitle.textContent = subtitle;
-
+  let activeVariantIndex = initialVariantIndex;
   let currentCamera = "front";
   let currentSpeed = 1;
 
-  if (media.frontMp4) {
-    elements.modalVideoContainer.innerHTML = `
-      <video
-        id="modal-video-player"
-        src="${escapeHtml(media.frontMp4)}"
-        poster="${escapeHtml(media.startImg || "")}"
-        controls
-        autoplay
-        loop
-        muted
-        playsinline
-      ></video>
+  elements.modalVideoContainer.innerHTML = `
+    <video
+      id="modal-video-player"
+      controls
+      autoplay
+      loop
+      muted
+      playsinline
+    ></video>
+  `;
+
+  const player = document.getElementById("modal-video-player");
+  const cameraBtns = elements.modalPlaybackBar.querySelectorAll(".camera-btn");
+  const speedBtns = elements.modalPlaybackBar.querySelectorAll(".speed-btn");
+
+  // İndirme bağlantısını seçili varyant ve kamera açısına göre günceller
+  const updateDownloadLink = (variant, media) => {
+    const targetUrl = currentCamera === "front" ? media.frontMp4 : media.sideMp4;
+    if (!targetUrl) {
+      elements.modalExternalActions.innerHTML = "";
+      return;
+    }
+    elements.modalExternalActions.innerHTML = `
+      <a
+        href="${escapeHtml(targetUrl)}"
+        download="${escapeHtml(variant.videoKey)}-${currentCamera}.mp4"
+        class="download-mp4-link"
+      >
+        HD MP4 İndir ↓
+      </a>
     `;
+  };
 
-    const player = document.getElementById("modal-video-player");
-    const cameraBtns = elements.modalPlaybackBar.querySelectorAll(".camera-btn");
-    const speedBtns = elements.modalPlaybackBar.querySelectorAll(".speed-btn");
+  // Seçilen varyanta göre modal başlığını, oynatıcıyı, kareleri ve ipuçlarını yeniler
+  const applyModalVariant = (variantIdx) => {
+    activeVariantIndex = variantIdx;
+    const variant = variants[variantIdx] || variants[0];
+    const media = getExerciseMedia(variant.videoKey);
 
-    // İndirme bağlantısını seçili kamera açısına göre günceller
-    const updateDownloadLink = () => {
-      const targetUrl = currentCamera === "front" ? media.frontMp4 : media.sideMp4;
-      elements.modalExternalActions.innerHTML = `
-        <a
-          href="${escapeHtml(targetUrl)}"
-          download="${escapeHtml(videoKey)}-${currentCamera}.mp4"
-          class="download-mp4-link"
-        >
-          HD MP4 İndir ↓
-        </a>
-      `;
+    elements.modalBadge.textContent = variant.modalBadge;
+    elements.modalTitle.textContent = variant.name;
+    elements.modalSubtitle.textContent = variant.turkishName;
+
+    if (media.frontMp4 && player) {
+      player.src = currentCamera === "front" ? media.frontMp4 : media.sideMp4;
+      player.poster = currentCamera === "front" ? media.startImg : media.endImg;
+      player.load();
+      player.playbackRate = currentSpeed;
+      player.play().catch(() => {});
+      updateDownloadLink(variant, media);
+      elements.modalPlaybackBar.hidden = false;
+    } else {
+      elements.modalPlaybackBar.hidden = true;
+      elements.modalExternalActions.innerHTML = "";
+    }
+
+    if (media.startImg && media.endImg) {
+      elements.modalFramesSection.hidden = false;
+      elements.modalImgStart.src = media.startImg;
+      elements.modalImgStart.alt = `${variant.name} ön açı HD karesi`;
+      elements.modalImgEnd.src = media.endImg;
+      elements.modalImgEnd.alt = `${variant.name} yan açı HD karesi`;
+    } else {
+      elements.modalFramesSection.hidden = true;
+    }
+
+    elements.modalTipsList.innerHTML = variant.tips.map((t) => `<li>${escapeHtml(t)}</li>`).join("");
+
+    // Modal içi varyant çubuğunu güncelle
+    if (variants.length > 1) {
+      elements.modalVariantsBar.innerHTML = createAlternativesBoxHtml(variants, variant.index);
+      elements.modalVariantsBar.hidden = false;
+      elements.modalVariantsBar.querySelectorAll(".alt-pill-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          applyModalVariant(Number(btn.dataset.variantIndex));
+        });
+      });
+    } else {
+      elements.modalVariantsBar.innerHTML = "";
+      elements.modalVariantsBar.hidden = true;
+    }
+  };
+
+  cameraBtns.forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.camera === "front");
+    btn.onclick = () => {
+      currentCamera = btn.dataset.camera;
+      cameraBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const variant = variants[activeVariantIndex] || variants[0];
+      const media = getExerciseMedia(variant.videoKey);
+      if (player) {
+        player.src = currentCamera === "front" ? media.frontMp4 : media.sideMp4;
+        player.poster = currentCamera === "front" ? media.startImg : media.endImg;
+        player.load();
+        player.playbackRate = currentSpeed;
+        player.play().catch(() => {});
+      }
+      updateDownloadLink(variant, media);
     };
+  });
 
-    cameraBtns.forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.camera === "front");
-      btn.onclick = () => {
-        currentCamera = btn.dataset.camera;
-        cameraBtns.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
+  speedBtns.forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.speed === "1");
+    btn.onclick = () => {
+      currentSpeed = parseFloat(btn.dataset.speed);
+      if (player) {
+        player.playbackRate = currentSpeed;
+      }
+      speedBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+    };
+  });
 
-        if (player) {
-          player.src = currentCamera === "front" ? media.frontMp4 : media.sideMp4;
-          player.poster = currentCamera === "front" ? media.startImg : media.endImg;
-          player.load();
-          player.playbackRate = currentSpeed;
-          player.play().catch(() => {});
-        }
-        updateDownloadLink();
-      };
-    });
-
-    speedBtns.forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.speed === "1");
-      btn.onclick = () => {
-        currentSpeed = parseFloat(btn.dataset.speed);
-        if (player) {
-          player.playbackRate = currentSpeed;
-        }
-        speedBtns.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-      };
-    });
-
-    updateDownloadLink();
-    elements.modalPlaybackBar.hidden = false;
-  } else {
-    elements.modalVideoContainer.innerHTML = "";
-    elements.modalPlaybackBar.hidden = true;
-    elements.modalExternalActions.innerHTML = "";
-  }
-
-  // Ön ve Yan Açı HD Stüdyo Kareleri
-  if (media.startImg && media.endImg) {
-    elements.modalFramesSection.hidden = false;
-    elements.modalImgStart.src = media.startImg;
-    elements.modalImgEnd.src = media.endImg;
-  } else {
-    elements.modalFramesSection.hidden = true;
-  }
-
-  // İpuçları
-  elements.modalTipsList.innerHTML = tips.map((t) => `<li>${escapeHtml(t)}</li>`).join("");
+  applyModalVariant(activeVariantIndex);
 
   elements.modal.hidden = false;
   document.body.style.overflow = "hidden";
@@ -747,6 +1017,8 @@ function closeMediaModal() {
   }
   elements.modal.hidden = true;
   elements.modalVideoContainer.innerHTML = "";
+  elements.modalVariantsBar.innerHTML = "";
+  elements.modalVariantsBar.hidden = true;
   document.body.style.overflow = "";
 }
 

@@ -1,7 +1,7 @@
 /*
  * Dosya: styles.css
  * Açıklama: Kravitz Lean & Fit web uygulamasının karanlık atletik tasarım sistemi,
- * responsive grid düzeni, yerel HTML5 video sahneleri, egzersiz piramidi ve modal stillerini içerir.
+ * responsive grid düzeni, yerel HTML5 video sahneleri, egzersiz piramidi, alternatif hareket seçici ve modal stillerini içerir.
  */
 
 :root {
@@ -757,6 +757,74 @@ body {
   font-size: 0.83rem;
 }
 
+/* Alternatif Hareket Seçici (Makine Doluysa / Yapılamıyorsa) */
+.alternatives-box {
+  background: var(--bg-main);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: 11px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.alternatives-header {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--amber);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.alt-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.alt-pill-btn {
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface-2);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  line-height: 1.3;
+}
+
+.alt-pill-btn:hover {
+  border-color: rgba(245, 158, 11, 0.45);
+  color: var(--text-primary);
+}
+
+.alt-pill-btn.active {
+  background: var(--amber-soft);
+  border-color: var(--amber);
+  color: var(--amber);
+  font-weight: 700;
+}
+
+.alt-reason-banner {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(245, 158, 11, 0.08);
+  border-left: 3px solid var(--amber);
+  font-size: 0.79rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.alt-reason-banner strong {
+  color: var(--amber);
+}
+
 /* Aktif Dinlenme Core Alt Kutusu */
 .core-rest-btn {
   margin-top: auto;
@@ -1034,6 +1102,20 @@ body {
   display: flex;
   flex-direction: column;
   gap: 18px;
+}
+
+.modal-variants-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--bg-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.modal-variants-bar[hidden] {
+  display: none;
 }
 
 .modal-video-container {
