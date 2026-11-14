@@ -94,8 +94,12 @@ function initEventListeners() {
     renderMainContent();
   });
 
-  // Modal kapatma
+  // Modal kapatma (<dialog> yerel ESC cancel olayı + backdrop tıklaması + odak tuzağı)
   elements.modalCloseBtn.addEventListener("click", closeMediaModal);
+  elements.modal.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    closeMediaModal();
+  });
   elements.modal.addEventListener("click", (event) => {
     if (event.target === elements.modal) {
       closeMediaModal();
@@ -103,9 +107,10 @@ function initEventListeners() {
   });
 
   document.addEventListener("keydown", (event) => {
-    if (elements.modal.hidden) return;
+    if (!elements.modal.open) return;
 
     if (event.key === "Escape") {
+      event.preventDefault();
       closeMediaModal();
       return;
     }

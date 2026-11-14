@@ -1,0 +1,399 @@
+/**
+ * Dosya: styles/components/dialog-modal.css
+ * Açıklama: Yerel HTML <dialog> ve ::backdrop + @starting-style kullanan ARENA
+ * oyuncu profili modalı (masaüstünde geniş sahne, mobilde alttan açılan bottom-sheet).
+ */
+
+@layer components {
+  dialog.modal-backdrop {
+    margin: 0;
+    padding: 0;
+    border: none;
+    max-width: none;
+    max-height: none;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    color: var(--text-1);
+    overflow: visible;
+    z-index: var(--z-modal);
+  }
+
+  dialog.modal-backdrop[open] {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  dialog.modal-backdrop::backdrop {
+    background: var(--scrim-void);
+    backdrop-filter: blur(8px);
+    opacity: 1;
+    transition: opacity var(--dur-transition) var(--ease-out);
+  }
+
+  @starting-style {
+    dialog.modal-backdrop[open]::backdrop {
+      opacity: 0;
+    }
+  }
+
+  .modal-dialog {
+    width: 100%;
+    max-width: 1040px;
+    max-height: 92dvh;
+    overflow-y: auto;
+    background: var(--stage-1);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--day-accent);
+    border-radius: var(--radius-sharp);
+    box-shadow: 0 28px 65px var(--shadow-deep);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition:
+      opacity var(--dur-transition) var(--ease-out),
+      transform var(--dur-transition) var(--ease-out);
+  }
+
+  @starting-style {
+    dialog.modal-backdrop[open] .modal-dialog {
+      opacity: 0;
+      transform: translateY(16px) scale(0.985);
+    }
+  }
+
+  .modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 18px 22px;
+    background: var(--stage-1);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .modal-badge {
+    display: inline-block;
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--day-accent);
+    margin-bottom: 4px;
+  }
+
+  .modal-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-score);
+    font-weight: 700;
+    line-height: 0.95;
+    text-transform: uppercase;
+    color: var(--text-1);
+  }
+
+  .modal-subtitle {
+    margin: 4px 0 0;
+    color: var(--text-2);
+    font-size: var(--fs-14);
+  }
+
+  .modal-close-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--line);
+    background: var(--stage-2);
+    color: var(--text-1);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition:
+      border-color var(--dur-micro) var(--ease-out),
+      background-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out);
+  }
+
+  .modal-close-btn:hover {
+    border-color: var(--volt);
+    background: var(--stage-3);
+    color: var(--volt);
+  }
+
+  .modal-body {
+    padding: 20px 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .modal-variants-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 14px;
+    background: var(--void);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sharp);
+  }
+
+  .modal-variants-bar[hidden] {
+    display: none;
+  }
+
+  .modal-video-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 460px;
+    background: var(--void);
+    border-radius: var(--radius-sharp);
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+
+  .modal-video-container:has(.modal-source-card) {
+    aspect-ratio: auto;
+    max-height: none;
+  }
+
+  .modal-video-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    background: var(--void);
+  }
+
+  .modal-source-card {
+    height: 100%;
+    min-height: 180px;
+    padding: 20px;
+    background:
+      radial-gradient(circle at top left, var(--accent-wash), transparent 65%), var(--void);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .modal-source-card p {
+    margin: 0;
+    max-width: 68ch;
+    font-size: var(--fs-14);
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+
+  .modal-source-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .source-link-btn.is-modal {
+    min-height: 44px;
+    padding: 10px 18px;
+    font-size: var(--fs-14);
+  }
+
+  .license-terms-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 44px;
+    padding: 6px 4px;
+    font-size: var(--fs-12);
+    color: var(--text-2);
+    text-decoration: underline;
+  }
+
+  .license-terms-link:hover {
+    color: var(--text-1);
+  }
+
+  .modal-playback-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--void);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sharp);
+  }
+
+  .camera-group,
+  .speed-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .speed-label {
+    font-size: var(--fs-12);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+
+  .camera-btn,
+  .speed-btn {
+    min-height: 38px;
+    padding: 6px 12px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--line);
+    background: var(--stage-1);
+    color: var(--text-2);
+    font-size: var(--fs-12);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      border-color var(--dur-micro) var(--ease-out),
+      background-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out);
+  }
+
+  .camera-btn.active {
+    background: var(--set-core);
+    color: var(--text-on-accent);
+    border-color: var(--set-core);
+  }
+
+  .speed-btn.active {
+    background: var(--day-accent);
+    color: var(--text-on-accent);
+    border-color: var(--day-accent);
+  }
+
+  .modal-external-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .modal-frames-section h4,
+  .modal-tips-box h4 {
+    margin: 0 0 10px;
+    font-family: var(--font-display);
+    font-size: var(--fs-20);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--text-1);
+  }
+
+  .modal-frames-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .frame-box {
+    margin: 0;
+    background: var(--void);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sharp);
+    overflow: hidden;
+  }
+
+  .frame-box img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .frame-box figcaption {
+    padding: 8px 12px;
+    font-size: var(--fs-12);
+    font-weight: 600;
+    color: var(--text-2);
+    background: var(--stage-2);
+  }
+
+  .modal-details-row {
+    background: var(--void);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--day-accent);
+    border-radius: var(--radius-sharp);
+    padding: 16px;
+  }
+
+  .modal-tips-box ul {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--text-2);
+    font-size: var(--fs-14);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 768px) {
+    dialog.modal-backdrop[open] {
+      padding: 0;
+      align-items: flex-end;
+    }
+
+    .modal-dialog {
+      max-height: 93dvh;
+      border-radius: var(--radius-sharp);
+      border-bottom: none;
+    }
+
+    @starting-style {
+      dialog.modal-backdrop[open] .modal-dialog {
+        opacity: 0;
+        transform: translateY(28px);
+      }
+    }
+
+    .modal-header {
+      padding: 14px 16px;
+    }
+
+    .modal-body {
+      padding: 14px 14px calc(20px + env(safe-area-inset-bottom));
+      gap: 14px;
+    }
+
+    .modal-video-container {
+      aspect-ratio: auto;
+      max-height: none;
+    }
+
+    .modal-playback-bar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .camera-btn,
+    .speed-btn {
+      min-height: 44px;
+    }
+
+    .modal-variants-bar .alt-pills-row {
+      flex-wrap: wrap;
+      overflow-x: visible;
+    }
+
+    .modal-frames-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}

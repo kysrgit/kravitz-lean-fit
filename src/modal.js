@@ -181,7 +181,13 @@ export function openMediaModal({ variants, initialVariantIndex = 0 }) {
 
   applyModalVariant(activeVariantIndex);
 
-  elements.modal.hidden = false;
+  if (typeof elements.modal.showModal === "function") {
+    if (!elements.modal.open) {
+      elements.modal.showModal();
+    }
+  } else {
+    elements.modal.setAttribute("open", "");
+  }
   document.body.style.overflow = "hidden";
   // Ekran okuyucu ve klavye gezinmesi icin odaklamayi senkron uygula
   const focusables = getModalFocusableElements();
@@ -198,7 +204,13 @@ export function closeMediaModal() {
   if (player) {
     player.pause();
   }
-  elements.modal.hidden = true;
+  if (typeof elements.modal.close === "function") {
+    if (elements.modal.open) {
+      elements.modal.close();
+    }
+  } else {
+    elements.modal.removeAttribute("open");
+  }
   elements.modalVideoContainer.innerHTML = "";
   elements.modalVariantsBar.innerHTML = "";
   elements.modalVariantsBar.hidden = true;
