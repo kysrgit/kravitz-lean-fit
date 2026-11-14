@@ -1,8 +1,8 @@
 <!--
   Dosya: index.html
-  Açıklama: Kravitz Lean & Fit (MACFit) antrenman ve beslenme rehberi web uygulamasının
+  Açıklama: Kravitz Lean & Fit antrenman ve beslenme rehberi web uygulamasının
   mobil öncelikli (Mobile-First) ana HTML iskeleti. Gün sekmeleri, thumb-zone mobil alt navigasyon barı,
-  yazılı/tablo özet görünümü, hareket ve alternatif kartları, reklamsız yerel video oynatıcısı ve detay modalını barındırır.
+  yazılı/tablo özet görünümü, hareket ve alternatif kartları, dış kaynak form bağlantıları ve detay modalını barındırır.
 -->
 <!DOCTYPE html>
 <html lang="tr">
@@ -39,7 +39,7 @@
     <header class="top-header">
       <div class="container header-inner">
         <div class="brand">
-          <div class="brand-badge">MACFIT · HD STÜDYO VİDEO &amp; GÖRSEL</div>
+          <div class="brand-badge">MACFIT · ANTRENMAN &amp; BESLENME REHBERİ</div>
           <h1 class="brand-title">KRAVITZ SİSTEMİ</h1>
         </div>
 
@@ -79,8 +79,8 @@
           </h2>
           <p class="hero-subtitle">
             25 yaş · <strong>62,9 kg kas kütleni</strong> koruyarak gövdede toplanan
-            <strong>10,6 kg (%23,1) yağı</strong> eritmek için tasarlanmış, sıfır reklamlı yerleşik
-            açık kaynak video ve görsel destekli MACFit salon rehberin.
+            <strong>10,6 kg (%23,1) yağı</strong> eritmek için tasarlanmış, reklamsız ve doğrulanmış
+            harici MuscleWiki form referanslı MACFit salon rehberin.
           </p>
         </div>
 
@@ -153,9 +153,10 @@
           Dinlenmesi · Denzel kuralı: <em>"Pantolonlar yalan söylemez."</em>
         </p>
         <p class="footer-sub">
-          Tüm egzersiz videoları ve kareleri açık kaynaklı 16:9 HD / Full HD / 4K stüdyo
-          çekimlerinden site içine indirilmiş olup sıfır reklamla yerel HTML5
-          <code>.mp4</code> olarak sunulmaktadır.
+          Egzersiz formu referansları harici bağlantılarla
+          <a href="https://musclewiki.com" target="_blank" rel="noopener noreferrer">MuscleWiki</a>
+          egzersiz sayfalarına yönlendirilir (<a href="https://api.musclewiki.com/api-terms" target="_blank" rel="noopener noreferrer">MuscleWiki Kullanım Şartları</a>);
+          üçüncü taraf video ve görseller bu repoda barındırılmaz.
         </p>
       </div>
     </footer>
@@ -163,7 +164,7 @@
     <!-- Mobil Tek El (Thumb-Zone) Sabit Alt Navigasyon Barı -->
     <nav id="mobile-bottom-nav" class="mobile-bottom-nav" aria-label="Mobil Hızlı Sekmeler"></nav>
 
-    <!-- Reklamsız Yerel Video & Detay Modalı -->
+    <!-- Egzersiz Formu & Detay Modalı -->
     <div
       id="media-modal"
       class="modal-backdrop"
@@ -193,14 +194,14 @@
           <!-- Modal İçi Ana Hareket / Alternatif Varyant Seçici -->
           <div id="modal-variants-bar" class="modal-variants-bar" hidden></div>
 
-          <!-- Yerel HTML5 HD MP4 Oynatıcı + Kamera Açısı ve Hız Kontrolleri -->
+          <!-- Harici MuscleWiki Form Referansı veya Lisanslı Medya Oynatıcısı -->
           <div id="modal-video-container" class="modal-video-container"></div>
 
-          <div id="modal-playback-bar" class="modal-playback-bar">
+          <div id="modal-playback-bar" class="modal-playback-bar" hidden>
             <div class="camera-group" role="group" aria-label="Kamera açısı seçimi">
               <span class="speed-label">Kamera:</span>
-              <button type="button" class="camera-btn active" data-camera="front">Ön Açı (HD)</button>
-              <button type="button" class="camera-btn" data-camera="side">Yan Açı (HD)</button>
+              <button type="button" class="camera-btn active" data-camera="front">Ön Açı</button>
+              <button type="button" class="camera-btn" data-camera="side">Yan Açı</button>
             </div>
 
             <div class="speed-group" role="group" aria-label="Video oynatma hızı">
@@ -212,17 +213,17 @@
             <div id="modal-external-actions" class="modal-external-actions"></div>
           </div>
 
-          <!-- Yüksek Çözünürlüklü Ön ve Yan Açı Form Kareleri -->
-          <div id="modal-frames-section" class="modal-frames-section">
-            <h4>Yüksek Çözünürlüklü (HD) Stüdyo Form Kareleri</h4>
+          <!-- Form Kareleri (yalnızca lisanslı medya sağlandığında görünür) -->
+          <div id="modal-frames-section" class="modal-frames-section" hidden>
+            <h4>Form Kareleri</h4>
             <div class="modal-frames-grid">
               <figure class="frame-box">
-                <img id="modal-img-start" src="" alt="Ön açı HD form karesi" loading="lazy" />
-                <figcaption>Ön Açı · Başlangıç / Form Karesi</figcaption>
+                <img id="modal-img-start" alt="Ön açı form karesi" loading="lazy" />
+                <figcaption>Ön Açı · Form Karesi</figcaption>
               </figure>
               <figure class="frame-box">
-                <img id="modal-img-end" src="" alt="Yan açı HD form karesi" loading="lazy" />
-                <figcaption>Yan Açı · Kasılma / Duruş Karesi</figcaption>
+                <img id="modal-img-end" alt="Yan açı form karesi" loading="lazy" />
+                <figcaption>Yan Açı · Form Karesi</figcaption>
               </figure>
             </div>
           </div>

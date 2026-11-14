@@ -1,20 +1,95 @@
 /**
  * Dosya: data.js
- * Açıklama: Kravitz Lean & Fit (MACFit) antrenman programı, görsel olarak doğrulanmış reklamsız yerel
- * HD/Full HD/4K stüdyo video/fotoğraf yolları, her hareket için 2'şer alternatif egzersiz, Tanita özeti,
- * 21'ler Core rehberi ve beslenme protokolünü içerir.
+ * Açıklama: Kravitz Lean & Fit antrenman programı, harici MuscleWiki egzersiz bağlantıları (`sourceUrl`),
+ * her hareket için 2'şer alternatif egzersiz, 21'ler Core rehberi ve beslenme protokolünü içerir.
  */
 
-// Yardımcı fonksiyon: Egzersizin yerel HD/Full HD Ön ve Yan Açı MP4 videoları ile HD fotoğraf karelerini döndürür
-export function getExerciseMedia(videoKey) {
-  if (!videoKey) {
-    return { frontMp4: null, sideMp4: null, startImg: null, endImg: null };
-  }
+export const MUSCLEWIKI_LICENSE_URL = "https://api.musclewiki.com/api-terms";
+
+const EXERCISE_SOURCE_URLS = {
+  "ab_wheel": "https://musclewiki.com/exercise/roll-outs",
+  "arnold_press": "https://musclewiki.com/exercise/dumbbell-seated-arnold-press",
+  "assisted_pullup": "https://musclewiki.com/exercise/machine-assisted-pull-up",
+  "barbell_bent_over_row": "https://musclewiki.com/exercise/barbell-bent-over-row",
+  "barbell_curl": "https://musclewiki.com/exercise/barbell-curl",
+  "barbell_hip_thrust": "https://musclewiki.com/exercise/barbell-hip-thrust",
+  "barbell_incline_press": "https://musclewiki.com/exercise/barbell-incline-bench-press",
+  "barbell_overhead_press": "https://musclewiki.com/exercise/barbell-overhead-press",
+  "bench_dips": "https://musclewiki.com/exercise/bench-dips",
+  "bicycle_crunch": "https://musclewiki.com/exercise/bodyweight-bicycle-crunch",
+  "bodyweight_crunch": "https://musclewiki.com/exercise/bodyweight-crunch",
+  "bodyweight_lunges": "https://musclewiki.com/exercise/bodyweight-forward-lunge",
+  "bodyweight_pushup": "https://musclewiki.com/exercise/push-up",
+  "bulgarian_split_squat": "https://musclewiki.com/exercise/dumbbell-bulgarian-split-squat",
+  "cable_bayesian_curl": "https://musclewiki.com/exercise/cable-bayesian-curl",
+  "cable_crossover": "https://musclewiki.com/exercise/cable-pec-fly",
+  "cable_crunch": "https://musclewiki.com/exercise/cable-rope-kneeling-crunch",
+  "cable_hammer_curl": "https://musclewiki.com/exercise/cable-hammer-curl",
+  "cable_lateral_raise": "https://musclewiki.com/exercise/cable-low-single-arm-lateral-raise",
+  "cable_woodchopper": "https://musclewiki.com/exercise/cable-woodchopper",
+  "db_overhead_triceps": "https://musclewiki.com/exercise/dumbbell-overhead-tricep-extension",
+  "db_romanian_deadlift": "https://musclewiki.com/exercise/dumbbell-romanian-deadlift",
+  "dead_bug": "https://musclewiki.com/exercise/dead-bug",
+  "decline_crunch": "https://musclewiki.com/exercise/bodyweight-situp",
+  "dumbbell_bicep_curl": "https://musclewiki.com/exercise/dumbbell-curl",
+  "dumbbell_calf_raise": "https://musclewiki.com/exercise/dumbbell-calf-raise",
+  "dumbbell_chest_fly": "https://musclewiki.com/exercise/dumbbell-chest-fly",
+  "dumbbell_lateral_raise": "https://musclewiki.com/exercise/dumbbell-lateral-raise",
+  "dumbbell_leg_curl": "https://musclewiki.com/exercise/dumbbell-leg-curl",
+  "dumbbell_rear_delt_fly": "https://musclewiki.com/exercise/dumbbell-rear-delt-fly",
+  "face_pull": "https://musclewiki.com/exercise/machine-face-pulls",
+  "farmers_walk": "https://musclewiki.com/exercise/kettlebell-farmers-carry",
+  "goblet_squat": "https://musclewiki.com/exercise/dumbbell-goblet-squat",
+  "hack_squat": "https://musclewiki.com/exercise/machine-hack-squat",
+  "hanging_leg_raise": "https://musclewiki.com/exercise/hanging-knee-raises",
+  "incline_db_press": "https://musclewiki.com/exercise/dumbbell-incline-bench-press",
+  "incline_hammer_curl": "https://musclewiki.com/exercise/dumbbell-incline-hammer-curl",
+  "incline_walk": "https://musclewiki.com/exercise/treadmill-walk",
+  "kettlebell_swing": "https://musclewiki.com/exercise/kettlebell-swing",
+  "leg_press": "https://musclewiki.com/exercise/leg-press",
+  "lying_leg_curl": "https://musclewiki.com/exercises/hamstrings",
+  "lying_leg_raise": "https://musclewiki.com/exercise/laying-leg-raises",
+  "machine_chest_press": "https://musclewiki.com/exercise/machine-chest-press",
+  "machine_pec_fly": "https://musclewiki.com/exercise/machine-pec-fly",
+  "mountain_climbers": "https://musclewiki.com/exercise/mountain-climber",
+  "plank": "https://musclewiki.com/exercise/hand-plank",
+  "plank_pullthrough": "https://musclewiki.com/exercise/dumbbell-plank-pullthrough",
+  "renegade_row_pushup": "https://musclewiki.com/exercise/dumbbell-renegade-row",
+  "reverse_crunch": "https://musclewiki.com/exercise/reverse-crunch-kick-up",
+  "reverse_fly_machine": "https://musclewiki.com/exercise/machine-reverse-fly",
+  "romanian_deadlift": "https://musclewiki.com/exercise/barbell-romanian-deadlift",
+  "rope_triceps_pushdown": "https://musclewiki.com/exercise/cable-cross-pushdown",
+  "russian_twist": "https://musclewiki.com/exercise/dumbbell-russian-twist",
+  "seated_cable_row": "https://musclewiki.com/exercise/seated-cable-row",
+  "seated_calf_raise": "https://musclewiki.com/exercise/machine-seated-calf-raises",
+  "seated_db_shoulder_press": "https://musclewiki.com/exercise/dumbbell-seated-overhead-press",
+  "seated_leg_curl": "https://musclewiki.com/exercise/machine-seated-leg-curl",
+  "single_arm_db_row": "https://musclewiki.com/exercise/dumbbell-single-arm-row",
+  "standing_calf_raise": "https://musclewiki.com/exercise/machine-standing-calf-raises",
+  "standing_hammer_curl": "https://musclewiki.com/exercise/dumbbell-hammer-curl",
+  "stomach_vacuum": "https://musclewiki.com/exercises/abdominals",
+  "straight_arm_pulldown": "https://musclewiki.com/exercise/cable-bent-over-bar-pullover",
+  "underhand_pulldown": "https://musclewiki.com/exercise/machine-underhand-pulldown",
+  "walking_lunges": "https://musclewiki.com/exercise/dumbbell-forward-lunge",
+  "wide_grip_lat_pulldown": "https://musclewiki.com/exercise/machine-pulldown"
+};
+
+// Yardımcı fonksiyon: Egzersizin dış kaynak form sayfası bağlantısını ve lisans bilgisini döndürür.
+// Üçüncü taraf video/görseller telif ve lisans uyumu nedeniyle bu repoda barındırılmaz.
+export function getExerciseMedia(keyOrItem) {
+  const isObj = keyOrItem && typeof keyOrItem === "object";
+  const videoKey = isObj ? keyOrItem.videoKey : keyOrItem;
+  const directSourceUrl = isObj ? keyOrItem.sourceUrl : null;
+  const sourceUrl =
+    directSourceUrl || (videoKey ? EXERCISE_SOURCE_URLS[videoKey] || "https://musclewiki.com/" : null);
+
   return {
-    frontMp4: `./assets/videos/${videoKey}-front.mp4`,
-    sideMp4: `./assets/videos/${videoKey}-side.mp4`,
-    startImg: `./assets/images/${videoKey}/start.jpg`,
-    endImg: `./assets/images/${videoKey}/end.jpg`,
+    sourceUrl,
+    licenseUrl: MUSCLEWIKI_LICENSE_URL,
+    frontMp4: null,
+    sideMp4: null,
+    startImg: null,
+    endImg: null,
   };
 }
 
@@ -101,6 +176,7 @@ export const CORE_LIBRARY = {
     reps: "21 Tekrar (3 Set)",
     imageId: "Hanging_Leg_Raise",
     videoKey: "hanging_leg_raise",
+    sourceUrl: "https://musclewiki.com/exercise/hanging-knee-raises",
     formCue:
       "Barfikse asıl, sallanmayı durdur. Dizlerini veya düz bacaklarını kalçanı hafifçe yukarı kıvırarak göğsüne çek. Yavaşça indir.",
     macfitTip: "Zorlanırsan ilk sette diz bükük (Knee Raise), sonraki setlerde düz bacak yapabilirsin.",
@@ -112,6 +188,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar (3 Set)",
         whenToUse: "Barfiks demiri doluysa, avuçların/ön kolun yorulduysa veya sallanmayı önlemek istediğinde.",
         videoKey: "lying_leg_raise",
+        sourceUrl: "https://musclewiki.com/exercise/laying-leg-raises",
         formCue:
           "Sırtüstü yat, eller kalça yanında veya sehpaya sabit. Bel boşluğunu yere bastırarak bacakları kontrollü kaldırıp yere değmeden durdur.",
         macfitTip: "İniş fazını 2 saniyeye yaymak alt karındaki gerilimi barfiks kadar yoğun tutar.",
@@ -123,6 +200,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar (3 Set)",
         whenToUse: "Bacakları düz kaldırırken belin öne açılıyorsa dizler bükülü şekilde saf alt karın için.",
         videoKey: "reverse_crunch",
+        sourceUrl: "https://musclewiki.com/exercise/reverse-crunch-kick-up",
         formCue:
           "Dizleri göğse doğru çekip leğen kemiğini hafifçe yerden yukarı kıvır; kontrollü şekilde başlangıç açısına dön.",
         macfitTip: "Bacaklarla ivme almak yerine sadece alt karnını bükerek kalçayı yerden ayır.",
@@ -137,6 +215,7 @@ export const CORE_LIBRARY = {
     reps: "21 Tekrar (3 Set)",
     imageId: "Cable_Crunch",
     videoKey: "cable_crunch",
+    sourceUrl: "https://musclewiki.com/exercise/cable-rope-kneeling-crunch",
     formCue:
       "Halat aparatını şakak hizasında sabitle, kalçanı geriye oynatmadan sadece omurganı bükerek dirseklerini dizlerine yaklaştır.",
     macfitTip: "Ağırlığı kollarınla değil, karnını sıkarak aşağı çek; en alt noktada nefesi tamamen boşalt.",
@@ -148,6 +227,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar (3 Set)",
         whenToUse: "MACFit kablo istasyonu veya halat aparatı yoğun saatte doluysa hiç beklemeden matta uygula.",
         videoKey: "bodyweight_crunch",
+        sourceUrl: "https://musclewiki.com/exercise/bodyweight-crunch",
         formCue:
           "Dizler bükülü sırtüstü yat, eller şakaklarda. Belini yerden kaldırmadan sadece kürek kemiklerini yerden ayırıp karnını sık.",
         macfitTip: "Boynundan çekme; çenenle göğsün arasında bir yumruk boşluk kalsın.",
@@ -159,6 +239,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar (3 Set)",
         whenToUse: "Daha yüksek tekrarlı nabız artışı ve tüm ön karın duvarını çalıştırmak istediğinde.",
         videoKey: "decline_crunch",
+        sourceUrl: "https://musclewiki.com/exercise/bodyweight-situp",
         formCue:
           "Ayaklar yerde sabit, karın kaslarıyla gövdeyi kontrollü şekilde yukarı kaldır ve yavaşça belini yere sererek in.",
         macfitTip: "İnerken kendini yere bırakma; inişin son kısmında karın kasların aktif kalsın.",
@@ -173,6 +254,7 @@ export const CORE_LIBRARY = {
     reps: "21 Tekrar (3 Set)",
     imageId: "Air_Bike",
     videoKey: "bicycle_crunch",
+    sourceUrl: "https://musclewiki.com/exercise/bodyweight-bicycle-crunch",
     formCue:
       "Sırtüstü yat, eller kulak hizasında (boyundan çekme). Sağ dirseği sol dize yaklaştırırken diğer bacağı yere paralel uzat.",
     macfitTip: "Hızlı ve savurarak değil, her dönüşte 1 saniye karın sıkıştırmasıyla uygula.",
@@ -184,6 +266,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar (3 Set)",
         whenToUse: "Yatar pozisyonda boynun gerginleşiyorsa oturarak yan bel kaslarını hedefle.",
         videoKey: "russian_twist",
+        sourceUrl: "https://musclewiki.com/exercise/dumbbell-russian-twist",
         formCue:
           "Sırtı dik tutarak gövdeyi 45° geriye yasla, omuz ve göğsü sağa-sola kontrollü döndür.",
         macfitTip: "Başlangıçta ağırlıksız, ilerledikçe 5 kg dambıl veya plaka ile uygula.",
@@ -195,6 +278,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar (Her Yön)",
         whenToUse: "Yerde mat sermek istemediğinde, kablo makinesinin hemen yanında ayakta devam etmek için.",
         videoKey: "cable_woodchopper",
+        sourceUrl: "https://musclewiki.com/exercise/cable-woodchopper",
         formCue:
           "Kabloyu göğüs hizasında tut, ayakları sabitleyip gövdeni yan karın kaslarınla döndür.",
         macfitTip: "Düşük kilo seç, dönüşü kollarınla değil göbek hizandan üret.",
@@ -209,6 +293,7 @@ export const CORE_LIBRARY = {
     reps: "45 Saniye Tutuş",
     imageId: "Plank",
     videoKey: "plank",
+    sourceUrl: "https://musclewiki.com/exercise/hand-plank",
     formCue:
       "Dirsekler omuz altında, kalça ne yukarıda ne sarkık. Göbek deliğini omurgaya doğru içeri çekerek tüm gövdeyi kilitle.",
     macfitTip: "Belini çukurlaştırmadan kalçanı ve karnını aynı anda sıktığında karın titremeye başlamalı.",
@@ -220,6 +305,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar (Sağ-Sol)",
         whenToUse: "Üst itiş günlerinde omuzların plankta çok yoruluyorsa veya belinde hassasiyet varsa.",
         videoKey: "dead_bug",
+        sourceUrl: "https://musclewiki.com/exercise/dead-bug",
         formCue:
           "Sırtüstü yat, beli yere tamamen yapıştır. Sağ kolu geriye uzatırken sol bacağı yere değdirmeden aç ve merkeze dön.",
         macfitTip: "Belinin altına elin girmemeli; tüm hareket boyunca beli zemine mühürle.",
@@ -231,6 +317,7 @@ export const CORE_LIBRARY = {
         reps: "30-45 Saniye Tutuş",
         whenToUse: "Standart plank sana kolay gelmeye başladığında iç karın yoğunluğunu 2 katına çıkarmak için.",
         videoKey: "stomach_vacuum",
+        sourceUrl: "https://musclewiki.com/exercises/abdominals",
         formCue:
           "Sırtüstü uzan, bel boşluğunu yere bastırıp kolları baş gerisine, bacakları yerden 15 cm yukarıda uzatarak kilitle.",
         macfitTip: "Zorlanırsan dizleri hafifçe bükerek bel temasını koru.",
@@ -245,6 +332,7 @@ export const CORE_LIBRARY = {
     reps: "21 Tekrar (3 Set)",
     imageId: "Decline_Crunch",
     videoKey: "decline_crunch",
+    sourceUrl: "https://musclewiki.com/exercise/bodyweight-situp",
     formCue:
       "Ayakları sabitle veya dizleri bük, beli sertçe yere vurmadan karın kaslarınla gövdeyi yukarı kaldırıp kontrollü geri in.",
     macfitTip: "MACFit'te eğimli mekik sehpası doluysa veya boşsa düz mat üstünde aynı tempoyla uygula.",
@@ -256,6 +344,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar (3 Set)",
         whenToUse: "Tam mekikte kalça önü (hip flexor) yoruluyor veya belin ağrıyorsa saf üst karın için.",
         videoKey: "bodyweight_crunch",
+        sourceUrl: "https://musclewiki.com/exercise/bodyweight-crunch",
         formCue:
           "Alt sırt zemine yapışık kalsın; sadece üst gövdeyi 30° kaldırıp tepede 1 saniye karnını sık.",
         macfitTip: "Kalça fleksörlerini devreden çıkarmak için topuklarını kalçana yakın tut.",
@@ -267,6 +356,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar",
         whenToUse: "Eğimli sehpa rahatsız ediyorsa sıfır omurga bükülmesiyle derin karın çalıştırmak için.",
         videoKey: "dead_bug",
+        sourceUrl: "https://musclewiki.com/exercise/dead-bug",
         formCue:
           "Belini mata bastır, ters kol ve bacağı kontrollü nefes vererek uzat.",
         macfitTip: "Her nefes verişte göbek deliğini içine çek.",
@@ -281,6 +371,7 @@ export const CORE_LIBRARY = {
     reps: "21 Tekrar (3 Set)",
     imageId: "Russian_Twist",
     videoKey: "russian_twist",
+    sourceUrl: "https://musclewiki.com/exercise/dumbbell-russian-twist",
     formCue:
       "Gövdeyi 45 derece geriye yatır, sırtı dik tut. Topuklar hafifçe havada veya yerde iken göğüs kafesini sağa-sola çevir.",
     macfitTip: "Sadece ellerini değil omuzlarını ve göğsünü döndür; ilk sette ağırlıksız, sonra 5 kg dambıl tutabilirsin.",
@@ -292,6 +383,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar (Her Yön)",
         whenToUse: "Oturarak gövde çevirmek belinde batma yaratıyorsa dik omurga pozisyonunda ayakta uygula.",
         videoKey: "cable_woodchopper",
+        sourceUrl: "https://musclewiki.com/exercise/cable-woodchopper",
         formCue:
           "Kabloyu omuz hizasına al, yan dön ve kolları gergin tutup gövdeyle çevir.",
         macfitTip: "Ayak parmak uçların sabit, kalçanı kilitleyip sadece bel üstünü döndür.",
@@ -303,6 +395,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar (Toplam)",
         whenToUse: "Dambıl veya ek ağırlık olmadan yüksek nabızlı çapraz karın için.",
         videoKey: "bicycle_crunch",
+        sourceUrl: "https://musclewiki.com/exercise/bodyweight-bicycle-crunch",
         formCue:
           "Sırtüstü yat, ters dirseği ters dize yaklaştırırken diğer bacağı tam aç.",
         macfitTip: "Üst karın + yan bel simidini aynı anda vurur.",
@@ -317,6 +410,7 @@ export const CORE_LIBRARY = {
     reps: "21 Tekrar (3 Set)",
     imageId: "Flat_Bench_Lying_Leg_Raise",
     videoKey: "lying_leg_raise",
+    sourceUrl: "https://musclewiki.com/exercise/laying-leg-raises",
     formCue:
       "Düz sehpaya veya mata uzan, ellerle sehpanın kenarını tut. Bel boşluğunu yere bastırarak bacakları kontrollü kaldır ve indir.",
     macfitTip: "Topukları yere değdirmeden durdurmak alt karındaki gerilimi kesintisiz tutar.",
@@ -328,6 +422,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar (3 Set)",
         whenToUse: "Bacakları düz indirirken alt belin yerden havalanıyorsa bel güvenliği için.",
         videoKey: "reverse_crunch",
+        sourceUrl: "https://musclewiki.com/exercise/reverse-crunch-kick-up",
         formCue:
           "Dizler bükülü halde bacakları yukarı kaldırırken kalçanı hafifçe yerden ayırıp kontrollü indir.",
         macfitTip: "Bel açığını kapatmak için diz bükülü versiyon her zaman daha güvenlidir.",
@@ -339,6 +434,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar",
         whenToUse: "İki bacağı aynı anda indirmek belini zorluyorsa tek bacakla aynı alt karın gerilimini yakala.",
         videoKey: "dead_bug",
+        sourceUrl: "https://musclewiki.com/exercise/dead-bug",
         formCue:
           "Sırayla bir bacağı yere paralel indirip geri çek; diğer bacak 90° açıda kalsın.",
         macfitTip: "Bel teması bozulduğu an hareketi bir üst açıda durdur.",
@@ -353,6 +449,7 @@ export const CORE_LIBRARY = {
     reps: "21 Tekrar (Her Yön / 3 Set)",
     imageId: "Standing_Cable_Wood_Chop",
     videoKey: "cable_woodchopper",
+    sourceUrl: "https://musclewiki.com/exercise/cable-woodchopper",
     formCue:
       "Kablo makinesini omuz hizasına al, yan dön. Kollar gergin halde kabloyu gövdeni döndürerek karşı tarafa çek.",
     macfitTip: "Düşük kilo seç, kollarla değil yan karın (oblik) kaslarınla dönüşü üret.",
@@ -364,6 +461,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar (3 Set)",
         whenToUse: "MACFit kablo istasyonu doluysa tek bir dambılla mat üstünde hemen uygula.",
         videoKey: "russian_twist",
+        sourceUrl: "https://musclewiki.com/exercise/dumbbell-russian-twist",
         formCue:
           "Gövde 45° geride, göğsünü her tekrarda sağa-sola tam döndür.",
         macfitTip: "Dizlerini birbirine yapıştırırsan oblik aktivasyonu daha da artar.",
@@ -375,6 +473,7 @@ export const CORE_LIBRARY = {
         reps: "20 Çekiş (Sağ-Sol)",
         whenToUse: "Dönmeyi engelleyen (anti-rotasyon) derin bel kası çalışması yapmak istediğinde.",
         videoKey: "plank_pullthrough",
+        sourceUrl: "https://musclewiki.com/exercise/dumbbell-plank-pullthrough",
         formCue:
           "Şınav pozisyonunda tek elle yerdeki dambılı gövdenin altından karşı tarafa çek; kalçan dönmesin.",
         macfitTip: "Ayakları omuzdan biraz geniş açmak kalçayı sabit tutmayı kolaylaştırır.",
@@ -389,6 +488,7 @@ export const CORE_LIBRARY = {
     reps: "21 Tekrar (3 Set)",
     imageId: "Reverse_Crunch",
     videoKey: "reverse_crunch",
+    sourceUrl: "https://musclewiki.com/exercise/reverse-crunch-kick-up",
     formCue:
       "Sırtüstü yat, bacakları yukarı uzatıp kalçanı kontrollü şekilde yerden kaldırarak alt karnı maksimum sıkıştır.",
     macfitTip: "İvme almak yerine alt karın kasıyla leğen kemiğini yukarı kıvırmaya odaklan.",
@@ -400,6 +500,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar (3 Set)",
         whenToUse: "Kalçayı dikey yukarı kıvırmakta zorlanıyorsan uzun kaldıraçlı alt karın gerilimi için.",
         videoKey: "lying_leg_raise",
+        sourceUrl: "https://musclewiki.com/exercise/laying-leg-raises",
         formCue:
           "Eller kalça yanında sabit, bacakları yere değdirmeden yukarı kaldırıp yavaşça indir.",
         macfitTip: "Bacakları yukarıda 90 dereceden geriye kaçırmadan dur.",
@@ -411,6 +512,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar",
         whenToUse: "Sırt/boyun gerginliğini tamamen sıfırlayarak alt karnı izole etmek için.",
         videoKey: "dead_bug",
+        sourceUrl: "https://musclewiki.com/exercise/dead-bug",
         formCue:
           "Bel boşluğunu zemine bastır, çapraz kol ve bacağı senkronize açıp kapat.",
         macfitTip: "Nefes verirken alt karnın sertleştiğini hisset.",
@@ -425,6 +527,7 @@ export const CORE_LIBRARY = {
     reps: "21 Tekrar (veya 12-15 Temiz)",
     imageId: "Ab_Roller",
     videoKey: "ab_wheel",
+    sourceUrl: "https://musclewiki.com/exercise/roll-outs",
     formCue:
       "Dizlerin üstünde tekerleği tut, kalçayı sık ve sırtı hafif kamburlaştır. Belini çukurlaştırmadan ileri uzanıp karınla geri çek.",
     macfitTip: "Belinde batma hissettiğin an açılma mesafesini kısalt.",
@@ -436,6 +539,7 @@ export const CORE_LIBRARY = {
         reps: "45 Saniye Tutuş",
         whenToUse: "MACFit fonksiyonel alanında karın tekerleği (Ab Roller) yoksa veya belin çukurlaşıyorsa.",
         videoKey: "plank",
+        sourceUrl: "https://musclewiki.com/exercise/hand-plank",
         formCue:
           "Dirsekler omuz altında, kalçayı sıkarak tüm ön karnı kilitle ve sabit kal.",
         macfitTip: "Dirsekleri ayak uçlarına doğru çekiyormuş gibi izometrik güç uygula.",
@@ -447,6 +551,7 @@ export const CORE_LIBRARY = {
         reps: "20 Çekiş",
         whenToUse: "Tekerlek yerine serbest dambıl kullanarak derin karın dayanıklılığı kurmak için.",
         videoKey: "plank_pullthrough",
+        sourceUrl: "https://musclewiki.com/exercise/dumbbell-plank-pullthrough",
         formCue:
           "Plank pozisyonunda dambılı göğüs altından yana çek ve kalçayı oynatma.",
         macfitTip: "Hafif-orta (5-7.5 kg) dambıl bu hareket için idealdir.",
@@ -461,6 +566,7 @@ export const CORE_LIBRARY = {
     reps: "21 Tekrar (Her Bacak)",
     imageId: "Mountain_Climbers",
     videoKey: "mountain_climbers",
+    sourceUrl: "https://musclewiki.com/exercise/mountain-climber",
     formCue:
       "Şınav pozisyonunda eller omuz altında. Kalçayı zıplatmadan sırayla dizleri hızla göğse çek.",
     macfitTip: "Nefesini tutma, ritmik ve hızlı tempoyla nabzı yukarı taşı.",
@@ -472,6 +578,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar (Her Yön)",
         whenToUse: "El bileklerin veya omuzların ağırlık setlerinden yorulduysa yükü üst gövdeden almak için.",
         videoKey: "bicycle_crunch",
+        sourceUrl: "https://musclewiki.com/exercise/bodyweight-bicycle-crunch",
         formCue:
           "Sırtüstü yat ve seri ama kontrollü biçimde çapraz diz-dirsek teması kur.",
         macfitTip: "Bacakları tam uzatarak nabzı ve karın yanmasını aynı seviyede tut.",
@@ -483,6 +590,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar",
         whenToUse: "Bilek hassasiyetinde veya zıplama/darbe istemediğin günlerde.",
         videoKey: "dead_bug",
+        sourceUrl: "https://musclewiki.com/exercise/dead-bug",
         formCue:
           "Sırtüstü bel sabit, ters kol-bacak değişimini akıcı tempoda uygula.",
         macfitTip: "Nefes kontrolünü hiç bozmadan tempoyu belirle.",
@@ -497,6 +605,7 @@ export const CORE_LIBRARY = {
     reps: "Her Sabah 5 Set × 20 Saniye",
     imageId: "Stomach_Vacuum",
     videoKey: "stomach_vacuum",
+    sourceUrl: "https://musclewiki.com/exercises/abdominals",
     formCue:
       "Sabah aç karnına tüm havayı boşaltıp göbek deliğini omurgaya vakumla; salonda veya matta Hollow Hold pozisyonunda beli yere bastırarak iç korseyi kilitle.",
     macfitTip: "Ayakta öne hafif eğilerek yapılan vakum + salonda Hollow Hold bel çevresini en hızlı daraltan kombinasyondur.",
@@ -508,6 +617,7 @@ export const CORE_LIBRARY = {
         reps: "21 Tekrar",
         whenToUse: "Hollow Hold sırasında bel boşluğun yerden havalanıyorsa beli koruyarak iç karını sıkmak için.",
         videoKey: "dead_bug",
+        sourceUrl: "https://musclewiki.com/exercise/dead-bug",
         formCue:
           "Dizler 90° havada beli yere mühürle, nefes vererek çapraz uzan.",
         macfitTip: "Her nefes verişte karnını içine doğru çekerek vakum etkisi yarat.",
@@ -519,6 +629,7 @@ export const CORE_LIBRARY = {
         reps: "45 Saniye Tutuş",
         whenToUse: "Sırtüstü yerine yüzüstü yerçekimine karşı göbek deliğini yukarı çekmek istediğinde.",
         videoKey: "plank",
+        sourceUrl: "https://musclewiki.com/exercise/hand-plank",
         formCue:
           "Dirsekler üstünde dur, göbeğini yukarı omurgaya doğru vakumlayıp tut.",
         macfitTip: "Nefesini kesmeden küçük burun nefesleriyle tutuşu sürdür.",
@@ -533,6 +644,7 @@ export const CORE_LIBRARY = {
     reps: "10 Dakika Finisher (Eğim 10-12 / Hız 5.0-5.5 km/s)",
     imageId: "Walking_Treadmill",
     videoKey: "incline_walk",
+    sourceUrl: "https://musclewiki.com/exercise/treadmill-walk",
     formCue:
       "Koşu bandının ön barlarına tutunmadan dik dur. Adımlarını kalçadan iterek at ve burundan nefes alıp ver.",
     macfitTip: "Bacak veya ağırlık antrenmanı sonunda glikojen azalmışken yapılan bu yürüyüş saf yağ oksidasyonunu hızlandırır.",
@@ -544,6 +656,7 @@ export const CORE_LIBRARY = {
         reps: "4 Tur × 21/Bacak (30 sn Ara)",
         whenToUse: "MACFit'te tüm koşu bantları doluysa beklemeden metabolik yağ yakımıyla günü kapatmak için.",
         videoKey: "mountain_climbers",
+        sourceUrl: "https://musclewiki.com/exercise/mountain-climber",
         formCue:
           "Plank pozisyonunda seri diz çekişlerle nabzı 140+ BPM bandına taşı.",
         macfitTip: "Her turun ardından 20 saniye ayakta derin nefeslen ve hemen devam et.",
@@ -555,6 +668,7 @@ export const CORE_LIBRARY = {
         reps: "3 Set × 25 Tekrar (45 sn Ara)",
         whenToUse: "Kardiyo alanına geçemiyorsan dambıl alanında son bir yağ yakım bloğu için.",
         videoKey: "goblet_squat",
+        sourceUrl: "https://musclewiki.com/exercise/dumbbell-goblet-squat",
         formCue:
           "Göğüste hafif-orta dambıl tut, kesintisiz ve akıcı tempoda çömelip kalk.",
         macfitTip: "Büyük bacak kasları oksijen tüketimini zirveye çıkararak ekstra kalori yaktırır.",
@@ -584,6 +698,7 @@ export const WORKOUT_DAYS = [
         equipment: "30° Eğimli Sehpa + Dambıl",
         imageId: "Incline_Dumbbell_Press",
         videoKey: "incline_db_press",
+        sourceUrl: "https://musclewiki.com/exercise/dumbbell-incline-bench-press",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Çok Hafif (Isınma & Kan Pompalama)" },
           { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
@@ -605,6 +720,7 @@ export const WORKOUT_DAYS = [
             equipment: "Eğimli Sehpa + Olimpik Bar",
             whenToUse: "İstediğin ağırlıktaki dambıllar doluysa veya ağır 5 tekrarlık sette dengeyi daha kolay kurmak istediğinde.",
             videoKey: "barbell_incline_press",
+            sourceUrl: "https://musclewiki.com/exercise/barbell-incline-bench-press",
             tips: [
               "Barı köprücük kemiğinin 2-3 parmak altına kontrollü indir ve göğsü kilitle.",
               "Omuz genişliğinden bir karış açık tutuşla bileklerini dik tut.",
@@ -617,6 +733,7 @@ export const WORKOUT_DAYS = [
             equipment: "MACFit Chest Press Makinesi",
             whenToUse: "Serbest ağırlık sehpaları tamamen doluysa veya tek başına güvenli şekilde tükenişe gitmek istediğinde.",
             videoKey: "machine_chest_press",
+            sourceUrl: "https://musclewiki.com/exercise/machine-chest-press",
             tips: [
               "Koltuk yüksekliğini tutamaklar orta göğüs hizana gelecek şekilde ayarla.",
               "Omuzlarını geride sehpaya bastırarak itişi tamamen göğüste tut.",
@@ -633,6 +750,7 @@ export const WORKOUT_DAYS = [
         equipment: "Dik Sehpa + Dambıl",
         imageId: "Dumbbell_Shoulder_Press",
         videoKey: "seated_db_shoulder_press",
+        sourceUrl: "https://musclewiki.com/exercise/dumbbell-seated-overhead-press",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif Ağırlık" },
           { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
@@ -653,6 +771,7 @@ export const WORKOUT_DAYS = [
             equipment: "Dik Sehpa + Hafif-Orta Dambıl",
             whenToUse: "Ön ve yan omuz ekleminde sıkışma hissediyorsan veya daha düşük kiloyla maksimum yanma arıyorsan.",
             videoKey: "arnold_press",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-seated-arnold-press",
             tips: [
               "Başlangıçta avuç içleri sana dönük olsun, yukarı iterken bilekleri dışa doğru çevir.",
               "Rotasyon sayesinde omuzun hem ön hem yan başı tek harekette ateşlenir.",
@@ -665,6 +784,7 @@ export const WORKOUT_DAYS = [
             equipment: "Olimpik Bar + Squat Rack",
             whenToUse: "Dik sehpalar boş değilse hem omuz hem derin karın korseni çalıştırmak için.",
             videoKey: "barbell_overhead_press",
+            sourceUrl: "https://musclewiki.com/exercise/barbell-overhead-press",
             tips: [
               "Kalçanı ve karnını sık, belini geriye yaslamadan barı baş üstüne düz çizgide it.",
               "Bar yüzünden geçerken kafanı hafif geriye çek, üstte koltuk altlarını ileri aç.",
@@ -681,6 +801,7 @@ export const WORKOUT_DAYS = [
         equipment: "Dambıl",
         imageId: "Side_Lateral_Raise",
         videoKey: "dumbbell_lateral_raise",
+        sourceUrl: "https://musclewiki.com/exercise/dumbbell-lateral-raise",
         pyramidSets: [
           { set: 1, reps: "35 Tekrar", load: "Çok Hafif (2.5 - 4 kg)" },
           { set: 2, reps: "20 Tekrar", load: "Hafif-Orta" },
@@ -701,6 +822,7 @@ export const WORKOUT_DAYS = [
             equipment: "Cable İstasyonu (En Alt Makara)",
             whenToUse: "Hareketin her milimetresinde sabit gerilim istediğinde veya hafif dambıl bulamadığında.",
             videoKey: "cable_lateral_raise",
+            sourceUrl: "https://musclewiki.com/exercise/cable-low-single-arm-lateral-raise",
             tips: [
               "Makarayı bilek hizasına indir, boş elinle makine direğini tutup gövdeni sabit tut.",
               "Kabloyu önünden veya arkandan geçirerek yan omzu tamamen izole et.",
@@ -713,6 +835,7 @@ export const WORKOUT_DAYS = [
             equipment: "Dambıl",
             whenToUse: "Yan omuza ek olarak arka omuz yuvarlaklığını da vurgulayıp duruşunu dikleştirmek istediğinde.",
             videoKey: "dumbbell_rear_delt_fly",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-rear-delt-fly",
             tips: [
               "Kalçadan öne eğil, sırtı düz tut ve dambılları dirseklerinle dışa süpür.",
               "Kürek kemiklerini sıkmaktan ziyade elleri yan duvarlara uzatmaya odaklan.",
@@ -729,6 +852,7 @@ export const WORKOUT_DAYS = [
         equipment: "MACFit Cable İstasyonu",
         imageId: "Cable_Crossover",
         videoKey: "cable_crossover",
+        sourceUrl: "https://musclewiki.com/exercise/cable-pec-fly",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
@@ -748,6 +872,7 @@ export const WORKOUT_DAYS = [
             equipment: "MACFit Pec Fly Makinesi",
             whenToUse: "Çiftli kablo istasyonu yoğun saatlerde doluysa oturduğun yerden aynı açıyla göğsü izole et.",
             videoKey: "machine_pec_fly",
+            sourceUrl: "https://musclewiki.com/exercise/machine-pec-fly",
             tips: [
               "Tutamaklar omuzundan yukarıda olmasın; göğüs ortası hizasına otur.",
               "Kolları geriye omuzları aşırı esnetmeyecek kadar açıp önde birleştir.",
@@ -760,6 +885,7 @@ export const WORKOUT_DAYS = [
             equipment: "Düz Sehpa + Dambıl",
             whenToUse: "Kablo ve kelebek makinesinin ikisi de meşgulse dambıl alanında hızlı çözüm için.",
             videoKey: "dumbbell_chest_fly",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-chest-fly",
             tips: [
               "Büyük bir ağaca sarılır gibi kolları geniş yay çizerek aç, dirsekleri kilitleme.",
               "Dambılları yukarıda birbirine vurmadan göğüs hizasında sıkıştırarak dur.",
@@ -776,6 +902,7 @@ export const WORKOUT_DAYS = [
         equipment: "Cable + Düz Bar veya İp",
         imageId: "Triceps_Pushdown_-_Rope_Attachment",
         videoKey: "rope_triceps_pushdown",
+        sourceUrl: "https://musclewiki.com/exercise/cable-cross-pushdown",
         pyramidSets: [
           { set: 1, reps: "35 Tekrar", load: "Hafif" },
           { set: 2, reps: "20 Tekrar", load: "Orta" },
@@ -796,6 +923,7 @@ export const WORKOUT_DAYS = [
             equipment: "Tek Ağır Dambıl",
             whenToUse: "Kablo sırası beklemek istemediğinde ve arka kolun uzun başını tam esnetmek istediğinde.",
             videoKey: "db_overhead_triceps",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-overhead-tricep-extension",
             tips: [
               "Tek dambılı iki elinle başının arkasından kontrollü indirip tavana kilitle.",
               "Dirseklerin yanlara aşırı açılmasına izin verme, başa yakın tut.",
@@ -808,6 +936,7 @@ export const WORKOUT_DAYS = [
             equipment: "Düz Sehpa (Vücut Ağırlığı)",
             whenToUse: "Hiçbir ekipman boş değilse sadece bir sehpa kenarıyla yüksek tekrar pump almak için.",
             videoKey: "bench_dips",
+            sourceUrl: "https://musclewiki.com/exercise/bench-dips",
             tips: [
               "Sırtını sehpaya çok yakın indir, dirsekler 90° bükülene kadar inip arka kolla it.",
               "Zorlaştırmak istersen ayaklarını ileri uzatabilirsin.",
@@ -836,6 +965,7 @@ export const WORKOUT_DAYS = [
         equipment: "MACFit Leg Press Makinesi",
         imageId: "Leg_Press",
         videoKey: "leg_press",
+        sourceUrl: "https://musclewiki.com/exercise/leg-press",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif (Diz & Kalça Isındırma)" },
           { set: 2, reps: "15 Tekrar", load: "Orta Plaka" },
@@ -856,6 +986,7 @@ export const WORKOUT_DAYS = [
             equipment: "MACFit Hack Squat",
             whenToUse: "Leg Press doluysa veya beli destekleyerek ön bacağı daha derin çalıştırmak istediğinde.",
             videoKey: "hack_squat",
+            sourceUrl: "https://musclewiki.com/exercise/machine-hack-squat",
             tips: [
               "Belini pedle tam bütünleştir, topukları kaldırmadan dizlerin yönünde derinleş.",
               "Yine piramit 30-15-10-5 düzeniyle kası yanana kadar uygula.",
@@ -868,6 +999,7 @@ export const WORKOUT_DAYS = [
             equipment: "Tek Ağır Dambıl / Kettlebell",
             whenToUse: "Tüm bacak makineleri sıradaysa dambıl alanında metabolizmayı hızlandıran serbest hareket için.",
             videoKey: "goblet_squat",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-goblet-squat",
             tips: [
               "Dambılı göğsüne yapıştır, dirsekler diz içlerine doğru çömel ve topuklardan iterek kalk.",
               "Gövdeni dik tuttuğun için core ve bacak aynı anda çalışır.",
@@ -884,6 +1016,7 @@ export const WORKOUT_DAYS = [
         equipment: "Olimpik Bar",
         imageId: "Romanian_Deadlift",
         videoKey: "romanian_deadlift",
+        sourceUrl: "https://musclewiki.com/exercise/barbell-romanian-deadlift",
         pyramidSets: [
           { set: 1, reps: "25 Tekrar", load: "Hafif (Form Provası)" },
           { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
@@ -904,6 +1037,7 @@ export const WORKOUT_DAYS = [
             equipment: "Çift Dambıl",
             whenToUse: "Olimpik bar veya rack alanı boş değilse dambıllarla kalçaya daha rahat ağırlık merkezi kurmak için.",
             videoKey: "db_romanian_deadlift",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-romanian-deadlift",
             tips: [
               "Dambılları bacak önünden değil yan-ön çaprazda sürterek kaval kemiği ortasına kadar indir.",
               "Arka bacakta gerilme zirveye çıktığında kalçayı öne iterek doğrul.",
@@ -916,6 +1050,7 @@ export const WORKOUT_DAYS = [
             equipment: "Düz Sehpa + Bar (veya Hip Thrust Makinesi)",
             whenToUse: "Belinde hafif yorgunluk varsa bel yükünü azaltıp doğrudan kalça ve arka zinciri patlatmak için.",
             videoKey: "barbell_hip_thrust",
+            sourceUrl: "https://musclewiki.com/exercise/barbell-hip-thrust",
             tips: [
               "Kürek kemiklerinin alt ucu sehpaya dayalı olsun, tepe noktada kalçayı 1 saniye sertçe sık.",
               "Çeneni hafif göğse yakın tutarak belini aşırı kavisleme.",
@@ -932,6 +1067,7 @@ export const WORKOUT_DAYS = [
         equipment: "Dambıl",
         imageId: "Dumbbell_Lunges",
         videoKey: "walking_lunges",
+        sourceUrl: "https://musclewiki.com/exercise/dumbbell-forward-lunge",
         pyramidSets: [
           { set: 1, reps: "20 Tekrar", load: "Vücut Ağırlığı / Hafif (Her Bacak 10)" },
           { set: 2, reps: "12 Tekrar", load: "Orta Dambıl (Her Bacak 6)" },
@@ -951,6 +1087,7 @@ export const WORKOUT_DAYS = [
             equipment: "Düz Sehpa + Dambıl",
             whenToUse: "Salonda yürümek için boş koridor yoksa tek bir sehpa başında bacak ve kalçayı yakmak için.",
             videoKey: "bulgarian_split_squat",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-bulgarian-split-squat",
             tips: [
               "Arka ayağın üstünü sehpaya koy, gövdeyi hafif öne verip ön topuktan güç alarak kalk.",
               "Önce zayıf bacağınla başla, iki bacağa da eşit tekrar yap.",
@@ -963,6 +1100,7 @@ export const WORKOUT_DAYS = [
             equipment: "Ekipmansız",
             whenToUse: "Bacakların çok yorulduğunda veya dizlerinde hafif hassasiyet varsa yüksek tempolu form için.",
             videoKey: "bodyweight_lunges",
+            sourceUrl: "https://musclewiki.com/exercise/bodyweight-forward-lunge",
             tips: [
               "Elleri göğüs önünde birleştirip denge kur, arka dizi yere hafifçe yaklaştırıp ön topukla it.",
               "Kesintisiz akıcı tempo nabzını yüksek tutar.",
@@ -979,6 +1117,7 @@ export const WORKOUT_DAYS = [
         equipment: "MACFit Seated Leg Curl",
         imageId: "Seated_Leg_Curl",
         videoKey: "seated_leg_curl",
+        sourceUrl: "https://musclewiki.com/exercise/machine-seated-leg-curl",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
@@ -998,6 +1137,7 @@ export const WORKOUT_DAYS = [
             equipment: "MACFit Lying Leg Curl",
             whenToUse: "MACFit şubende oturarak model yoksa veya Seated Leg Curl makinesi doluysa.",
             videoKey: "lying_leg_curl",
+            sourceUrl: "https://musclewiki.com/exercises/hamstrings",
             tips: [
               "Kalçanı pedden kaldırmadan topuklarını kalçana doğru çek ve zirvede 1 sn sık.",
               "Kontrollü iniş arka bacak sıkılaşmasını 2 kat artırır.",
@@ -1010,6 +1150,7 @@ export const WORKOUT_DAYS = [
             equipment: "Düz Sehpa + Tek Dambıl",
             whenToUse: "Her iki arka bacak makinesi de sıradaysa sadece bir sehpa ve dambılla izole etmek için.",
             videoKey: "dumbbell_leg_curl",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-leg-curl",
             tips: [
               "Sehpaya yüzüstü uzan, hafif-orta bir dambılı ayak tabanlarının arasına sıkıştırıp topukları kalçaya çek.",
               "Dambılı yere düşürmemek için yavaş ve kontrollü tekrar yap.",
@@ -1026,6 +1167,7 @@ export const WORKOUT_DAYS = [
         equipment: "Calf Makinesi + Koşu Bandı",
         imageId: "Standing_Calf_Raises",
         videoKey: "standing_calf_raise",
+        sourceUrl: "https://musclewiki.com/exercise/machine-standing-calf-raises",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "20 Tekrar", load: "Orta" },
@@ -1045,6 +1187,7 @@ export const WORKOUT_DAYS = [
             equipment: "Seated Calf Makinesi",
             whenToUse: "Ayakta Calf Raise veya Smith Machine doluysa, alt bacağın Soleus kasını hedeflemek için.",
             videoKey: "seated_calf_raise",
+            sourceUrl: "https://musclewiki.com/exercise/machine-seated-calf-raises",
             tips: [
               "Aşil tendonunda tam esneme hissetmek için her tekrarın dibinde 1 saniye dur.",
               "Dizler 90° bükülü olduğu için kalfın alt-dış hattını şekillendirir.",
@@ -1057,6 +1200,7 @@ export const WORKOUT_DAYS = [
             equipment: "Çift Dambıl (İsteğe Bağlı Basamak/Plaka)",
             whenToUse: "Kalf makinelerinin hiçbiri boş değilse dambıl yanında hemen tamamlamak için.",
             videoKey: "dumbbell_calf_raise",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-calf-raise",
             tips: [
               "Parmak uçlarını bir ağırlık plakasının üstüne koyarsan hareket açıklığı artar.",
               "Sallanmayı önlemek için bir sehpaya tek elle hafif destek alabilirsin.",
@@ -1085,6 +1229,7 @@ export const WORKOUT_DAYS = [
         equipment: "Lat Pulldown İstasyonu",
         imageId: "Wide-Grip_Lat_Pulldown",
         videoKey: "wide_grip_lat_pulldown",
+        sourceUrl: "https://musclewiki.com/exercise/machine-pulldown",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif (Kanat Aktivasyonu)" },
           { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
@@ -1105,6 +1250,7 @@ export const WORKOUT_DAYS = [
             equipment: "MACFit Assisted Pull-Up",
             whenToUse: "Lat Pulldown doluysa veya kendi vücut ağırlığınla dikey sırt çekişi yapmak istediğinde.",
             videoKey: "assisted_pullup",
+            sourceUrl: "https://musclewiki.com/exercise/machine-assisted-pull-up",
             tips: [
               "Destek ağırlığını son sette azaltarak zorlayıcı 5-8 tekrara yaklaş.",
               "Göğsünü bara doğru kaldırıp kürek kemiklerini aşağı bastır.",
@@ -1117,6 +1263,7 @@ export const WORKOUT_DAYS = [
             equipment: "Lat Pulldown İstasyonu",
             whenToUse: "Omuz önü hassasiyetinde veya alt kanat (lower lats) liflerini daha yoğun vurmak için.",
             videoKey: "underhand_pulldown",
+            sourceUrl: "https://musclewiki.com/exercise/machine-underhand-pulldown",
             tips: [
               "Avuç içleri sana baksın, eller omuz genişliğinde olsun.",
               "Dirseklerini kalçana doğru aşağı çek; biceps de ek destek verecektir.",
@@ -1133,6 +1280,7 @@ export const WORKOUT_DAYS = [
         equipment: "Seated Row İstasyonu",
         imageId: "Seated_Cable_Rows",
         videoKey: "seated_cable_row",
+        sourceUrl: "https://musclewiki.com/exercise/seated-cable-row",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
@@ -1153,6 +1301,7 @@ export const WORKOUT_DAYS = [
             equipment: "Düz Sehpa + Tek Dambıl",
             whenToUse: "Seated Row makinesi doluysa veya sağ-sol sırt dengesizliğini gidermek istediğinde.",
             videoKey: "single_arm_db_row",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-single-arm-row",
             tips: [
               "Dambılı göğse doğru değil, kalça cebine doğru yay çizerek çek.",
               "Sırtını masa gibi düz tut, omuzu aşağı serbest bırakıp kürek kemiğini tam çalıştır.",
@@ -1165,6 +1314,7 @@ export const WORKOUT_DAYS = [
             equipment: "Olimpik Bar / Z-Bar",
             whenToUse: "Tüm kablo ve sırt makineleri meşgulse barla tüm arka zinciri ve sırt kalınlığını vurmak için.",
             videoKey: "barbell_bent_over_row",
+            sourceUrl: "https://musclewiki.com/exercise/barbell-bent-over-row",
             tips: [
               "Dizleri hafif bük, gövdeyi ~45° öne eğ ve barı göbek deliğine doğru çek.",
               "Belini kilitlemek için karnını içeride tut.",
@@ -1181,6 +1331,7 @@ export const WORKOUT_DAYS = [
         equipment: "Cable + İp Aparatı",
         imageId: "Face_Pull",
         videoKey: "face_pull",
+        sourceUrl: "https://musclewiki.com/exercise/machine-face-pulls",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "20 Tekrar", load: "Orta" },
@@ -1200,6 +1351,7 @@ export const WORKOUT_DAYS = [
             equipment: "MACFit Reverse Fly (Pec Deck Ters)",
             whenToUse: "Kablo halatı doluysa kelebek makinesine ters oturarak aynı arka omuz hedefini vur.",
             videoKey: "reverse_fly_machine",
+            sourceUrl: "https://musclewiki.com/exercise/machine-reverse-fly",
             tips: [
               "Göğsünü pede daya, dirsekleri omuz hizasında tutarak kolları geriye doğru aç.",
               "Trapezleri sıkmadan sadece arka omuz başlarıyla hareket et.",
@@ -1212,6 +1364,7 @@ export const WORKOUT_DAYS = [
             equipment: "Hafif Dambıl (3-6 kg)",
             whenToUse: "Kablo veya makine boş değilse düşük dambıllarla her yerde uygulanabilen alternatif.",
             videoKey: "dumbbell_rear_delt_fly",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-rear-delt-fly",
             tips: [
               "Hafif ağırlık seç ki ivme almadan arka omuzların 30-15 tekrarda tam yansın.",
               "Hareketi durdurmadan akıcı ve kontrollü uygula.",
@@ -1228,6 +1381,7 @@ export const WORKOUT_DAYS = [
         equipment: "Dambıl (4-5 kg'dan 17.5-20 kg'a)",
         imageId: "Dumbbell_Bicep_Curl",
         videoKey: "dumbbell_bicep_curl",
+        sourceUrl: "https://musclewiki.com/exercise/dumbbell-curl",
         pyramidSets: [
           { set: 1, reps: "45 Tekrar", load: "4-5 kg (Tam Lenny Kravitz Pompası)" },
           { set: 2, reps: "20 Tekrar", load: "9-10 kg" },
@@ -1248,6 +1402,7 @@ export const WORKOUT_DAYS = [
             equipment: "Düz Bar veya Z-Bar",
             whenToUse: "Aradığın basamaklardaki dambıllar doluysa tek bir bara plaka ekleyerek piramidi sürdür.",
             videoKey: "barbell_curl",
+            sourceUrl: "https://musclewiki.com/exercise/barbell-curl",
             tips: [
               "Boş bar (~10-15 kg) veya Z-bar (~7.5 kg) ile 35-45 tekrarla başla, plaka takarak 5 tekrara in.",
               "Bilek hassasiyetinde Z-bar kavrayışı çok rahattır.",
@@ -1260,6 +1415,7 @@ export const WORKOUT_DAYS = [
             equipment: "Cable İstasyonu (Alt Makara)",
             whenToUse: "Sabit gerilimle biceps tepe noktasını ve uzun başını ekstra esnetmek istediğinde.",
             videoKey: "cable_bayesian_curl",
+            sourceUrl: "https://musclewiki.com/exercise/cable-bayesian-curl",
             tips: [
               "Kablo makinesine arkanı dönüp bir adım öne çık ki kolun gövdenin hafif arkasından başlasın.",
               "Dirseği arkada sabitleyip sadece ön kolu bük.",
@@ -1276,6 +1432,7 @@ export const WORKOUT_DAYS = [
         equipment: "45° Sehpa + Dambıl",
         imageId: "Incline_Hammer_Curls",
         videoKey: "incline_hammer_curl",
+        sourceUrl: "https://musclewiki.com/exercise/dumbbell-incline-hammer-curl",
         pyramidSets: [
           { set: 1, reps: "25 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
@@ -1295,6 +1452,7 @@ export const WORKOUT_DAYS = [
             equipment: "Sadece Dambıl (Sehpasız)",
             whenToUse: "Eğimli sehpa boş değilse veya ayakta biraz daha ağır kilogramlarla çalışmak istediğinde.",
             videoKey: "standing_hammer_curl",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-hammer-curl",
             tips: [
               "Dirseklerini kaburga yanına kilitle, dambılları sallamadan nötr tutuşla omza çek.",
               "İnişte 2 saniyede kontrollü bırakmak ön kol kasını (brachioradialis) güçlendirir.",
@@ -1307,6 +1465,7 @@ export const WORKOUT_DAYS = [
             equipment: "Cable + İp Aparatı",
             whenToUse: "Dambıl rafı kalabalıksa veya pin takarak ağırlıkları 5 saniyede değiştirmek istediğinde.",
             videoKey: "cable_hammer_curl",
+            sourceUrl: "https://musclewiki.com/exercise/cable-hammer-curl",
             tips: [
               "Alt makaraya halat tak, başparmaklar yukarı bakacak şekilde çekip tepede 1 sn sık.",
               "Ağırlığı indirdiğinde dirseklerde hafif gerginlik kalsın, tam boşaltma.",
@@ -1335,6 +1494,7 @@ export const WORKOUT_DAYS = [
         equipment: "Kettlebell (MACFit Fonksiyonel Alan)",
         imageId: "One-Arm_Kettlebell_Swings",
         videoKey: "kettlebell_swing",
+        sourceUrl: "https://musclewiki.com/exercise/kettlebell-swing",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "10-12 kg (Ritmi Bul)" },
           { set: 2, reps: "20 Tekrar", load: "14-16 kg" },
@@ -1355,6 +1515,7 @@ export const WORKOUT_DAYS = [
             equipment: "Tek Dambıl",
             whenToUse: "MACFit'te ağır Kettlebell yoksa veya o gün beline dinamik salınım yükü vermek istemiyorsan.",
             videoKey: "goblet_squat",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-goblet-squat",
             tips: [
               "Orta ağırlıkta bir dambılı dik tutup duraksamadan 30-20-15 tekrar tempoda squat yap.",
               "Kalp ritmini Kettlebell Swing kadar hızlı yükseltir.",
@@ -1367,6 +1528,7 @@ export const WORKOUT_DAYS = [
             equipment: "Çift Dambıl",
             whenToUse: "Aynı kalça ve arka bacak kas grubunu daha kontrollü tempoyla vurmak için.",
             videoKey: "db_romanian_deadlift",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-romanian-deadlift",
             tips: [
               "Kalçayı geriye it, yukarı çıkarken kalçayı ve karnı sertçe kilitle.",
               "Dinlenmeleri 30 saniyede tutarak metabolik etkiyi koru.",
@@ -1383,6 +1545,7 @@ export const WORKOUT_DAYS = [
         equipment: "2 Adet Altıgen (Hex) Dambıl",
         imageId: "Alternating_Renegade_Row",
         videoKey: "renegade_row_pushup",
+        sourceUrl: "https://musclewiki.com/exercise/dumbbell-renegade-row",
         pyramidSets: [
           { set: 1, reps: "20 Tekrar (Toplam)", load: "Hafif Dambıl (7.5 - 10 kg) · İsteğe Bağlı Arada Şınav" },
           { set: 2, reps: "16 Tekrar (Toplam)", load: "Orta Dambıl (12.5 kg)" },
@@ -1402,6 +1565,7 @@ export const WORKOUT_DAYS = [
             equipment: "Ekipmansız",
             whenToUse: "Yuvarlak dambıllar bileğini burkuyorsa veya altıgen (Hex) dambıl bulamadıysan.",
             videoKey: "bodyweight_pushup",
+            sourceUrl: "https://musclewiki.com/exercise/push-up",
             tips: [
               "Karın ve kalçayı plank gibi sık, göğsü yere yaklaştırıp dirsekleri 45° geriye it.",
               "Yüksek tekrarlarla göğüs + core dayanıklılığını uçurur.",
@@ -1414,6 +1578,7 @@ export const WORKOUT_DAYS = [
             equipment: "Tek Dambıl",
             whenToUse: "Sadece 1 dambıl varken aynı anti-rotasyon karın kilidini bilek yükü olmadan yakalamak için.",
             videoKey: "plank_pullthrough",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-plank-pullthrough",
             tips: [
               "Ellerin doğrudan zeminde olsun (bilek daha güvenli), sırayla tek elle dambılı altından karşıya çek.",
               "Gövdenin dönmesine izin verme.",
@@ -1430,6 +1595,7 @@ export const WORKOUT_DAYS = [
         equipment: "Cable + Düz Bar veya İp",
         imageId: "Straight-Arm_Pulldown",
         videoKey: "straight_arm_pulldown",
+        sourceUrl: "https://musclewiki.com/exercise/cable-bent-over-bar-pullover",
         pyramidSets: [
           { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
@@ -1449,6 +1615,7 @@ export const WORKOUT_DAYS = [
             equipment: "Lat Pulldown Makinesi",
             whenToUse: "Kablo istasyonu doluysa doğrudan Lat makinesinde yüksek tekrar sırt pompası için.",
             videoKey: "wide_grip_lat_pulldown",
+            sourceUrl: "https://musclewiki.com/exercise/machine-pulldown",
             tips: [
               "Hafif-orta kiloyla göğsüne çekip kanatlarda 1 saniye kasılma hisset.",
               "Setler arası beklemeden hemen core hareketine geç.",
@@ -1461,6 +1628,7 @@ export const WORKOUT_DAYS = [
             equipment: "Dambıl + Sehpa",
             whenToUse: "Tüm kablo istasyonları meşgulse kesintisiz tempolu sırt ve kalp atışı için.",
             videoKey: "single_arm_db_row",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-single-arm-row",
             tips: [
               "Sağ kol 15 tekrar bitince hiç dinlenmeden sol kola geç.",
               "Karın korseni sıkı tutarak omurga rotasyonunu sıfırda tut.",
@@ -1477,6 +1645,7 @@ export const WORKOUT_DAYS = [
         equipment: "2 Adet Ağır Kettlebell veya Dambıl",
         imageId: "Farmers_Walk",
         videoKey: "farmers_walk",
+        sourceUrl: "https://musclewiki.com/exercise/kettlebell-farmers-carry",
         pyramidSets: [
           { set: 1, reps: "45 Saniye Yürüyüş", load: "Orta-Ağır (2× 20 kg)" },
           { set: 2, reps: "45 Saniye Yürüyüş", load: "Ağır (2× 25 kg)" },
@@ -1496,6 +1665,7 @@ export const WORKOUT_DAYS = [
             equipment: "Tek Dambıl",
             whenToUse: "Salon çok kalabalıksa ve ağır ağırlıklarla yürüyecek boş koridor yoksa yerinde aynı core kası için.",
             videoKey: "plank_pullthrough",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-plank-pullthrough",
             tips: [
               "Şınav pozisyonunda karnı ve kalçayı kilitleyip ağırlığı sağa-sola kontrollü taşı.",
               "Bölgesel bel ve oblik dayanıklılığını zirveye çıkarır.",
@@ -1508,6 +1678,7 @@ export const WORKOUT_DAYS = [
             equipment: "Ekipmansız",
             whenToUse: "Ön kol tutuşun önceki günlerden çok yorgunsa tutuş gereksinimi olmadan bel korseni sıkılaştırmak için.",
             videoKey: "plank",
+            sourceUrl: "https://musclewiki.com/exercise/hand-plank",
             tips: [
               "Göbeğini omurgaya vakumlayarak 45-60 saniye kusursuz düz çizgiyi koru.",
               "Yürüyüş olmadan benzer derin karın yorgunluğu sağlar.",
@@ -1524,6 +1695,7 @@ export const WORKOUT_DAYS = [
         equipment: "Ekipmansız (Sabah + Antrenman Kapanışı)",
         imageId: "Stomach_Vacuum",
         videoKey: "stomach_vacuum",
+        sourceUrl: "https://musclewiki.com/exercises/abdominals",
         pyramidSets: [
           { set: 1, reps: "20-30 Sn Tutuş", load: "Sabah Aç Karnına / Finisher - Set 1" },
           { set: 2, reps: "20-30 Sn Tutuş", load: "Sabah Aç Karnına / Finisher - Set 2" },
@@ -1546,6 +1718,7 @@ export const WORKOUT_DAYS = [
             equipment: "Ekipmansız (Mat)",
             whenToUse: "Hollow hold sırasında belin yerden havalanıyor ve bel boşluğun ağrıyorsa.",
             videoKey: "dead_bug",
+            sourceUrl: "https://musclewiki.com/exercise/dead-bug",
             tips: [
               "Her çapraz uzanmada tüm nefesini boşaltıp belini yere mühürle.",
               "İç karın kasını zorlamadan ama son derece etkili çalıştırır.",
@@ -1559,6 +1732,7 @@ export const WORKOUT_DAYS = [
             equipment: "Ekipmansız (Mat)",
             whenToUse: "Sırtüstü yatmadan veya sabah rutinine ek yüzüstü iç karın çalışması istediğinde.",
             videoKey: "plank",
+            sourceUrl: "https://musclewiki.com/exercise/hand-plank",
             tips: [
               "Plank duruşundayken göbeğini yerçekimine ters şekilde omurgaya doğru içeri çek.",
               "Karın kasların yanarken bel çukurunu sıfırda tut.",

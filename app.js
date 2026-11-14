@@ -3,11 +3,12 @@
  * Açıklama: Kravitz Lean & Fit uygulamasının mobil öncelikli (Mobile-First) arayüz oluşturma,
  * üst + alt başparmak (thumb-zone) sekme yönetimi, gün içi ve tam sayfa yazılı/tablolu program özeti,
  * ana + alternatif hareket arama, kart ve modal içi etkileşimli Alternatif Hareketler seçicisi,
- * çift kamera açılı (Ön/Yan) HD/Full HD MP4 video sahneleri ve hız kontrollü detay modalını yürütür.
+ * dış kaynak MuscleWiki form referans bağlantıları ("Formu izle ↗") ve detay modalını yürütür.
  */
 
 import {
   CORE_LIBRARY,
+  MUSCLEWIKI_LICENSE_URL,
   NUTRITION_PROTOCOL,
   SYSTEM_PILLARS,
   TANITA_PROFILE,
@@ -121,6 +122,7 @@ function getExerciseVariants(item, kind) {
       modalBadge: `Aktif Dinlenme Core · ${item.reps}`,
       whenToUse: null,
       videoKey: item.videoKey,
+      sourceUrl: item.sourceUrl || getExerciseMedia(item.videoKey).sourceUrl,
       tips: [item.formCue, `MACFit İpucu: ${item.macfitTip}`],
     };
 
@@ -135,6 +137,7 @@ function getExerciseVariants(item, kind) {
       modalBadge: `Alternatif Core · ${alt.reps || item.reps}`,
       whenToUse: alt.whenToUse,
       videoKey: alt.videoKey,
+      sourceUrl: alt.sourceUrl || getExerciseMedia(alt.videoKey).sourceUrl,
       tips: [alt.formCue, `MACFit İpucu: ${alt.macfitTip}`],
     }));
 
@@ -152,6 +155,7 @@ function getExerciseVariants(item, kind) {
     modalBadge: `${item.muscleGroup} · ${item.equipment}`,
     whenToUse: null,
     videoKey: item.videoKey,
+    sourceUrl: item.sourceUrl || getExerciseMedia(item.videoKey).sourceUrl,
     tips: item.tips || [],
   };
 
@@ -170,6 +174,7 @@ function getExerciseVariants(item, kind) {
       modalBadge: `Alternatif · ${secondaryTag}`,
       whenToUse: alt.whenToUse,
       videoKey: alt.videoKey,
+      sourceUrl: alt.sourceUrl || getExerciseMedia(alt.videoKey).sourceUrl,
       tips: alt.tips || [],
     };
   });
@@ -291,68 +296,114 @@ function renderTabs() {
   }
 }
 
-// Medya sahnesi HTML'ini (Ön/Yan Açı HD MP4 videolar + HD form fotoğrafları) üretir
-function createMediaStageHtml({ badgeText, name, videoKey, triggerAttr }) {
-  const media = getExerciseMedia(videoKey);
+// Medya veya dış form referans sahnesi HTML'ini üretir
+// Lisanslı yerel medya yoksa MuscleWiki kaynak sayfasına giden "Formu izle ↗" bağlantısı gösterilir.
+function createMediaStageHtml({
+  badgeText,
+  name,
+  primaryTag,
+  secondaryTag,
+  tips = [],
+  sourceUrl,
+  videoKey,
+  triggerAttr,
+}) {
+  const media = getExerciseMedia({ videoKey, sourceUrl });
+
+  if (media.frontMp4) {
+    return `
+      <div class="media-stage" data-media-mode="front">
+        <video
+          class="media-video"
+          src="${escapeHtml(media.frontMp4)}"
+          poster="${escapeHtml(media.startImg || "")}"
+          data-front-src="${escapeHtml(media.frontMp4)}"
+          data-side-src="${escapeHtml(media.sideMp4 || "")}"
+          autoplay
+          loop
+          muted
+          playsinline
+          preload="metadata"
+          aria-label="${escapeHtml(name)} hareket videosu"
+        ></video>
+
+        ${
+          media.startImg
+            ? `<img
+                class="media-frame frame-start is-hidden"
+                src="${escapeHtml(media.startImg)}"
+                alt="${escapeHtml(name)} ön açı karesi"
+                loading="lazy"
+              />`
+            : ""
+        }
+        ${
+          media.endImg
+            ? `<img
+                class="media-frame frame-end is-hidden"
+                src="${escapeHtml(media.endImg)}"
+                alt="${escapeHtml(name)} yan açı karesi"
+                loading="lazy"
+              />`
+            : ""
+        }
+
+        <div class="media-overlay-top">
+          <span class="order-badge">${escapeHtml(badgeText)}</span>
+          <span class="pose-indicator">Ön Açı · Video</span>
+        </div>
+
+        <div class="media-controls-bar">
+          <div class="pose-toggle-group" role="group" aria-label="Kamera ve görünüm seçici">
+            <button type="button" class="pose-btn active" data-mode="front">Ön Açı</button>
+            <button type="button" class="pose-btn" data-mode="side">Yan Açı</button>
+            <button type="button" class="pose-btn" data-mode="photo">Kare</button>
+          </div>
+
+          <button
+            type="button"
+            class="video-trigger-btn"
+            ${triggerAttr}
+          >
+            <span>Form &amp; Detay</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  const resolvedUrl = media.sourceUrl || "https://musclewiki.com/";
+  const cueText = tips[0] || "Kontrollü tempo ve tam hareket açıklığıyla uygula.";
+  const metaSummary = [primaryTag, secondaryTag].filter(Boolean).join(" · ");
 
   return `
-    <div class="media-stage" data-media-mode="front">
-      <video
-        class="media-video"
-        src="${escapeHtml(media.frontMp4)}"
-        poster="${escapeHtml(media.startImg || "")}"
-        data-front-src="${escapeHtml(media.frontMp4)}"
-        data-side-src="${escapeHtml(media.sideMp4)}"
-        autoplay
-        loop
-        muted
-        playsinline
-        preload="metadata"
-        aria-label="${escapeHtml(name)} HD hareket videosu"
-      ></video>
-
-      ${
-        media.startImg
-          ? `<img
-              class="media-frame frame-start is-hidden"
-              src="${escapeHtml(media.startImg)}"
-              alt="${escapeHtml(name)} ön açı HD karesi"
-              loading="lazy"
-            />`
-          : ""
-      }
-      ${
-        media.endImg
-          ? `<img
-              class="media-frame frame-end is-hidden"
-              src="${escapeHtml(media.endImg)}"
-              alt="${escapeHtml(name)} yan açı HD karesi"
-              loading="lazy"
-            />`
-          : ""
-      }
-
+    <div class="media-stage is-reference-stage" data-media-mode="reference">
       <div class="media-overlay-top">
         <span class="order-badge">${escapeHtml(badgeText)}</span>
-        <span class="pose-indicator">Ön Açı · HD Video</span>
+        <span class="pose-indicator">MuscleWiki · Dış Kaynak</span>
+      </div>
+
+      <div class="reference-preview-body">
+        <div class="reference-preview-meta">${escapeHtml(metaSummary)}</div>
+        <p class="reference-preview-cue">${escapeHtml(cueText)}</p>
       </div>
 
       <div class="media-controls-bar">
-        <div class="pose-toggle-group" role="group" aria-label="Kamera ve görünüm seçici">
-          <button type="button" class="pose-btn active" data-mode="front">Ön Açı (HD)</button>
-          <button type="button" class="pose-btn" data-mode="side">Yan Açı (HD)</button>
-          <button type="button" class="pose-btn" data-mode="photo">Fotoğraf (HD)</button>
-        </div>
+        <a
+          href="${escapeHtml(resolvedUrl)}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="source-link-btn"
+        >
+          Formu izle ↗
+        </a>
 
         <button
           type="button"
           class="video-trigger-btn"
           ${triggerAttr}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M8 5v14l11-7z" />
-          </svg>
-          <span>Detaylı Video</span>
+          <span>İpuçları &amp; Alt.</span>
         </button>
       </div>
     </div>
@@ -421,6 +472,10 @@ function createExerciseCardHtml(exercise, badgeText, initialVariantIndex = 0) {
   const stageHtml = createMediaStageHtml({
     badgeText,
     name: activeVariant.name,
+    primaryTag: activeVariant.primaryTag,
+    secondaryTag: activeVariant.secondaryTag,
+    tips: activeVariant.tips,
+    sourceUrl: activeVariant.sourceUrl,
     videoKey: activeVariant.videoKey,
     triggerAttr: `data-open-exercise="${escapeHtml(exercise.id)}"`,
   });
@@ -464,16 +519,12 @@ function createExerciseCardHtml(exercise, badgeText, initialVariantIndex = 0) {
             class="core-rest-btn"
             data-open-core="${escapeHtml(coreItem.id)}"
           >
-            ${
-              coreMedia && coreMedia.startImg
-                ? `<img class="core-thumb" src="${escapeHtml(coreMedia.startImg)}" alt="${escapeHtml(coreItem.name)}" loading="lazy" />`
-                : ""
-            }
+            <span class="core-thumb-badge" aria-hidden="true">21×</span>
             <div class="core-rest-copy">
               <span class="core-rest-kicker">Set Arası Aktif Dinlenme</span>
               <span class="core-rest-text">${escapeHtml(exercise.coreRestLabel)}</span>
             </div>
-            <span class="core-rest-action">HD Video &amp; Alternatifler →</span>
+            <span class="core-rest-action">Form &amp; Alternatifler →</span>
           </button>
         `
             : ""
@@ -492,6 +543,10 @@ function createCoreCardHtml(core, initialVariantIndex = 0) {
   const stageHtml = createMediaStageHtml({
     badgeText: isVacuum ? "SABAH RUTİNİ" : "21× AKTİF DİNLENME",
     name: activeVariant.name,
+    primaryTag: activeVariant.primaryTag,
+    secondaryTag: activeVariant.secondaryTag,
+    tips: activeVariant.tips,
+    sourceUrl: activeVariant.sourceUrl,
     videoKey: activeVariant.videoKey,
     triggerAttr: `data-open-core="${escapeHtml(core.id)}"`,
   });
@@ -584,8 +639,16 @@ function createDaySummaryTableHtml(day, { showDayHeader = false, showJumpBtn = f
                 data-open-exercise="${escapeHtml(exercise.id)}"
                 data-open-variant="0"
               >
-                ▶ HD Video
+                Form &amp; Detay
               </button>
+              <a
+                href="${escapeHtml(getExerciseMedia(exercise).sourceUrl || "https://musclewiki.com/")}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="table-video-btn"
+              >
+                Formu izle ↗
+              </a>
             </div>
           </td>
           <td class="col-pyramid" data-label="Piramit Set & Tekrarlar">
@@ -629,7 +692,7 @@ function createDaySummaryTableHtml(day, { showDayHeader = false, showJumpBtn = f
           <span class="meta-pill">📅 ${escapeHtml(day.scheduleNote)}</span>
           ${
             showJumpBtn
-              ? `<button type="button" class="table-jump-btn" data-jump-day="${escapeHtml(day.id)}">Videolu Günü Aç →</button>`
+              ? `<button type="button" class="table-jump-btn" data-jump-day="${escapeHtml(day.id)}">Gün Kartlarını Aç →</button>`
               : ""
           }
         </div>
@@ -669,7 +732,7 @@ function createDaySummaryTableHtml(day, { showDayHeader = false, showJumpBtn = f
   `;
 }
 
-// Antrenman günü görünümünü (Tablo + Video Kartları seçicisi ile) render eder
+// Antrenman günü görünümünü (Tablo + Hareket Kartları seçicisi ile) render eder
 function renderWorkoutDay(day) {
   const viewModeBarHtml = `
     <div class="view-mode-bar" role="group" aria-label="Görünüm modu seçici">
@@ -680,7 +743,7 @@ function renderWorkoutDay(day) {
           class="view-mode-btn ${state.viewMode === "both" ? "active" : ""}"
           data-view-mode="both"
         >
-          📋 Tablo + Video Kartları
+          📋 Tablo + Hareket Kartları
         </button>
         <button
           type="button"
@@ -694,7 +757,7 @@ function renderWorkoutDay(day) {
           class="view-mode-btn ${state.viewMode === "cards-only" ? "active" : ""}"
           data-view-mode="cards-only"
         >
-          🎬 Sadece Video Kartları
+          🏋️ Sadece Hareket Kartları
         </button>
       </div>
     </div>
@@ -744,7 +807,7 @@ function renderFullSummaryTab() {
         <td data-label="Takvim Notu">${escapeHtml(day.scheduleNote)}</td>
         <td data-label="Hızlı Geçiş">
           <button type="button" class="table-jump-btn" data-jump-day="${escapeHtml(day.id)}">
-            Videolu Günü Aç →
+            Gün Kartlarını Aç →
           </button>
         </td>
       </tr>
@@ -792,8 +855,16 @@ function renderFullSummaryTab() {
                 data-open-core="${escapeHtml(core.id)}"
                 data-open-variant="0"
               >
-                ▶ HD Video
+                Form &amp; Detay
               </button>
+              <a
+                href="${escapeHtml(getExerciseMedia(core).sourceUrl || "https://musclewiki.com/")}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="table-video-btn"
+              >
+                Formu izle ↗
+              </a>
             </div>
           </td>
           <td data-label="Hedef Bölge"><span class="tag-chip">${escapeHtml(core.target)}</span></td>
@@ -850,7 +921,7 @@ function renderFullSummaryTab() {
         <div>
           <h2>📋 Kravitz Lean &amp; Fit — Tüm Programın Yazılı &amp; Tablo Özeti</h2>
           <p>
-            Video kartları arasında gezinmeden; tüm antrenman günlerini, piramit set/tekrarlarını,
+            Kartlar arasında gezinmeden; tüm antrenman günlerini, piramit set/tekrarlarını,
             set arası 21'ler core hareketlerini, alternatifleri ve beslenme protokolünü tek sayfada gör.
           </p>
         </div>
@@ -1273,20 +1344,35 @@ function applyVariantToCard(cardEl, variants, variantIndex) {
   const variant = variants[variantIndex] || variants[0];
   if (!variant) return;
 
-  const media = getExerciseMedia(variant.videoKey);
+  const media = getExerciseMedia(variant);
   cardEl.dataset.activeVariantIndex = String(variant.index);
 
-  // Medya sahnesini yeni video ve karelerle güncelle
+  // Referans sahnesi bilgilerini ve harici bağlantıyı güncelle
+  const sourceLinkEl = cardEl.querySelector(".source-link-btn");
+  const previewMetaEl = cardEl.querySelector(".reference-preview-meta");
+  const previewCueEl = cardEl.querySelector(".reference-preview-cue");
+  if (sourceLinkEl) {
+    sourceLinkEl.href = media.sourceUrl || "https://musclewiki.com/";
+  }
+  if (previewMetaEl) {
+    previewMetaEl.textContent = [variant.primaryTag, variant.secondaryTag].filter(Boolean).join(" · ");
+  }
+  if (previewCueEl) {
+    previewCueEl.textContent =
+      (variant.tips && variant.tips[0]) || "Kontrollü tempo ve tam hareket açıklığıyla uygula.";
+  }
+
+  // Lisanslı medya sahnesi varsa video ve kareleri güncelle
   const videoEl = cardEl.querySelector(".media-video");
   const startImg = cardEl.querySelector(".frame-start");
   const endImg = cardEl.querySelector(".frame-end");
   const activeModeBtn = cardEl.querySelector(".pose-btn.active");
   const activeMode = activeModeBtn ? activeModeBtn.dataset.mode : "front";
 
-  if (videoEl) {
+  if (videoEl && media.frontMp4) {
     videoEl.dataset.frontSrc = media.frontMp4 || "";
     videoEl.dataset.sideSrc = media.sideMp4 || "";
-    videoEl.setAttribute("aria-label", `${variant.name} HD hareket videosu`);
+    videoEl.setAttribute("aria-label", `${variant.name} hareket videosu`);
     videoEl.poster = media.startImg || "";
 
     if (activeMode === "front" || activeMode === "side") {
@@ -1299,11 +1385,11 @@ function applyVariantToCard(cardEl, variants, variantIndex) {
 
   if (startImg && media.startImg) {
     startImg.src = media.startImg;
-    startImg.alt = `${variant.name} ön açı HD karesi`;
+    startImg.alt = `${variant.name} ön açı karesi`;
   }
   if (endImg && media.endImg) {
     endImg.src = media.endImg;
-    endImg.alt = `${variant.name} yan açı HD karesi`;
+    endImg.alt = `${variant.name} yan açı karesi`;
   }
 
   // Başlık, etiket ve ipuçlarını güncelle
@@ -1369,11 +1455,11 @@ function bindCardInteractions() {
         videoEl.play().catch(() => {});
         if (startImg) startImg.classList.add("is-hidden");
         if (endImg) endImg.classList.add("is-hidden");
-        indicator.textContent = mode === "front" ? "Ön Açı · HD Video" : "Yan Açı · HD Video";
+        indicator.textContent = mode === "front" ? "Ön Açı · Video" : "Yan Açı · Video";
         return;
       }
 
-      // Fotoğraf (HD) modu: Ön ve yan açı HD kareleri arasında akıcı geçiş
+      // Kare modu: Ön ve yan açı kareleri arasında akıcı geçiş
       videoEl.classList.add("is-hidden");
       videoEl.pause();
 
@@ -1381,7 +1467,7 @@ function bindCardInteractions() {
       const showFrame = (isEnd) => {
         if (startImg) startImg.classList.toggle("is-hidden", isEnd);
         if (endImg) endImg.classList.toggle("is-hidden", !isEnd);
-        indicator.textContent = isEnd ? "HD Kare · Yan Açı" : "HD Kare · Ön Açı";
+        indicator.textContent = isEnd ? "Kare · Yan Açı" : "Kare · Ön Açı";
       };
 
       showFrame(false);
@@ -1495,7 +1581,7 @@ function findExerciseById(exerciseId) {
   return null;
 }
 
-// Reklamsız yerel HD HTML5 MP4 Video, Alternatif Geçişi & Stüdyo Kareleri modalını açar
+// Harici form referansı ("Formu izle ↗"), alternatif seçici ve uygulama ipuçları modalını açar
 function openMediaModal({ variants, initialVariantIndex = 0 }) {
   if (!variants || variants.length === 0) return;
 
@@ -1503,68 +1589,92 @@ function openMediaModal({ variants, initialVariantIndex = 0 }) {
   let currentCamera = "front";
   let currentSpeed = 1;
 
-  elements.modalVideoContainer.innerHTML = `
-    <video
-      id="modal-video-player"
-      controls
-      autoplay
-      loop
-      muted
-      playsinline
-    ></video>
-  `;
-
-  const player = document.getElementById("modal-video-player");
   const cameraBtns = elements.modalPlaybackBar.querySelectorAll(".camera-btn");
   const speedBtns = elements.modalPlaybackBar.querySelectorAll(".speed-btn");
 
-  // İndirme bağlantısını seçili varyant ve kamera açısına göre günceller
-  const updateDownloadLink = (variant, media) => {
-    const targetUrl = currentCamera === "front" ? media.frontMp4 : media.sideMp4;
-    if (!targetUrl) {
-      elements.modalExternalActions.innerHTML = "";
-      return;
-    }
+  // Harici kaynak veya lisanslı medya aksiyon linkini günceller
+  const updateExternalLink = (media) => {
+    const resolvedUrl = media.sourceUrl || "https://musclewiki.com/";
     elements.modalExternalActions.innerHTML = `
       <a
-        href="${escapeHtml(targetUrl)}"
-        download="${escapeHtml(variant.videoKey)}-${currentCamera}.mp4"
-        class="download-mp4-link"
+        href="${escapeHtml(resolvedUrl)}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="source-link-btn"
       >
-        HD MP4 İndir ↓
+        Formu izle ↗
       </a>
     `;
   };
 
-  // Seçilen varyanta göre modal başlığını, oynatıcıyı, kareleri ve ipuçlarını yeniler
+  // Seçilen varyanta göre modal başlığını, referans kartını ve ipuçlarını yeniler
   const applyModalVariant = (variantIdx) => {
     activeVariantIndex = variantIdx;
     const variant = variants[variantIdx] || variants[0];
-    const media = getExerciseMedia(variant.videoKey);
+    const media = getExerciseMedia(variant);
+    const resolvedSourceUrl = media.sourceUrl || "https://musclewiki.com/";
+    const licenseUrl = media.licenseUrl || MUSCLEWIKI_LICENSE_URL;
 
     elements.modalBadge.textContent = variant.modalBadge;
     elements.modalTitle.textContent = variant.name;
     elements.modalSubtitle.textContent = variant.turkishName;
 
-    if (media.frontMp4 && player) {
-      player.src = currentCamera === "front" ? media.frontMp4 : media.sideMp4;
-      player.poster = currentCamera === "front" ? media.startImg : media.endImg;
+    if (media.frontMp4) {
+      elements.modalVideoContainer.innerHTML = `
+        <video
+          id="modal-video-player"
+          controls
+          autoplay
+          loop
+          muted
+          playsinline
+        ></video>
+      `;
+      const player = document.getElementById("modal-video-player");
+      player.src = currentCamera === "front" ? media.frontMp4 : media.sideMp4 || media.frontMp4;
+      player.poster = (currentCamera === "front" ? media.startImg : media.endImg) || "";
       player.load();
       player.playbackRate = currentSpeed;
       player.play().catch(() => {});
-      updateDownloadLink(variant, media);
+      updateExternalLink(media);
       elements.modalPlaybackBar.hidden = false;
     } else {
       elements.modalPlaybackBar.hidden = true;
       elements.modalExternalActions.innerHTML = "";
+      elements.modalVideoContainer.innerHTML = `
+        <div class="modal-source-card">
+          <p>
+            Lisans ve kullanım şartları gereği üçüncü taraf egzersiz videoları bu sitede yeniden barındırılmaz.
+            Hareketin adım adım videosunu ve kas haritasını doğrudan kaynak sayfasından izleyebilirsin:
+          </p>
+          <div class="modal-source-actions">
+            <a
+              href="${escapeHtml(resolvedSourceUrl)}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="source-link-btn is-modal"
+            >
+              Formu izle ↗ (MuscleWiki)
+            </a>
+            <a
+              href="${escapeHtml(licenseUrl)}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="license-terms-link"
+            >
+              MuscleWiki Kullanım Şartları ↗
+            </a>
+          </div>
+        </div>
+      `;
     }
 
     if (media.startImg && media.endImg) {
       elements.modalFramesSection.hidden = false;
       elements.modalImgStart.src = media.startImg;
-      elements.modalImgStart.alt = `${variant.name} ön açı HD karesi`;
+      elements.modalImgStart.alt = `${variant.name} ön açı karesi`;
       elements.modalImgEnd.src = media.endImg;
-      elements.modalImgEnd.alt = `${variant.name} yan açı HD karesi`;
+      elements.modalImgEnd.alt = `${variant.name} yan açı karesi`;
     } else {
       elements.modalFramesSection.hidden = true;
     }
@@ -1594,15 +1704,15 @@ function openMediaModal({ variants, initialVariantIndex = 0 }) {
       btn.classList.add("active");
 
       const variant = variants[activeVariantIndex] || variants[0];
-      const media = getExerciseMedia(variant.videoKey);
-      if (player) {
-        player.src = currentCamera === "front" ? media.frontMp4 : media.sideMp4;
-        player.poster = currentCamera === "front" ? media.startImg : media.endImg;
+      const media = getExerciseMedia(variant);
+      const player = document.getElementById("modal-video-player");
+      if (player && media.frontMp4) {
+        player.src = currentCamera === "front" ? media.frontMp4 : media.sideMp4 || media.frontMp4;
+        player.poster = (currentCamera === "front" ? media.startImg : media.endImg) || "";
         player.load();
         player.playbackRate = currentSpeed;
         player.play().catch(() => {});
       }
-      updateDownloadLink(variant, media);
     };
   });
 
@@ -1610,6 +1720,7 @@ function openMediaModal({ variants, initialVariantIndex = 0 }) {
     btn.classList.toggle("active", btn.dataset.speed === "1");
     btn.onclick = () => {
       currentSpeed = parseFloat(btn.dataset.speed);
+      const player = document.getElementById("modal-video-player");
       if (player) {
         player.playbackRate = currentSpeed;
       }
