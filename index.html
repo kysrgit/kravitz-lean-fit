@@ -69,6 +69,22 @@
     </header>
 
     <main class="container main-content">
+      <!-- İlk Açılış Sağlık Uyarısı (localStorage: klf:v1:disclaimer_ack) -->
+      <aside
+        id="medical-disclaimer-banner"
+        class="disclaimer-banner"
+        role="region"
+        aria-label="Sağlık ve Tıbbi Sorumluluk Uyarısı"
+        hidden
+      >
+        <div class="disclaimer-copy">
+          <strong>⚕️ Sağlık Uyarısı:</strong> Bu içerik tıbbi tavsiye değildir; kronik rahatsızlık, ilaç kullanımı veya ağrı varsa hekime danışın.
+        </div>
+        <button type="button" id="medical-disclaimer-accept" class="disclaimer-btn">
+          Okudum, Anladım
+        </button>
+      </aside>
+
       <!-- Hero ve Sistem Kuralları Bölümü -->
       <section class="hero-section">
         <div class="hero-copy">
@@ -199,6 +215,9 @@
         <p>
           <strong>Kravitz Lean &amp; Fit</strong> · Kravitz'ten Esinlenilmiş Uyarlama (30-15-10-5) + 21× Aktif Core
           Dinlenmesi · Denzel kuralı: <em>"Pantolonlar yalan söylemez."</em>
+        </p>
+        <p class="footer-medical-disclaimer">
+          ⚕️ Bu içerik tıbbi tavsiye değildir; kronik rahatsızlık, ilaç kullanımı veya ağrı varsa hekime danışın.
         </p>
         <p class="footer-sub">
           Egzersiz formu referansları harici bağlantılarla

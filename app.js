@@ -23,6 +23,7 @@ import {
 } from "./data.js";
 
 const PROFILE_STORAGE_KEY = "klf:v1:profile";
+const DISCLAIMER_ACK_KEY = "klf:v1:disclaimer_ack";
 
 // Uygulama durumu
 const state = {
@@ -2214,8 +2215,36 @@ function initEventListeners() {
   });
 }
 
+// İlk açılış sağlık uyarısını localStorage durumuna göre gösterir/gizler
+function initDisclaimerBanner() {
+  const banner = document.getElementById("medical-disclaimer-banner");
+  const acceptBtn = document.getElementById("medical-disclaimer-accept");
+  if (!banner) return;
+
+  let acknowledged = false;
+  try {
+    acknowledged = window.localStorage.getItem(DISCLAIMER_ACK_KEY) === "1";
+  } catch {
+    acknowledged = false;
+  }
+
+  banner.hidden = acknowledged;
+
+  if (acceptBtn) {
+    acceptBtn.addEventListener("click", () => {
+      try {
+        window.localStorage.setItem(DISCLAIMER_ACK_KEY, "1");
+      } catch {
+        // Depolama erişimi kısıtlıysa sessizce kapat
+      }
+      banner.hidden = true;
+    });
+  }
+}
+
 // Uygulama başlangıcı
 function bootstrap() {
+  initDisclaimerBanner();
   renderSystemPillars();
   renderTanitaSection();
   renderTabs();
