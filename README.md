@@ -1,6 +1,6 @@
 <!-- Kısa Açıklama: Kravitz Lean & Fit (MACFit) antrenman ve beslenme rehberi projesinin Türkçe dokümantasyonu -->
 
-# Kravitz Lean & Fit — MACFit Antrenman ve Beslenme Rehberi
+# Kravitz Lean & Fit — MACFit Salonlarında Uygulanmak Üzere Antrenman Rehberi
 
 Bu web uygulaması, yalnızca kendi tarayıcınızda saklanan kişisel **Profilim** ölçümlerinize ve **Kravitz'ten Esinlenilmiş Uyarlama** (**Piramit 30 → 15 → 10 → 5 + 21'ler Aktif Core**) çerçevesinde (basın kaynaklarında aktarılan haftada 5-6 gün / 50-35-21-14-10 veya 50-25-12-5 ve aralıklı oruç uygulanmayan düzenin 4 günlük sürdürülebilir uyarlaması olarak) hazırlanmış, takip karmaşası olmayan, doğrudan **reklamsız egzersiz formu bağlantılı** mobil uyumlu antrenman rehberidir.
 
@@ -28,6 +28,10 @@ npx serve .
 # veya
 python -m http.server 8080
 ```
+
+## Marka Bağımsızlığı
+
+Bu proje bağımsız bir açık eğitim ve antrenman rehberidir; MACFit ile bağlantılı değildir.
 
 ## Barındırma (GitHub Pages)
 

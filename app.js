@@ -192,7 +192,7 @@ function getExerciseVariants(item, kind) {
       whenToUse: null,
       videoKey: item.videoKey,
       sourceUrl: item.sourceUrl || getExerciseMedia(item.videoKey).sourceUrl,
-      tips: [item.formCue, `MACFit İpucu: ${item.macfitTip}`],
+      tips: [item.formCue, `Salon İpucu: ${item.macfitTip}`],
     };
 
     const alts = (item.alternatives || []).map((alt, i) => ({
@@ -207,7 +207,7 @@ function getExerciseVariants(item, kind) {
       whenToUse: alt.whenToUse,
       videoKey: alt.videoKey,
       sourceUrl: alt.sourceUrl || getExerciseMedia(alt.videoKey).sourceUrl,
-      tips: [alt.formCue, `MACFit İpucu: ${alt.macfitTip}`],
+      tips: [alt.formCue, `Salon İpucu: ${alt.macfitTip}`],
     }));
 
     return [primary, ...alts];
@@ -1618,7 +1618,7 @@ function renderFullSummaryTab() {
           <td data-label="Tekrar / Süre"><strong>${escapeHtml(core.reps)}</strong></td>
           <td class="col-cue" data-label="Nasıl Yapılır">
             <div>${escapeHtml(core.formCue)}</div>
-            ${core.macfitTip ? `<div class="table-alt-when"><strong>MACFit İpucu:</strong> ${escapeHtml(core.macfitTip)}</div>` : ""}
+            ${core.macfitTip ? `<div class="table-alt-when"><strong>Salon İpucu:</strong> ${escapeHtml(core.macfitTip)}</div>` : ""}
           </td>
           <td class="col-alts" data-label="Alternatifler"><div class="table-alt-list">${altsHtml}</div></td>
         </tr>
@@ -1734,7 +1734,7 @@ function renderFullSummaryTab() {
       <!-- Bölüm 1: Sistem Özeti, Profil Hedefleri & Haftalık Şema -->
       <section id="summary-sec-weekly" class="summary-section-block">
         <div class="summary-section-title-row">
-          <h3>1. Sistem Özeti, Profil Hedefleri &amp; Haftalık MACFit Şeması</h3>
+          <h3>1. Sistem Özeti, Profil Hedefleri &amp; Haftalık Antrenman Şeması</h3>
         </div>
 
         <div class="summary-prose-grid">
