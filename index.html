@@ -1,0 +1,210 @@
+<!--
+  Dosya: index.html
+  Açıklama: Kravitz Lean & Fit (MACFit) antrenman ve beslenme rehberi web uygulamasının
+  ana HTML iskeleti. Gün sekmeleri, hareket kartları, canlı form görselleştirme ve video modalını barındırır.
+-->
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="MACFit Tanita ölçüm verilerine özel Lenny Kravitz (Dodd Romero) Piramit 30-15-10-5 + 21'ler Core antrenman ve göbek yağı eritme rehberi."
+    />
+    <meta name="theme-color" content="#090b10" />
+    <title>Kravitz Lean &amp; Fit | MACFit Antrenman Rehberi</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23090b10'/%3E%3Cpath d='M16 44L26 20h6l-6 14h12l6-14h6L40 44h-6l5-10H27l-5 10h-6z' fill='%23f59e0b'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Arka plan atmosferik parlamaları -->
+    <div class="bg-glow bg-glow-amber" aria-hidden="true"></div>
+    <div class="bg-glow bg-glow-emerald" aria-hidden="true"></div>
+
+    <!-- Üst sabit navigasyon barı -->
+    <header class="top-header">
+      <div class="container header-inner">
+        <div class="brand">
+          <div class="brand-badge">MACFIT · LEAN &amp; FIT</div>
+          <h1 class="brand-title">KRAVITZ SİSTEMİ</h1>
+        </div>
+
+        <div class="header-actions">
+          <button
+            type="button"
+            id="toggle-tanita-btn"
+            class="btn-outline"
+            aria-expanded="false"
+            aria-controls="tanita-drawer"
+          >
+            <span>Tanita Verilerim</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container main-content">
+      <!-- Hero ve Sistem Kuralları Bölümü -->
+      <section class="hero-section">
+        <div class="hero-copy">
+          <span class="pill-tag">Dodd Romero × Lenny Kravitz Protokolü · 45-60 Dk</span>
+          <h2>
+            Spider-Man &amp; Bruce Lee Silüeti İçin
+            <span class="text-gradient">Piramit + 21’ler Core</span>
+          </h2>
+          <p class="hero-subtitle">
+            25 yaş · <strong>62,9 kg kas kütleni</strong> koruyarak gövdede toplanan
+            <strong>10,6 kg (%23,1) yağı</strong> eritmek için tasarlanmış, görsel ve video destekli
+            MACFit salon rehberin.
+          </p>
+        </div>
+
+        <!-- 3 Temel Sistem Kuralı Kartları -->
+        <div id="pillars-grid" class="pillars-grid"></div>
+      </section>
+
+      <!-- Açılır/Kapanır Tanita Röntgeni Bölümü -->
+      <section id="tanita-drawer" class="tanita-section" hidden>
+        <div class="section-header-inline">
+          <div>
+            <h3>MACFit Tanita Ölçüm Analizi &amp; Hedeflerin</h3>
+            <p id="tanita-meta" class="muted-text"></p>
+          </div>
+          <span class="status-chip">Hedef: %11-12 Yağ · ~75 kg</span>
+        </div>
+        <div id="tanita-grid" class="tanita-grid"></div>
+      </section>
+
+      <!-- Sekme Navigasyonu & Hızlı Arama -->
+      <section class="controls-bar" aria-label="Program Günleri ve Arama">
+        <nav class="tabs-nav" id="tabs-nav" role="tablist" aria-label="Program Sekmeleri">
+          <!-- Sekmeler app.js tarafından doldurulur -->
+        </nav>
+
+        <div class="search-wrapper">
+          <svg
+            class="search-icon"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="M21 21l-4.35-4.35" />
+          </svg>
+          <input
+            type="search"
+            id="exercise-search"
+            class="search-input"
+            placeholder="Hareket veya kas ara (örn. Biceps, Karın, Omuz)..."
+            aria-label="Hareket veya kas grubu ara"
+          />
+          <button
+            type="button"
+            id="clear-search-btn"
+            class="search-clear"
+            aria-label="Aramayı temizle"
+            hidden
+          >
+            ×
+          </button>
+        </div>
+      </section>
+
+      <!-- Dinamik İçerik Alanı (Antrenman Günleri / Core Rehberi / Beslenme Protokolü) -->
+      <section id="content-area" class="content-area" aria-live="polite">
+        <!-- İçerik app.js tarafından render edilir -->
+      </section>
+    </main>
+
+    <!-- Alt Bilgi -->
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>
+          <strong>Kravitz Lean &amp; Fit</strong> · Dodd Romero Piramit (30-15-10-5) + 21× Aktif Core
+          Dinlenmesi · Denzel kuralı: <em>"Pantolonlar yalan söylemez."</em>
+        </p>
+        <p class="footer-sub">
+          Tüm egzersiz görselleri açık kaynak <code>free-exercise-db</code> üzerinden, eğitim videoları
+          doğrulanmış YouTube içeriklerinden sunulmaktadır.
+        </p>
+      </div>
+    </footer>
+
+    <!-- Video & Detay Modalı -->
+    <div
+      id="media-modal"
+      class="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      hidden
+    >
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <div>
+            <span id="modal-badge" class="modal-badge"></span>
+            <h3 id="modal-title" class="modal-title"></h3>
+            <p id="modal-subtitle" class="modal-subtitle"></p>
+          </div>
+          <button
+            type="button"
+            id="modal-close-btn"
+            class="modal-close-btn"
+            aria-label="Pencereyi kapat"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <!-- YouTube Gömülü Oynatıcı veya Bilgilendirme -->
+          <div id="modal-video-container" class="modal-video-container"></div>
+
+          <!-- Başlangıç ve Bitiş Pozisyonu Karşılaştırması -->
+          <div id="modal-frames-section" class="modal-frames-section">
+            <h4>Başlangıç &amp; Bitiş Form Kareleri</h4>
+            <div class="modal-frames-grid">
+              <figure class="frame-box">
+                <img id="modal-img-start" src="" alt="Başlangıç pozisyonu" loading="lazy" />
+                <figcaption>1. Başlangıç Pozisyonu</figcaption>
+              </figure>
+              <figure class="frame-box">
+                <img id="modal-img-end" src="" alt="Bitiş pozisyonu" loading="lazy" />
+                <figcaption>2. Bitiş / Kasılma Noktası</figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <!-- Uygulama İpuçları ve Direkt YouTube Bağlantısı -->
+          <div class="modal-details-row">
+            <div class="modal-tips-box">
+              <h4>MACFit Uygulama İpuçları</h4>
+              <ul id="modal-tips-list"></ul>
+            </div>
+            <div id="modal-external-actions" class="modal-external-actions"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

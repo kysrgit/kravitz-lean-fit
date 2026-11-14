@@ -1,0 +1,810 @@
+/**
+ * Dosya: data.js
+ * Açıklama: Kravitz Lean & Fit (MACFit) antrenman programı, doğrulanmış görsel/video kimlikleri,
+ * Tanita vücut analizi özeti, 21'ler Core rehberi ve göbek yağı eritme beslenme protokolü verilerini içerir.
+ */
+
+// Egzersiz görselleri için GitHub tabanlı açık kaynak veritabanı temel adresi
+export const IMAGE_BASE_URL =
+  "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises";
+
+// Yardımcı fonksiyon: Egzersiz görsel ID'sine göre başlangıç (0.jpg) ve bitiş (1.jpg) URL'lerini üretir
+export function getExerciseImages(imageId) {
+  if (!imageId) return null;
+  return {
+    start: `${IMAGE_BASE_URL}/${imageId}/0.jpg`,
+    end: `${IMAGE_BASE_URL}/${imageId}/1.jpg`,
+  };
+}
+
+// Kullanıcının MACFit Tanita ölçüm verileri ve hedef özeti
+export const TANITA_PROFILE = {
+  date: "22.05.2026 - MACFit Kulüp",
+  age: 25,
+  targetStyle: "Spider-Man & Bruce Lee (Lean / Fit Vücut)",
+  metrics: [
+    {
+      label: "Mevcut Kilo",
+      current: "84,4 kg",
+      target: "~75,0 kg",
+      note: "Kası koruyarak ~9 kg saf yağ kaybı",
+      highlight: false,
+    },
+    {
+      label: "Toplam Yağ Oranı",
+      current: "%21,7 (18,3 kg)",
+      target: "%11 - %12",
+      note: "Karın çizgileri ve V-üçgeni görünümü",
+      highlight: false,
+    },
+    {
+      label: "Gövde (Bel/Karın) Yağı",
+      current: "%23,1 (10,6 kg)",
+      target: "< 5,0 kg",
+      note: "Toplam yağın %58'i gövdede — Ana hedef!",
+      highlight: true,
+    },
+    {
+      label: "Toplam Kas Kütlesi",
+      current: "62,9 kg",
+      target: "62,5+ kg Koru",
+      note: "Güçlü temel — Piramidin 5 tekrar seti kası korur",
+      highlight: false,
+    },
+    {
+      label: "Bazal Metabolizma (BMR)",
+      current: "1970 kcal/gün",
+      target: "2050-2150 kcal Alım",
+      note: "1900 kcal altına düşmeden kontrollü açık",
+      highlight: false,
+    },
+    {
+      label: "Vücut Su Oranı",
+      current: "%55,8 (47,1 kg)",
+      target: "%60 - %65",
+      note: "Günde en az 3 - 3,5 L su + 1-2 maden suyu",
+      highlight: false,
+    },
+  ],
+};
+
+// Dodd Romero & Lenny Kravitz antrenman sisteminin 3 temel kuralı
+export const SYSTEM_PILLARS = [
+  {
+    badge: "01 · PİRAMİT MERDİVENİ",
+    title: "30 → 15 → 10 → 5 Tekrar",
+    description:
+      "Hafif ağırlıkla 30 tekrar başla: kasa kan pompalar, glikojeni boşaltır ve eklemleri ısıtır. Sonra ağırlığı kademeli artırıp 5 tekrarla bitirerek 62,9 kg kasını koru.",
+  },
+  {
+    badge: "02 · AKTİF DİNLENME",
+    title: "Set Arası 21× Core",
+    description:
+      "Set aralarında oturup telefona bakmak yok. Hemen 21 tekrar karın hareketi yap, 30-45 sn nefeslen ve ağır sete geç. Nabız 130-145 BPM'de yağ yakar.",
+  },
+  {
+    badge: "03 · KOT PANTOLON TESTİ",
+    title: "45-60 Dk Yüksek Tempo",
+    description:
+      "Seanslar kısa ve keskin. İlk öğün öğleden sonra (18:6 / 16:8), sabahları aç karnına sade kahve + Mide Vakumu. Gelişimi tartıyla değil bel mezurasıyla ölç.",
+  },
+];
+
+// Core / Aktif dinlenme hareketlerinin merkezi kataloğu (hem gün içinde hem Core rehberinde kullanılır)
+export const CORE_LIBRARY = {
+  hanging_leg_raise: {
+    id: "hanging_leg_raise",
+    name: "Hanging Leg / Knee Raise",
+    turkishName: "Barfikste Asılarak Bacak / Diz Kaldırma",
+    target: "Alt Karın & Derin Core",
+    reps: "21 Tekrar (3 Set)",
+    imageId: "Hanging_Leg_Raise",
+    videoId: "hdng3Nm1x_E",
+    formCue:
+      "Barfikse asıl, sallanmayı durdur. Dizlerini veya düz bacaklarını kalçanı hafifçe yukarı kıvırarak göğsüne çek. Yavaşça indir.",
+    macfitTip: "Zorlanırsan ilk sette diz bükük (Knee Raise), sonraki setlerde düz bacak yapabilirsin.",
+  },
+  cable_crunch: {
+    id: "cable_crunch",
+    name: "Cable Crunch",
+    turkishName: "Kablo İle Diz Üstü Mekik",
+    target: "Üst & Orta Karın Kasları",
+    reps: "21 Tekrar (3 Set)",
+    imageId: "Cable_Crunch",
+    videoId: "2fbujeH3F0E",
+    formCue:
+      "Halat aparatını başının iki yanında sabitle, kalçanı geriye oynatmadan sadece omurganı bükerek dirseklerini dizlerine yaklaştır.",
+    macfitTip: "Ağırlığı kollarınla değil, karnını sıkarak aşağı çek; tepe noktada nefesi tamamen boşalt.",
+  },
+  bicycle_crunch: {
+    id: "bicycle_crunch",
+    name: "Bicycle Crunch",
+    turkishName: "Bisiklet Mekik (Sağ-Sol Toplam 21)",
+    target: "Karın & Oblik (Yan Bel)",
+    reps: "21 Tekrar (3 Set)",
+    imageId: "Air_Bike",
+    videoId: "9FGilxCbdz8",
+    formCue:
+      "Sırtüstü yat, eller kulak hizasında (boyundan çekme). Sağ dirseği sol dize yaklaştırırken diğer bacağı yere paralel uzat.",
+    macfitTip: "Hızlı ve savurarak değil, her dönüşte 1 saniye karın sıkıştırmasıyla uygula.",
+  },
+  plank: {
+    id: "plank",
+    name: "Vakumlu Plank",
+    turkishName: "İç Karın Vakumlu Plank",
+    target: "Transverse Abdominis (İç Korse)",
+    reps: "45 Saniye Tutuş",
+    imageId: "Plank",
+    videoId: "pSHjTRCQxIw",
+    formCue:
+      "Dirsekler omuz altında, kalça ne yukarıda ne sarkık. Göbek deliğini omurgaya doğru içeri çekerek tüm gövdeyi kilitle.",
+    macfitTip: "Belini çukurlaştırmadan kalçanı ve karnını aynı anda sıktığında karın titremeye başlamalı.",
+  },
+  decline_crunch: {
+    id: "decline_crunch",
+    name: "Decline Bench Crunch / Sit-Up",
+    turkishName: "Eğimli Sehpada Mekik",
+    target: "Tüm Karın Duvarı",
+    reps: "21 Tekrar (3 Set)",
+    imageId: "Decline_Crunch",
+    videoId: "Xyd_fa5zoEU",
+    formCue:
+      "Ayakları pedlere sabitle, beli tamamen yere yatırmadan kontrollü şekilde geriye açıl ve nefes vererek yukarı kalk.",
+    macfitTip: "MACFit'te eğimli mekik sehpası doluysa zeminde ağırlıksız kontrollü Crunch yapabilirsin.",
+  },
+  russian_twist: {
+    id: "russian_twist",
+    name: "Russian Twist",
+    turkishName: "Oturarak Gövde Döndürme (Oblik)",
+    target: "Yan Karın & Bel Simidi",
+    reps: "21 Tekrar (3 Set)",
+    imageId: "Russian_Twist",
+    videoId: "wkD8rjkodUI",
+    formCue:
+      "Gövdeyi 45 derece geriye yatır, sırtı dik tut. Topuklar hafifçe havada veya yerde iken göğüs kafesini sağa-sola çevir.",
+    macfitTip: "Sadece ellerini değil omuzlarını ve göğsünü döndür; isteğe göre 5 kg plaka tutabilirsin.",
+  },
+  lying_leg_raise: {
+    id: "lying_leg_raise",
+    name: "Flat Bench Lying Leg Raise",
+    turkishName: "Sehpada / Yerde Yatarak Bacak Kaldırma",
+    target: "Alt Karın",
+    reps: "21 Tekrar (3 Set)",
+    imageId: "Flat_Bench_Lying_Leg_Raise",
+    videoId: "JB2oyawG9KI",
+    formCue:
+      "Düz sehpaya veya mata uzan, ellerle sehpanın kenarını tut. Bel boşluğunu yere bastırarak bacakları kontrollü kaldır ve indir.",
+    macfitTip: "Topukları yere değdirmeden durdurmak alt karındaki gerilimi kesintisiz tutar.",
+  },
+  cable_woodchopper: {
+    id: "cable_woodchopper",
+    name: "Standing Cable Wood Chop",
+    turkishName: "Kablo İle Yan Bel Çevirme (Woodchopper)",
+    target: "Oblikler & Bel İnceltme",
+    reps: "21 Tekrar (Her Yön / 3 Set)",
+    imageId: "Standing_Cable_Wood_Chop",
+    videoId: "pAplQXk3dkU",
+    formCue:
+      "Kablo makinesini omuz hizasına al, yan dön. Kollar gergin halde kabloyu çapraz aşağı doğru gövdeni döndürerek çek.",
+    macfitTip: "Düşük kilo seç, kollarla değil yan karın (oblik) kaslarınla dönüşü üret.",
+  },
+  reverse_crunch: {
+    id: "reverse_crunch",
+    name: "Reverse Crunch",
+    turkishName: "Ters Mekik (Kalça Kaldırış)",
+    target: "Alt Karın",
+    reps: "21 Tekrar (3 Set)",
+    imageId: "Reverse_Crunch",
+    videoId: "hyv14e2QDq0",
+    formCue:
+      "Sırtüstü yat, dizler 90 derece bükülü. Kalçanı yerden hafifçe yuvarlayarak dizleri göğse doğru kaldır.",
+    macfitTip: "İvme almak yerine alt karın kasıyla leğen kemiğini yukarı kıvırmaya odaklan.",
+  },
+  ab_wheel: {
+    id: "ab_wheel",
+    name: "Ab Wheel Rollout",
+    turkishName: "Karın Tekerleği İle İleri Açılış",
+    target: "Tüm Ön & Derin Core",
+    reps: "21 Tekrar (veya 12-15 Temiz)",
+    imageId: "Ab_Roller",
+    videoId: "rqiTPdK1c_I",
+    formCue:
+      "Dizlerin üstünde tekerleği tut, kalçayı sık ve sırtı hafif kamburlaştır. Belini çukurlaştırmadan ileri uzanıp karınla geri çek.",
+    macfitTip: "MACFit fonksiyonel alanında yoksa Fitness Topu (Swiss Ball) üzerinde Rollout veya Crunch yap.",
+  },
+  mountain_climbers: {
+    id: "mountain_climbers",
+    name: "Mountain Climbers",
+    turkishName: "Dağ Tırmanışı (Her Bacak 21)",
+    target: "Core + Kardiyo Yağ Yakımı",
+    reps: "21 Tekrar (Her Bacak)",
+    imageId: "Mountain_Climbers",
+    videoId: "nmwgirgXLYM",
+    formCue:
+      "Şınav pozisyonunda eller omuz altında. Kalçayı zıplatmadan sırayla dizleri hızla göğse çek.",
+    macfitTip: "Nefesini tutma, ritmik ve hızlı tempoyla nabzı yukarı taşı.",
+  },
+  stomach_vacuum: {
+    id: "stomach_vacuum",
+    name: "Stomach Vacuum",
+    turkishName: "Sabah Mide Vakumu (İç Bel İnceltme)",
+    target: "Transverse Abdominis (Bel Çevresi)",
+    reps: "Her Sabah 5 Set × 20 Saniye",
+    imageId: "Stomach_Vacuum",
+    videoId: "gDx1xfSobG4",
+    formCue:
+      "Sabah aç karnına nefesini tamamen ver, akciğerler boşken göbek deliğini omurgana ve kaburgalarının altına doğru maksimum içeri çek ve tut.",
+    macfitTip: "Ayakta eller dizlerde hafif öne eğilerek veya sırtüstü dizler bükülü başlaman vakumu çok kolaylaştırır.",
+  },
+  incline_walk: {
+    id: "incline_walk",
+    name: "Incline Treadmill Walk",
+    turkishName: "Yüksek Eğimli Tempolu Yürüyüş",
+    target: "Doğrudan Göbek Yağı & Kondisyon",
+    reps: "10 Dakika Finisher (Eğim 10-12 / Hız 5.0-5.5 km/s)",
+    imageId: "Walking_Treadmill",
+    videoId: null,
+    formCue:
+      "Koşu bandının ön barlarına tutunmadan dik dur. Adımlarını kalçadan iterek at ve burundan nefes alıp ver.",
+    macfitTip: "Bacak antrenmanı sonunda yorgun glikojen depoları varken yapılan bu yürüyüş saf yağ oksidasyonunu hızlandırır.",
+  },
+};
+
+// Haftalık 4 günlük MACFit antrenman programı
+export const WORKOUT_DAYS = [
+  {
+    id: "day-1",
+    tabLabel: "1. Gün",
+    shortTitle: "Üst İtiş & V-Taper",
+    fullTitle: "1. GÜN: Üst Vücut İtiş & V-Taper (Göğüs + Omuz + Triceps)",
+    duration: "45 - 55 Dakika",
+    targetGoal:
+      "Omuzları genişletip göğsü şekillendirerek belin optik olarak çok daha dar ('Spider-Man' silüeti) görünmesini sağlamak.",
+    scheduleNote: "Haftada 3 gün gidiyorsan Pazartesi · 4 gün gidiyorsan Pazartesi",
+    exercises: [
+      {
+        id: "incline-db-press",
+        order: 1,
+        name: "Incline Dumbbell Press",
+        turkishName: "Eğimli Sehpada Dambıl Göğüs İtiş",
+        muscleGroup: "Üst Göğüs & Ön Omuz",
+        equipment: "30° Eğimli Sehpa + Dambıl",
+        imageId: "Incline_Dumbbell_Press",
+        videoId: "8iPEnn-ltC8",
+        pyramidSets: [
+          { set: 1, reps: "30 Tekrar", load: "Çok Hafif (Isınma & Kan Pompalama)" },
+          { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "10 Tekrar", load: "Zorlayıcı Ağırlık" },
+          { set: 4, reps: "5 Tekrar", load: "Ağır / Kusursuz Form" },
+        ],
+        coreRestId: "hanging_leg_raise",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Hanging Leg / Knee Raise (3 Set)",
+        tips: [
+          "Sehpa açısını 30 dereceye ayarla (45 derecede yük omuza kayar).",
+          "Dambılları indirirken dirseklerini gövdeye 45° açıda tut, göğüs hizasına kadar indir.",
+          "İlk 30 tekrar setinde kasın ısınmasını hisset, ağır 5 tekrarda patlayıcı it.",
+        ],
+      },
+      {
+        id: "seated-db-shoulder-press",
+        order: 2,
+        name: "Seated Dumbbell Shoulder Press",
+        turkishName: "Oturarak Dambıl Omuz Press",
+        muscleGroup: "Ön & Yan Omuz",
+        equipment: "Dik Sehpa + Dambıl",
+        imageId: "Dumbbell_Shoulder_Press",
+        videoId: "qEwKCR5JCog",
+        pyramidSets: [
+          { set: 1, reps: "30 Tekrar", load: "Hafif Ağırlık" },
+          { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "10 Tekrar", load: "Orta-Ağır" },
+          { set: 4, reps: "5 Tekrar", load: "Ağır Kilogram" },
+        ],
+        coreRestId: "cable_crunch",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Cable Crunch (3 Set)",
+        tips: [
+          "Sırtını sehpaya tam yasla, belini aşırı çukurlaştırmamak için karnını sık.",
+          "Dambılları tepe noktada birbirine çarpmadan kontrollü durdur.",
+        ],
+      },
+      {
+        id: "dumbbell-lateral-raise",
+        order: 3,
+        name: "Dumbbell Lateral Raise",
+        turkishName: "Dambıl Yana Açış (V-Taper Anahtarı)",
+        muscleGroup: "Yan Omuz (Deltoid)",
+        equipment: "Dambıl",
+        imageId: "Side_Lateral_Raise",
+        videoId: "3VcKaXpzqRo",
+        pyramidSets: [
+          { set: 1, reps: "35 Tekrar", load: "Çok Hafif (2.5 - 4 kg)" },
+          { set: 2, reps: "20 Tekrar", load: "Hafif-Orta" },
+          { set: 3, reps: "15 Tekrar", load: "Orta Ağırlık" },
+          { set: 4, reps: "10 Tekrar", load: "Kontrollü Ağır (Omuz güvenliği için min 10)" },
+        ],
+        coreRestId: "bicycle_crunch",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Bicycle Crunch (Sağ-Sol Toplam 21)",
+        tips: [
+          "Yan omuz eklemini korumak için bu harekette 5 tekrara inme; minimum 10 tekrarda kal.",
+          "Dambılları yukarı değil, odanın iki yan duvarına doğru uzatarak kaldır.",
+        ],
+      },
+      {
+        id: "cable-crossover",
+        order: 4,
+        name: "Cable Crossover / Machine Fly",
+        turkishName: "Kablo İle Göğüs Sıkıştırma",
+        muscleGroup: "Göğüs İç Çizgi & Dış Hat",
+        equipment: "MACFit Cable İstasyonu",
+        imageId: "Cable_Crossover",
+        videoId: "taI4XduLpTk",
+        pyramidSets: [
+          { set: 1, reps: "30 Tekrar", load: "Hafif" },
+          { set: 2, reps: "15 Tekrar", load: "Orta" },
+          { set: 3, reps: "10 Tekrar", load: "Zorlayıcı" },
+        ],
+        coreRestId: "plank",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 45 Saniye Vakumlu Plank",
+        tips: [
+          "Bir adım öne çık, göğsünü dik tut ve dirseklerdeki hafif bükülmeyi sabit tut.",
+          "Ellerini göğüs önünde birleştirirken 1 saniye sıkıştır.",
+        ],
+      },
+      {
+        id: "rope-triceps-pushdown",
+        order: 5,
+        name: "Rope Triceps Pushdown",
+        turkishName: "Kablo İp İle Arka Kol İtiş",
+        muscleGroup: "Triceps (3 Baş)",
+        equipment: "Cable + İp Aparatı",
+        imageId: "Triceps_Pushdown_-_Rope_Attachment",
+        videoId: "vB5OHsJ3EME",
+        pyramidSets: [
+          { set: 1, reps: "35 Tekrar", load: "Hafif" },
+          { set: 2, reps: "20 Tekrar", load: "Orta" },
+          { set: 3, reps: "12 Tekrar", load: "Orta-Ağır" },
+          { set: 4, reps: "6 Tekrar", load: "Ağır" },
+        ],
+        coreRestId: "hanging_leg_raise",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Hanging Knee Raise (Bitirici)",
+        tips: [
+          "Dirseklerini kaburgalarına yapıştır ve hareket boyunca öne-arkaya oynatma.",
+          "En alt noktada ipin iki ucunu dışa doğru açarak arka kolu tamamen kas.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "day-2",
+    tabLabel: "2. Gün",
+    shortTitle: "Alt Vücut & Metabolik",
+    fullTitle: "2. GÜN: Atletik Alt Vücut & Metabolik Ateşleme (Bacak + Kalça + Core)",
+    duration: "50 - 60 Dakika",
+    targetGoal:
+      "Vücudundaki en büyük kas grubunu (~21 kg bacak kasını) çalıştırarak metabolizma hızını ve doğal büyüme hormonu salınımını zirveye çıkarmak.",
+    scheduleNote: "Haftada 3 gün gidiyorsan Çarşamba · 4 gün gidiyorsan Salı/Çarşamba",
+    exercises: [
+      {
+        id: "leg-press",
+        order: 1,
+        name: "Leg Press",
+        turkishName: "Leg Press (Bacak İtiş)",
+        muscleGroup: "Ön Bacak (Quadriceps) & Kalça",
+        equipment: "MACFit Leg Press Makinesi",
+        imageId: "Leg_Press",
+        videoId: "IZxyjW7MPJQ",
+        pyramidSets: [
+          { set: 1, reps: "30 Tekrar", load: "Hafif (Diz & Kalça Isındırma)" },
+          { set: 2, reps: "15 Tekrar", load: "Orta Plaka" },
+          { set: 3, reps: "10 Tekrar", load: "Yüksek Plaka" },
+          { set: 4, reps: "5 Tekrar", load: "Ağır & Kontrollü İniş" },
+        ],
+        coreRestId: "decline_crunch",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Decline Crunch / Mekik (3 Set)",
+        tips: [
+          "En üst noktada dizlerini tamamen kilitleme, hafif kırık bırak.",
+          "Aşağı inerken kalçan sehpadan kalkmasın; gücü topuklarından iterek üret.",
+        ],
+      },
+      {
+        id: "romanian-deadlift",
+        order: 2,
+        name: "Romanian Deadlift",
+        turkishName: "Romen Deadlift (Arka Bacak & Kalça)",
+        muscleGroup: "Arka Bacak (Hamstring) & Kalça",
+        equipment: "Barbell veya Ağır Dambıl",
+        imageId: "Romanian_Deadlift",
+        videoId: "JCXUYuzwNrM",
+        pyramidSets: [
+          { set: 1, reps: "25 Tekrar", load: "Hafif (Form Provası)" },
+          { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "10 Tekrar", load: "Zorlayıcı Ağırlık" },
+          { set: 4, reps: "6 Tekrar", load: "Ağır Kilogram" },
+        ],
+        coreRestId: "hanging_leg_raise",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Hanging Leg Raise (3 Set)",
+        tips: [
+          "Sırtını tamamen düz kilitle, barı bacaklarına sürtercesine yakın indir.",
+          "Eğilmek için belini bükme; kalçanı geriye iterek arka bacağındaki gerilmeyi hisset.",
+        ],
+      },
+      {
+        id: "walking-lunges",
+        order: 3,
+        name: "Dumbbell Walking Lunges",
+        turkishName: "Dambıl İle Yürüyen Lunge",
+        muscleGroup: "Bacak, Kalça & Denge",
+        equipment: "Dambıl + Koridor Alanı",
+        imageId: "Dumbbell_Lunges",
+        videoId: "L8fvypPrzzs",
+        pyramidSets: [
+          { set: 1, reps: "20 Tekrar", load: "Vücut Ağırlığı / Hafif (Her Bacak 10)" },
+          { set: 2, reps: "12 Tekrar", load: "Orta Dambıl (Her Bacak 6)" },
+          { set: 3, reps: "8 Tekrar", load: "Ağır Dambıl (Her Bacak 8)" },
+        ],
+        coreRestId: "russian_twist",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Russian Twist (3 Set)",
+        tips: [
+          "Adımını çok dar atma; öndeki dizin parmak ucunu aşırı geçmesin, dik dur.",
+          "Nabzı en çok yükselten ve kaloriyi eriten bacak hareketlerinden biridir.",
+        ],
+      },
+      {
+        id: "seated-leg-curl",
+        order: 4,
+        name: "Seated Leg Curl",
+        turkishName: "Oturarak Arka Bacak Bükme",
+        muscleGroup: "Arka Bacak (Hamstring)",
+        equipment: "MACFit Seated Leg Curl",
+        imageId: "Seated_Leg_Curl",
+        videoId: "ELOCsoDSmrg",
+        pyramidSets: [
+          { set: 1, reps: "30 Tekrar", load: "Hafif" },
+          { set: 2, reps: "15 Tekrar", load: "Orta" },
+          { set: 3, reps: "10 Tekrar", load: "Zorlayıcı" },
+        ],
+        coreRestId: "plank",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 45 Saniye Plank",
+        tips: [
+          "Üst pedin bacaklarını sımsıkı sabitlediğinden emin ol.",
+          "Aşağı çekerken patlayıcı, yukarı bırakırken 2 saniyede kontrollü bırak.",
+        ],
+      },
+      {
+        id: "standing-calf-raise",
+        order: 5,
+        name: "Standing Calf Raise + Eğimli Yürüyüş",
+        turkishName: "Ayakta Kalf & 10 Dk Yağ Yakım Yürüyüşü",
+        muscleGroup: "Kalf & Kardiyovasküler Sistem",
+        equipment: "Calf Makinesi / Smith + Koşu Bandı",
+        imageId: "Standing_Calf_Raises",
+        videoId: "gwLzBJYoWlI",
+        pyramidSets: [
+          { set: 1, reps: "30 Tekrar", load: "Hafif" },
+          { set: 2, reps: "20 Tekrar", load: "Orta" },
+          { set: 3, reps: "12 Tekrar", load: "Ağır (Tepe ve Dipte 1 sn Bekle)" },
+        ],
+        coreRestId: "incline_walk",
+        coreRestLabel: "Antrenman Sonu: 10 Dk Incline Walk (Eğim 12 · Hız 5.2 km/s)",
+        tips: [
+          "Kalf hareketini zıplayarak değil, topuğu tam aşağı esnetip tam parmak ucuna çıkarak yap.",
+          "Hemen ardından koşu bandında tutunmadan 10 dakika eğimli yürüyüşle yağ yakımını kapat.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "day-3",
+    tabLabel: "3. Gün",
+    shortTitle: "Sırt & Kol (Bruce Lee)",
+    fullTitle: "3. GÜN: Bruce Lee Sırt & Kol Detayı (Sırt + Arka Omuz + Biceps)",
+    duration: "45 - 55 Dakika",
+    targetGoal:
+      "Sırt kanatlarını (Lat) açarak bel çevresini daha ince göstermek ve Lenny Kravitz'in 45->5 özel Biceps piramidiyle kolları keskinleştirmek.",
+    scheduleNote: "Haftada 3 gün gidiyorsan Cuma · 4 gün gidiyorsan Perşembe/Cuma",
+    exercises: [
+      {
+        id: "wide-grip-lat-pulldown",
+        order: 1,
+        name: "Wide-Grip Lat Pulldown",
+        turkishName: "Geniş Tutuş Kanat Çekiş",
+        muscleGroup: "Sırt Genişliği (Latissimus Dorsi)",
+        equipment: "Lat Pulldown İstasyonu",
+        imageId: "Wide-Grip_Lat_Pulldown",
+        videoId: "CAwf7n6Luuc",
+        pyramidSets: [
+          { set: 1, reps: "30 Tekrar", load: "Hafif (Kanat Aktivasyonu)" },
+          { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "10 Tekrar", load: "Zorlayıcı Ağırlık" },
+          { set: 4, reps: "5 Tekrar", load: "Ağır & Kontrollü" },
+        ],
+        coreRestId: "lying_leg_raise",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Lying Leg Raise (3 Set)",
+        tips: [
+          "Barı ensene değil, göğsünün üst kısmına doğru çek; omuzlarını kulaklarından uzak tut.",
+          "Ellerini bir kanca gibi düşün ve dirseklerini aşağı doğru çekmeye odaklan.",
+        ],
+      },
+      {
+        id: "seated-cable-row",
+        order: 2,
+        name: "Seated Cable Row",
+        turkishName: "Oturarak Kablo Sırt Çekiş",
+        muscleGroup: "Orta Sırt & Postür",
+        equipment: "Seated Row İstasyonu",
+        imageId: "Seated_Cable_Rows",
+        videoId: "GZbfZ033f74",
+        pyramidSets: [
+          { set: 1, reps: "30 Tekrar", load: "Hafif" },
+          { set: 2, reps: "15 Tekrar", load: "Orta" },
+          { set: 3, reps: "10 Tekrar", load: "Orta-Ağır" },
+          { set: 4, reps: "5 Tekrar", load: "Ağır" },
+        ],
+        coreRestId: "cable_woodchopper",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Cable Woodchopper (Bel Simidi / Oblik)",
+        tips: [
+          "Gövdeyi aşırı öne-arkaya sallamadan kürek kemiklerini arkada birbirine sıkıştır.",
+          "Göbek yağını saklayan kambur duruşu düzelten en iyi postür hareketidir.",
+        ],
+      },
+      {
+        id: "face-pull",
+        order: 3,
+        name: "Face Pull",
+        turkishName: "Yüze Kablo Çekiş (Arka Omuz)",
+        muscleGroup: "Arka Omuz & Üst Sırt",
+        equipment: "Cable + İp Aparatı",
+        imageId: "Face_Pull",
+        videoId: "rep-qVOkqgk",
+        pyramidSets: [
+          { set: 1, reps: "30 Tekrar", load: "Hafif" },
+          { set: 2, reps: "20 Tekrar", load: "Orta" },
+          { set: 3, reps: "15 Tekrar", load: "Orta-Zorlayıcı" },
+        ],
+        coreRestId: "reverse_crunch",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Reverse Crunch (Alt Karın - 3 Set)",
+        tips: [
+          "Kabloyu göz hizasına ayarla, ipi başparmakların geriye bakacak şekilde alnına doğru çek.",
+          "Omuzları geriye açarak Bruce Lee tarzı atletik üst vücut duruşunu oturtur.",
+        ],
+      },
+      {
+        id: "dumbbell-bicep-curl",
+        order: 4,
+        name: "Dumbbell Bicep Curl (Kravitz Özel Seti)",
+        turkishName: "Dambıl Biceps Curl — Lenny Kravitz Piramidi",
+        muscleGroup: "Biceps (Ön Kol)",
+        equipment: "Dambıl (4-5 kg'dan 17.5-20 kg'a)",
+        imageId: "Dumbbell_Bicep_Curl",
+        videoId: "ykJmrZ5v0Oo",
+        pyramidSets: [
+          { set: 1, reps: "45 Tekrar", load: "4-5 kg (Tam Lenny Kravitz Pompası)" },
+          { set: 2, reps: "20 Tekrar", load: "9-10 kg" },
+          { set: 3, reps: "10 Tekrar", load: "12.5-15 kg" },
+          { set: 4, reps: "5 Tekrar", load: "17.5-20 kg (Sallanmadan)" },
+        ],
+        coreRestId: "bicycle_crunch",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Bicycle Crunch (3 Set)",
+        tips: [
+          "Dodd Romero'nun meşhur imza setidir: 45 tekrarda kollarının yanmasını kabullen.",
+          "Dirseklerini bel hizasında sabitle; son 5 tekrarlık ağır sette belinden güç alma.",
+        ],
+      },
+      {
+        id: "incline-hammer-curl",
+        order: 5,
+        name: "Incline Hammer Curl",
+        turkishName: "Eğimli Sehpada Çekiç Curl",
+        muscleGroup: "Brachialis & Ön Kol (Forearm)",
+        equipment: "45° Sehpa + Dambıl",
+        imageId: "Incline_Hammer_Curls",
+        videoId: "TwD-YGVP4Bk",
+        pyramidSets: [
+          { set: 1, reps: "25 Tekrar", load: "Hafif" },
+          { set: 2, reps: "15 Tekrar", load: "Orta" },
+          { set: 3, reps: "8 Tekrar", load: "Ağır" },
+        ],
+        coreRestId: "plank",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 45 Saniye Vakumlu Plank",
+        tips: [
+          "Avuç içleri birbirine baksın; kollarını tam aşağı sarkıtıp gerilimi hisset.",
+          "Tişört içinde ön kol ve biceps ayrımını en keskin gösteren harekettir.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "day-4",
+    tabLabel: "4. Gün",
+    shortTitle: "Full-Body & Belly Fat",
+    fullTitle: "4. GÜN: Full-Body Fonksiyonel Kondisyon & Göbek Yağı Yok Edici",
+    duration: "45 Dakika (Yüksek Nabız)",
+    targetGoal:
+      "Dinlenme aralarını minimumda tutarak metabolizmayı ateşlemek, viseral/gövde yağını yakmak ve atletik kondisyon kazanmak.",
+    scheduleNote: "4. gün MACFit'e gidebildiğin haftalarda Cumartesi veya Pazar uygula",
+    exercises: [
+      {
+        id: "kettlebell-swing",
+        order: 1,
+        name: "Kettlebell Swing",
+        turkishName: "Kettlebell Savurma (Kalça & Metabolik Patlama)",
+        muscleGroup: "Kalça, Arka Bacak, Core & Kondisyon",
+        equipment: "Kettlebell (MACFit Fonksiyonel Alan)",
+        imageId: "One-Arm_Kettlebell_Swings",
+        videoId: "YSxHifyI6s8",
+        pyramidSets: [
+          { set: 1, reps: "30 Tekrar", load: "10-12 kg (Ritmi Bul)" },
+          { set: 2, reps: "20 Tekrar", load: "14-16 kg" },
+          { set: 3, reps: "15 Tekrar", load: "16-20 kg" },
+          { set: 4, reps: "12 Tekrar", load: "20-24 kg" },
+        ],
+        coreRestId: "ab_wheel",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Ab Wheel Rollout / Crunch",
+        tips: [
+          "Kollarınla kaldırma! Kettlebell'i göğüs hizasına fırlatan şey kalçanı sertçe öne kilitlemendir.",
+          "Sırtını düz tut ve tepe noktada karnını sertçe sık.",
+        ],
+      },
+      {
+        id: "renegade-row-pushup",
+        order: 2,
+        name: "Push-Up & Alternating Renegade Row",
+        turkishName: "Şınav + Dambıl Renegade Row Süperseti",
+        muscleGroup: "Göğüs, Sırt & Anti-Rotasyon Core",
+        equipment: "2 Adet Altıgen (Hex) Dambıl",
+        imageId: "Alternating_Renegade_Row",
+        videoId: "roCP6wCXPqo",
+        pyramidSets: [
+          { set: 1, reps: "20 Şınav + 16 Row", load: "Hafif Dambıl (7.5 - 10 kg)" },
+          { set: 2, reps: "15 Şınav + 12 Row", load: "Orta Dambıl (12.5 kg)" },
+          { set: 3, reps: "12 Şınav + 10 Row", load: "Ağır Dambıl (15 kg)" },
+        ],
+        coreRestId: "mountain_climbers",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Mountain Climbers (Her Bacak)",
+        tips: [
+          "Ayaklarını omuz genişliğinden biraz fazla aç ki dambılı çekerken kalçan sağa sola dönmesin.",
+          "Tek harekette hem üst gövde hem de tüm karın duvarını kilitler.",
+        ],
+      },
+      {
+        id: "straight-arm-pulldown",
+        order: 3,
+        name: "Straight-Arm Cable Pulldown",
+        turkishName: "Düz Kol Kablo Çekiş (Kanat & Core)",
+        muscleGroup: "Alt Kanat & Serratus (Kaburga Çizgisi)",
+        equipment: "Cable + Düz Bar veya İp",
+        imageId: "Straight-Arm_Pulldown",
+        videoId: "G9uNaXGTJ4w",
+        pyramidSets: [
+          { set: 1, reps: "30 Tekrar", load: "Hafif" },
+          { set: 2, reps: "15 Tekrar", load: "Orta" },
+          { set: 3, reps: "10 Tekrar", load: "Orta-Ağır" },
+        ],
+        coreRestId: "hanging_leg_raise",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Hanging Leg Raise",
+        tips: [
+          "Dirsekleri kilitlemeden hafif kırık bırak, kabloyu kalçana doğru çek.",
+          "İndirirken karnını sık; kaburga üzerindeki 'serratus' çizgilerini belirginleştirir.",
+        ],
+      },
+      {
+        id: "farmers-walk",
+        order: 4,
+        name: "Farmer's Walk (Çiftçi Yürüyüşü)",
+        turkishName: "Ağır Dambıl İle Çiftçi Yürüyüşü",
+        muscleGroup: "Derin Core, Kavrama, Omuz & Yağ Yakımı",
+        equipment: "2 Adet Ağır Dambıl / Kettlebell",
+        imageId: "Farmers_Walk",
+        videoId: "Fkzk_RqlYig",
+        pyramidSets: [
+          { set: 1, reps: "45 Saniye Yürüyüş", load: "Orta-Ağır (2× 20 kg)" },
+          { set: 2, reps: "45 Saniye Yürüyüş", load: "Ağır (2× 25 kg)" },
+          { set: 3, reps: "45 Saniye Yürüyüş", load: "Maksimum Temiz (2× 27.5-30 kg)" },
+        ],
+        coreRestId: "russian_twist",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Russian Twist",
+        tips: [
+          "Omuzlarını geriye ve aşağı çek, karnını içeri vakumla ve küçük, hızlı adımlarla yürü.",
+          "Yorgunlukta gövdeni sağa sola yatırmamak için derin karın kasların aralıksız çalışır.",
+        ],
+      },
+      {
+        id: "stomach-vacuum-card",
+        order: 5,
+        name: "Stomach Vacuum (Günlük Sabah Rutini)",
+        turkishName: "Mide Vakumu — Bel İnceltme Silahı",
+        muscleGroup: "Transverse Abdominis (İç Bel Kuşağı)",
+        equipment: "Ekipmansız (Sabah Aç Karnına)",
+        imageId: "Stomach_Vacuum",
+        videoId: "gDx1xfSobG4",
+        pyramidSets: [
+          { set: 1, reps: "20 Saniye Tutuş", load: "Sabah Aç Karnına - Set 1" },
+          { set: 2, reps: "20 Saniye Tutuş", load: "Sabah Aç Karnına - Set 2" },
+          { set: 3, reps: "20 Saniye Tutuş", load: "Sabah Aç Karnına - Set 3" },
+          { set: 4, reps: "20 Saniye Tutuş", load: "Sabah Aç Karnına - Set 4" },
+          { set: 5, reps: "20 Saniye Tutuş", load: "Sabah Aç Karnına - Set 5" },
+        ],
+        coreRestId: "incline_walk",
+        coreRestLabel: "4. Gün Kardiyo Finisher: Kürek/Bisiklette 8 Tur (30 sn Depar / 60 sn Hafif)",
+        tips: [
+          "Gövde yağın erirken iç karın kasını sıkılaştırır; 3 haftada bel çevreni 2-3 cm daraltır.",
+          "Akciğerindeki tüm havayı boşaltmadan vakuma başlama; göbek deliğini kaburgaların altına çek.",
+        ],
+      },
+    ],
+  },
+];
+
+// Beslenme ve göbek yağı eritme protokolü verileri
+export const NUTRITION_PROTOCOL = {
+  summary: {
+    calories: "2.050 – 2.150 kcal",
+    protein: "170 – 180 g",
+    carbs: "140 – 160 g",
+    fats: "60 – 65 g",
+    water: "3,0 – 3,5 Litre + 1-2 Maden Suyu",
+  },
+  fastingWindows: [
+    {
+      name: "Seçenek A: Kravitz Modu (18:6)",
+      window: "İlk Öğün: 14:30 - 15:00  |  Son Öğün: 20:30",
+      description:
+        "Lenny Kravitz protokolüne en yakın düzen. Öğlene kadar insülini sıfırda tutarak göbek yağını (10,6 kg) hızlıca enerjiye çevirir.",
+    },
+    {
+      name: "Seçenek B: Standart Mod (16:8)",
+      window: "İlk Öğün: 12:30  |  Son Öğün: 20:30",
+      description:
+        "İş veya okul temposunda öğlene kadar dayanmakta zorlanıyorsan ideal başlangıç penceresi.",
+    },
+  ],
+  morningFastRules: [
+    "Su (oda sıcaklığında veya limonlu)",
+    "Şekersiz Sade Kahve (Americano / Filtre / Espresso) — Yağ yakımını hızlandırır",
+    "Şekersiz Yeşil Çay veya Sade Maden Suyu",
+    "Açlık penceresinde sıfır kalori (süt, şeker, meyve suyu yok)",
+  ],
+  dailyMeals: [
+    {
+      time: "Öğün 1 · 14:00 - 15:00",
+      title: "Kravitz Kırılış Omleti",
+      items: [
+        "4 yumurta beyazı + 2 tam yumurta",
+        "Bol ıspanak, yeşil biber, mantar ve maydanoz (1 tatlı kaşığı zeytinyağında)",
+        "50 g yağsız lor veya light beyaz peynir",
+        "50-60 g yulaf ezmesi (tarçın + 10 çiğ badem) VEYA 2 dilim ekşi mayalı tam buğday ekmeği",
+      ],
+    },
+    {
+      time: "Öğün 2 · 17:30",
+      title: "Antrenman Çevresi Hızlı Yakıt",
+      items: [
+        "1 ölçek Whey Protein Shake (su ile)",
+        "1 orta boy yeşil elma veya 1 küçük muz (sadece antrenman günlerinde)",
+      ],
+    },
+    {
+      time: "Öğün 3 · 20:00",
+      title: "Akşam Protein + Dev Salata",
+      items: [
+        "250-300 g ızgara tavuk göğsü, hindi, yağsız dana eti veya somon/levrek",
+        "Dev Yeşil Salata: Roka, marul, salatalık, brokoli (1 yemek kaşığı zeytinyağı + bol limon/elma sirkesi)",
+        "Ölçülü Karbonhidrat: 4-5 yemek kaşığı (~120-150 g pişmiş) basmati pirinç, bulgur veya karabuğday (dinlenme günlerinde yarıya indir)",
+      ],
+    },
+  ],
+  waistRules: [
+    {
+      title: "Sabah Mide Vakumu",
+      text: "Her sabah aç karnına 5×20 saniye. İç karın kasını sıkılaştırarak bel çevresini optik ve fiziksel olarak daraltır.",
+    },
+    {
+      title: "Denzel & Kravitz Kuralı",
+      text: "İlk 3-4 hafta piramit setler kaslarda glikojen ve su tutacağı için tartıya aldanma. Her Pazar aç karnına göbek deliği hizasından mezura ile belini ölç.",
+    },
+    {
+      title: "1900 Kalorinin Altına Düşme",
+      text: "BMR değerin 1970 kcal. Çok az yersen metabolizman kendini koruma moduna alıp yavaşlar; kalorini 2050-2150 bandında tutup antrenmanla açık yarat.",
+    },
+  ],
+};
