@@ -49,7 +49,7 @@ const TABS = [
   {
     id: "nutrition",
     top: "Protokol",
-    sub: "Beslenme & Göbek Eritme",
+    sub: "Beslenme & Enerji Açığı",
     mobileIcon: "🥗",
     mobileLabel: "Besin",
   },
@@ -1154,10 +1154,10 @@ function renderFullSummaryTab() {
         </div>
       </section>
 
-      <!-- Bölüm 4: Beslenme, Oruç Saatleri & Göbek Eritme Özeti -->
+      <!-- Bölüm 4: Beslenme, Öğün Zamanlaması & Enerji Dengesi Özeti -->
       <section id="summary-sec-nutrition" class="summary-section-block">
         <div class="summary-section-title-row">
-          <h3>4. Beslenme, Aralıklı Oruç Saatleri &amp; Göbek Eritme Protokolü</h3>
+          <h3>4. Beslenme, Öğün Zamanlaması &amp; Enerji Dengesi Protokolü</h3>
         </div>
 
         <div class="summary-table-card">
@@ -1222,7 +1222,7 @@ function renderFullSummaryTab() {
           </article>
 
           <article class="summary-prose-card">
-            <h4>📌 Göbek Yağı Eritme İçin 3 Altın Kural</h4>
+            <h4>📌 Vücut Kompozisyonu İçin 3 Temel Kural</h4>
             <ul class="table-bullets">
               ${waistRules
                 .map((rule) => `<li><strong>${escapeHtml(rule.title)}:</strong> ${escapeHtml(rule.text)}</li>`)
@@ -1247,8 +1247,8 @@ function renderCoreGuide(filteredItems = null) {
       <div>
         <h2>21’ler Aktif Core Dinlenmesi &amp; Sabah Mide Vakumu Rehberi</h2>
         <p>
-          Piramit setleri arasında oturmak yerine bu karın hareketlerinden birini 21 tekrar yap.
-          Ekipman doluysa her kartın içinden alternatif harekete geçebilirsin.
+          Core çalışmaları bölgesel yağ eritmez (Ramirez-Campillo R. ve ark., Human Movement 2022;23, DOI: 10.5114/hm.2022.110373);
+          gövde stabilitesi, postür farkındalığı ve karın kaslarının kuvvet/hipertrofi gelişimi için uygulanır.
         </p>
       </div>
       <div class="day-meta-badges">
@@ -1261,7 +1261,7 @@ function renderCoreGuide(filteredItems = null) {
   bindCardInteractions();
 }
 
-// Beslenme ve göbek eritme protokolü sekmesini render eder
+// Beslenme ve enerji dengesi protokolü sekmesini render eder
 function renderNutritionProtocol() {
   const { summary, fastingWindows, morningFastRules, dailyMeals, waistRules } = NUTRITION_PROTOCOL;
   const profileTargets = getActiveProfileTargets();

@@ -504,7 +504,7 @@ export const CORE_LIBRARY = {
     id: "cable_woodchopper",
     name: "Standing Cable Wood Chop",
     turkishName: "Kablo İle Yan Bel Çevirme (Woodchopper)",
-    target: "Oblikler & Bel İnceltme",
+    target: "Oblikler & Gövde Rotasyon Kontrolü",
     reps: "21 Tekrar (Her Yön / 3 Set)",
     imageId: "Standing_Cable_Wood_Chop",
     videoKey: "cable_woodchopper",
@@ -660,14 +660,14 @@ export const CORE_LIBRARY = {
     id: "stomach_vacuum",
     name: "Stomach Vacuum & Hollow Core Hold",
     turkishName: "Sabah Mide Vakumu & İç Karın Kilitleme",
-    target: "Transverse Abdominis (Bel Çevresi)",
+    target: "Transversus Abdominis (TVA Kontrolü & Postür)",
     reps: "Her Sabah 5 Set × 20 Saniye",
     imageId: "Stomach_Vacuum",
     videoKey: "stomach_vacuum",
     sourceUrl: "https://musclewiki.com/exercises/abdominals",
     formCue:
-      "Sabah aç karnına tüm havayı boşaltıp göbek deliğini omurgaya vakumla; salonda veya matta Hollow Hold pozisyonunda beli yere bastırarak iç korseyi kilitle.",
-    macfitTip: "Ayakta öne hafif eğilerek yapılan vakum + salonda Hollow Hold bel çevresini en hızlı daraltan kombinasyondur.",
+      "Sabah aç karnına nefesi boşaltıp derin karın kasını (Transversus Abdominis - TVA) içeri çekerek izometrik aktivasyon sağla; matta Hollow Hold ile gövde stabilitesini pekiştir.",
+    macfitTip: "Amaç bölgesel yağ yakmak değil; postür farkındalığı ve derin karın kası (TVA) nöromüsküler kontrolü geliştirmektir.",
     alternatives: [
       {
         id: "dead_bug_sv",
@@ -699,14 +699,14 @@ export const CORE_LIBRARY = {
     id: "incline_walk",
     name: "Incline Treadmill Walk",
     turkishName: "Yüksek Eğimli Tempolu Yürüyüş",
-    target: "Doğrudan Göbek Yağı & Kondisyon",
+    target: "Genel Kondisyon & Toplam Enerji Harcaması",
     reps: "10 Dakika Finisher (Eğim 10-12 / Hız 5.0-5.5 km/s)",
     imageId: "Walking_Treadmill",
     videoKey: "incline_walk",
     sourceUrl: "https://musclewiki.com/exercise/treadmill-walk",
     formCue:
-      "Koşu bandının ön barlarına tutunmadan dik dur. Adımlarını kalçadan iterek at ve burundan nefes alıp ver.",
-    macfitTip: "Bacak veya ağırlık antrenmanı sonunda glikojen azalmışken yapılan bu yürüyüş saf yağ oksidasyonunu hızlandırır.",
+      "Koşu bandının ön barlarına tutunmadan dik dur. Adımlarını kalçadan iterek at ve burundan kontrollü nefes al.",
+    macfitTip: "Antrenman sonunda toplam günlük enerji harcamasını ve kardiyovasküler dayanıklılığı destekler.",
     alternatives: [
       {
         id: "mountain_climbers_iw",
@@ -1136,7 +1136,7 @@ export const WORKOUT_DAYS = [
         coreRestLabel: "Set Arası Aktif Dinlenme: 21× Russian Twist (3 Set)",
         tips: [
           "Adımını çok dar atma; öndeki dizin parmak ucunu aşırı geçmesin, gövde dik kalsın.",
-          "Nabzı en çok yükselten ve kaloriyi eriten bacak hareketlerinden biridir.",
+          "Alt vücut kas kuvveti ve kalça stabilitesi için yüksek metabolik iş yükü sunar.",
         ],
         alternatives: [
           {
@@ -1350,7 +1350,7 @@ export const WORKOUT_DAYS = [
         coreRestLabel: "Set Arası Aktif Dinlenme: 21× Cable Woodchopper (Bel Simidi / Oblik)",
         tips: [
           "Gövdeyi aşırı öne-arkaya sallamadan kürek kemiklerini arkada birbirine sıkıştır.",
-          "Göbek yağını saklayan kambur duruşu düzelten en iyi postür hareketidir.",
+          "Üst sırt ve omuz kuşağı postürünü dengelemeye yardımcı olur.",
         ],
         alternatives: [
           {
@@ -1537,11 +1537,11 @@ export const WORKOUT_DAYS = [
   {
     id: "day-4",
     tabLabel: "4. Gün",
-    shortTitle: "Full-Body & Belly Fat",
-    fullTitle: "4. GÜN: Full-Body Fonksiyonel Kondisyon & Göbek Yağı Yok Edici",
-    duration: "45 Dakika (Yüksek Nabız)",
+    shortTitle: "Full-Body & Kondisyon",
+    fullTitle: "4. GÜN: Full-Body Fonksiyonel Kondisyon & Metabolik Antrenman",
+    duration: "45 Dakika (Yüksek İş Kapasitesi)",
     targetGoal:
-      "Dinlenme aralarını minimumda tutarak metabolizmayı ateşlemek, viseral/gövde yağını yakmak ve atletik kondisyon kazanmak.",
+      "Tüm vücut kaslarını birleştirip günlük enerji açığını ve atletik iş kapasitesini desteklemek (yağ kaybı bölgesel egzersizle değil toplam enerji açığıyla gerçekleşir; Ramirez-Campillo R. ve ark., DOI: 10.5114/hm.2022.110373).",
     scheduleNote: "4. gün MACFit'e gidebildiğin haftalarda Cumartesi veya Pazar uygula",
     exercises: [
       {
@@ -1749,8 +1749,8 @@ export const WORKOUT_DAYS = [
         id: "stomach-vacuum-card",
         order: 5,
         name: "Stomach Vacuum & Hollow Core Hold",
-        turkishName: "Mide Vakumu & Hollow Hold — Bel İnceltme Silahı",
-        muscleGroup: "Transverse Abdominis (İç Bel Kuşağı)",
+        turkishName: "Mide Vakumu & Hollow Hold (Postür & TVA Kontrolü)",
+        muscleGroup: "Transversus Abdominis (Derin Karın & Postür)",
         equipment: "Ekipmansız (Sabah + Antrenman Kapanışı)",
         imageId: "Stomach_Vacuum",
         videoKey: "stomach_vacuum",
@@ -1765,8 +1765,8 @@ export const WORKOUT_DAYS = [
         coreRestId: "incline_walk",
         coreRestLabel: "4. Gün Kardiyo Finisher: 10 Dk Eğimli Yürüyüş (Eğim 12 · Hız 5.2)",
         tips: [
-          "Gövde yağın erirken iç karın kasını sıkılaştırır; 3 haftada bel çevreni 2-3 cm daraltır.",
-          "Sabah aç karnına nefes boşken vakum, salonda Hollow Hold ile beli yere bastırarak uygula.",
+          "Bölgesel yağ yakmaz; postür farkındalığı ve derin karın kası (Transversus Abdominis - TVA) nöromüsküler kontrolünü güçlendirir (Ramirez-Campillo ve ark., DOI: 10.5114/hm.2022.110373).",
+          "Sabah aç karnına nefesi boşaltarak TVA aktivasyonu, salonda Hollow Hold ile gövde stabilitesi çalış.",
         ],
         alternatives: [
           {
@@ -1877,8 +1877,8 @@ export const NUTRITION_PROTOCOL = {
   ],
   waistRules: [
     {
-      title: "Sabah Mide Vakumu",
-      text: "Her sabah aç karnına 5×20 saniye. İç karın kasını sıkılaştırarak bel çevresini optik ve fiziksel olarak daraltır.",
+      title: "Postür & Derin Karın (TVA) Kontrolü + Genel Açık",
+      text: "Sabah mide vakumu bölgesel yağ yakımı sağlamaz; postür farkındalığı ve Transversus Abdominis (TVA) kontrolünü geliştirir. Yağ kaybı yalnızca toplam enerji açığıyla gerçekleşir (Ramirez-Campillo R. ve ark., Human Movement 2022;23, DOI: 10.5114/hm.2022.110373).",
     },
     {
       title: "Haftalık Kayıp Hızı & Kalori Ayarı (Genel Öneri)",

@@ -15,7 +15,7 @@ Bu web uygulaması, yalnızca kendi tarayıcınızda saklanan kişisel **Profili
   - **1. Gün:** Üst Vücut İtiş & V-Taper (Göğüs + Omuz + Triceps)
   - **2. Gün:** Atletik Alt Vücut & Metabolik Ateşleme (Bacak + Kalça)
   - **3. Gün:** Bruce Lee Sırt & Kol Detayı (Sırt + Arka Omuz + Biceps)
-  - **4. Gün:** Full-Body Fonksiyonel Kondisyon & Göbek Yağı Yok Edici
+  - **4. Gün:** Full-Body Fonksiyonel Kondisyon & Metabolik Antrenman
 - **21'ler Core & Sabah Mide Vakumu Rehberi:** Set aralarında yapılacak tüm karın hareketleri ve alternatifleri, ayrıca sabah aç karnına uygulanacak *Stomach Vacuum & Hollow Core Hold* protokolü.
 - **Beslenme & Aralıklı Öğün Planı:** Kişisel Profilim verilerinize göre hesaplanan kalori ve ~2 g/kg protein hedefli esnek 18:6 ve 16:8 öğün penceresi.
 
