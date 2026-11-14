@@ -1,14 +1,16 @@
 <!--
   Dosya: index.html
   Açıklama: Kravitz Lean & Fit (MACFit) antrenman ve beslenme rehberi web uygulamasının
-  ana HTML iskeleti. Gün sekmeleri, yazılı/tablo özet görünümü, hareket ve alternatif kartları,
-  reklamsız yerel video oynatıcısı ve detay modalını barındırır.
+  mobil öncelikli (Mobile-First) ana HTML iskeleti. Gün sekmeleri, thumb-zone mobil alt navigasyon barı,
+  yazılı/tablo özet görünümü, hareket ve alternatif kartları, reklamsız yerel video oynatıcısı ve detay modalını barındırır.
 -->
 <!DOCTYPE html>
 <html lang="tr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta
       name="description"
       content="MACFit Tanita ölçüm verilerine özel Lenny Kravitz (Dodd Romero) Piramit 30-15-10-5 + 21'ler Core antrenman ve göbek yağı eritme rehberi."
@@ -157,6 +159,9 @@
         </p>
       </div>
     </footer>
+
+    <!-- Mobil Tek El (Thumb-Zone) Sabit Alt Navigasyon Barı -->
+    <nav id="mobile-bottom-nav" class="mobile-bottom-nav" aria-label="Mobil Hızlı Sekmeler"></nav>
 
     <!-- Reklamsız Yerel Video & Detay Modalı -->
     <div

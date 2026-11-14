@@ -1,8 +1,7 @@
 /*
  * Dosya: styles.css
- * Açıklama: Kravitz Lean & Fit web uygulamasının karanlık atletik tasarım sistemi,
- * responsive grid düzeni, yazılı/tablolu özet bileşenleri, yerel HTML5 video sahneleri,
- * egzersiz piramidi, alternatif hareket seçici ve modal stillerini içerir.
+ * Açıklama: Kravitz Lean & Fit web uygulamasının mobil öncelikli (Mobile-First) karanlık atletik tasarım sistemi,
+ * thumb-zone sabit alt navigasyon barı, mobilde kartlaşan tablolar, responsive grid ve bottom-sheet modal stillerini içerir.
  */
 
 :root {
@@ -1307,7 +1306,7 @@ body {
   font-size: 0.78rem;
 }
 
-/* Responsive Uyumluluk */
+/* Responsive Uyumluluk (Tablet Altı Genel) */
 @media (max-width: 1024px) {
   .pillars-grid,
   .tanita-grid,
@@ -1318,40 +1317,6 @@ body {
 
   .macro-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .controls-bar {
-    position: static;
-  }
-
-  .pillars-grid,
-  .tanita-grid,
-  .exercises-grid,
-  .core-grid,
-  .two-col-grid,
-  .three-col-grid,
-  .macro-grid,
-  .modal-frames-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .search-wrapper {
-    max-width: 100%;
-  }
-
-  .pyramid-step {
-    grid-template-columns: 46px 1fr auto;
-    font-size: 0.79rem;
-  }
-
-  .header-inner {
-    flex-wrap: wrap;
-  }
-
-  .summary-prose-grid {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -1792,15 +1757,450 @@ body {
   color: var(--amber);
 }
 
+/* Mobil Alt Navigasyon Barı (Masaüstünde Gizli) */
+.mobile-bottom-nav {
+  display: none;
+}
+
+.mobile-nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 46px;
+  padding: 4px 2px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.mobile-nav-btn .mobile-nav-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.mobile-nav-btn .mobile-nav-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.mobile-nav-btn.active {
+  background: var(--amber-soft);
+  border-color: var(--border-accent);
+  color: var(--amber);
+}
+
+/* Özet Sayfası İçi Hızlı Bölüm Atlama Çubuğu */
+.summary-quick-nav {
+  position: sticky;
+  top: 66px;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 8px 10px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.summary-quick-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.summary-quick-chip {
+  flex: 0 0 auto;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.summary-quick-chip:hover,
+.summary-quick-chip:focus-visible {
+  border-color: var(--border-accent);
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.summary-section-block,
+.summary-table-card[id],
+#content-area {
+  scroll-margin-top: 120px;
+}
+
+/* ==========================================================================
+   Mobil Öncelikli (Mobile-First) Gym UI/UX Düzenlemeleri
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  body {
+    padding-bottom: calc(74px + env(safe-area-inset-bottom));
+  }
+
+  .container {
+    padding: 0 12px;
+  }
+
+  .top-header .header-inner {
+    padding: 10px 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .brand-badge {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+  }
+
+  .brand-title {
+    font-size: 1.2rem;
+  }
+
+  .btn-outline {
+    padding: 7px 11px;
+    font-size: 0.76rem;
+    min-height: 36px;
+  }
+
+  .main-content {
+    padding-top: 16px;
+    padding-bottom: 32px;
+  }
+
+  .hero-section {
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .hero-subtitle {
+    font-size: 0.88rem;
+  }
+
+  /* Mobilde 3 sistem kuralını parmakla kaydırılan kompakt kartlara çevir */
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 84%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 12px;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .pillars-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pillar-card {
+    scroll-snap-align: start;
+    padding: 14px 15px;
+  }
+
+  .tanita-grid,
+  .exercises-grid,
+  .core-grid,
+  .two-col-grid,
+  .three-col-grid,
+  .macro-grid,
+  .modal-frames-grid,
+  .summary-prose-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .controls-bar {
+    position: static;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .search-wrapper {
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .search-input {
+    font-size: 16px;
+    min-height: 44px;
+  }
+
+  .day-banner {
+    padding: 15px;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .day-banner h2 {
+    font-size: 1.3rem;
+  }
+
+  .day-banner p {
+    font-size: 0.84rem;
+  }
+
+  .card-body {
+    padding: 15px;
+    gap: 12px;
+  }
+
+  .pyramid-step {
+    grid-template-columns: 46px 1fr auto;
+    font-size: 0.79rem;
+  }
+
+  /* Gün içi görünüm seçici: Mobilde 3 eşit tam genişlikli buton */
+  .view-mode-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px;
+    margin-bottom: 14px;
+  }
+
+  .view-mode-label {
+    display: none;
+  }
+
+  .view-mode-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .view-mode-btn {
+    padding: 8px 6px;
+    font-size: 0.72rem;
+    text-align: center;
+    min-height: 40px;
+    line-height: 1.2;
+  }
+
+  /* Başparmak Bölgesi (Thumb-Zone) Sabit Alt Bar */
+  .mobile-bottom-nav {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    gap: 2px;
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    background: rgba(9, 11, 16, 0.96);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  /* Özet sayfası içi yapışkan atlama çubuğu */
+  .summary-quick-nav {
+    top: 8px;
+    padding: 7px 8px;
+  }
+
+  .summary-quick-chip {
+    min-height: 36px;
+    padding: 7px 12px;
+  }
+
+  .summary-section-block,
+  .summary-table-card[id],
+  #content-area {
+    scroll-margin-top: 72px;
+  }
+
+  /* Sıfır Yatay Kaydırmalı Mobil Tablo Kartları */
+  .table-responsive {
+    overflow-x: visible;
+  }
+
+  .workout-summary-table {
+    min-width: 0;
+    width: 100%;
+    display: block;
+  }
+
+  .workout-summary-table thead {
+    display: none;
+  }
+
+  .workout-summary-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .workout-summary-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-main);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .workout-summary-table tbody td {
+    display: block;
+    width: 100%;
+    min-width: 0 !important;
+    padding: 0 0 10px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    text-align: left;
+  }
+
+  .workout-summary-table tbody td:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .workout-summary-table tbody td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--amber);
+    margin-bottom: 5px;
+  }
+
+  /* Mobilde dokunma hedeflerini (tap targets) büyüt */
+  .alt-pill-btn {
+    padding: 7px 11px;
+    min-height: 36px;
+    font-size: 0.77rem;
+  }
+
+  .table-video-btn,
+  .table-jump-btn {
+    min-height: 36px;
+    padding: 6px 12px;
+  }
+
+  .table-alt-btn {
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .table-core-btn {
+    padding: 9px 11px;
+    min-height: 44px;
+  }
+
+  /* Mobil Bottom-Sheet Video Modalı */
+  .modal-backdrop {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal-dialog {
+    max-height: 93dvh;
+    border-radius: 20px 20px 0 0;
+    border-bottom: none;
+  }
+
+  .modal-header {
+    padding: 14px 16px;
+  }
+
+  .modal-close-btn {
+    width: 42px;
+    height: 42px;
+    font-size: 1.1rem;
+  }
+
+  .modal-body {
+    padding: 14px 14px calc(20px + env(safe-area-inset-bottom));
+    gap: 14px;
+  }
+
+  .modal-playback-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .camera-btn,
+  .speed-btn {
+    min-height: 38px;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Mobilde video kontrol şeridi videonun üstünü kapatmasın; 16:9 sahnenin hemen altına yerleşsin */
+  .media-stage {
+    aspect-ratio: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .media-video {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    display: block;
+  }
+
+  .media-frame {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .media-controls-bar {
+    position: static;
+    padding: 8px 10px;
+    background: #080b11;
+    border-top: 1px solid var(--border-subtle);
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .pose-btn,
+  .video-trigger-btn {
+    min-height: 38px;
+    padding: 7px 11px;
+  }
+}
+
 @media print {
   body {
     background: #ffffff;
     color: #111827;
+    padding-bottom: 0;
   }
 
   .top-header,
   .controls-bar,
   .view-mode-bar,
+  .mobile-bottom-nav,
+  .summary-quick-nav,
   .site-footer,
   .bg-glow,
   .table-video-btn,

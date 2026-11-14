@@ -1,7 +1,7 @@
 /**
  * Dosya: app.js
- * Açıklama: Kravitz Lean & Fit uygulamasının arayüz oluşturma, sekme yönetimi,
- * gün içi ve tam sayfa yazılı/tablolu program özeti görünümü,
+ * Açıklama: Kravitz Lean & Fit uygulamasının mobil öncelikli (Mobile-First) arayüz oluşturma,
+ * üst + alt başparmak (thumb-zone) sekme yönetimi, gün içi ve tam sayfa yazılı/tablolu program özeti,
  * ana + alternatif hareket arama, kart ve modal içi etkileşimli Alternatif Hareketler seçicisi,
  * çift kamera açılı (Ön/Yan) HD/Full HD MP4 video sahneleri ve hız kontrollü detay modalını yürütür.
  */
@@ -23,27 +23,38 @@ const state = {
   photoTimers: [],
 };
 
-// Sekme tanımları
+// Günlere özel mobil ikonlar
+const DAY_MOBILE_ICONS = ["1️⃣", "2️⃣", "3️⃣", "4️⃣"];
+
+// Sekme tanımları (masaüstü üst bar + mobil thumb-zone alt navigasyon barı)
 const TABS = [
-  ...WORKOUT_DAYS.map((day) => ({
+  ...WORKOUT_DAYS.map((day, idx) => ({
     id: day.id,
     top: day.tabLabel,
     sub: day.shortTitle,
+    mobileIcon: DAY_MOBILE_ICONS[idx] || "•",
+    mobileLabel: day.tabLabel,
   })),
   {
     id: "core-guide",
     top: "Aktif Dinlenme",
     sub: "21'ler Core & Vakum",
+    mobileIcon: "🔥",
+    mobileLabel: "21'ler",
   },
   {
     id: "nutrition",
     top: "Protokol",
     sub: "Beslenme & Göbek Eritme",
+    mobileIcon: "🥗",
+    mobileLabel: "Besin",
   },
   {
     id: "summary",
     top: "📋 Hızlı Bakış",
     sub: "Yazılı & Tablo Özet",
+    mobileIcon: "📋",
+    mobileLabel: "Özet",
   },
 ];
 
@@ -56,6 +67,7 @@ const elements = {
   tanitaMeta: document.getElementById("tanita-meta"),
   tanitaGrid: document.getElementById("tanita-grid"),
   tabsNav: document.getElementById("tabs-nav"),
+  mobileBottomNav: document.getElementById("mobile-bottom-nav"),
   searchInput: document.getElementById("exercise-search"),
   clearSearchBtn: document.getElementById("clear-search-btn"),
   contentArea: document.getElementById("content-area"),
@@ -197,16 +209,34 @@ function renderTanitaSection() {
     .join("");
 }
 
-// Sekme butonlarını oluşturur
+// Aktif sekmeye geçer, aramayı temizler ve isteğe bağlı içerik alanına yumuşakça odaklanır
+function selectTab(tabId, { scrollToContent = false } = {}) {
+  if (!tabId) return;
+  state.activeTab = tabId;
+  if (state.searchQuery) {
+    state.searchQuery = "";
+    elements.searchInput.value = "";
+    elements.clearSearchBtn.hidden = true;
+  }
+  renderTabs();
+  renderMainContent();
+  if (scrollToContent && elements.contentArea) {
+    elements.contentArea.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+// Üst sekme çubuğu ve mobil alt navigasyon barını senkronize biçimde oluşturur
 function renderTabs() {
+  const hasSearch = state.searchQuery.trim().length > 0;
+
   elements.tabsNav.innerHTML = TABS.map(
     (tab) => `
       <button
         type="button"
         role="tab"
-        class="tab-btn ${state.activeTab === tab.id && !state.searchQuery ? "active" : ""}"
+        class="tab-btn ${state.activeTab === tab.id && !hasSearch ? "active" : ""}"
         data-tab="${escapeHtml(tab.id)}"
-        aria-selected="${state.activeTab === tab.id && !state.searchQuery}"
+        aria-selected="${state.activeTab === tab.id && !hasSearch}"
       >
         <span class="tab-btn-top">${escapeHtml(tab.top)}</span>
         <span class="tab-btn-sub">${escapeHtml(tab.sub)}</span>
@@ -215,24 +245,50 @@ function renderTabs() {
   ).join("");
 
   if (elements.openSummaryBtn) {
-    elements.openSummaryBtn.classList.toggle(
-      "active",
-      state.activeTab === "summary" && !state.searchQuery
-    );
+    elements.openSummaryBtn.classList.toggle("active", state.activeTab === "summary" && !hasSearch);
   }
 
   elements.tabsNav.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      state.activeTab = btn.dataset.tab;
-      if (state.searchQuery) {
-        state.searchQuery = "";
-        elements.searchInput.value = "";
-        elements.clearSearchBtn.hidden = true;
-      }
-      renderTabs();
-      renderMainContent();
+      selectTab(btn.dataset.tab, { scrollToContent: true });
     });
   });
+
+  // Aktif üst sekme butonunu yatay şeritte ortala
+  const activeTopTab = elements.tabsNav.querySelector(".tab-btn.active");
+  if (activeTopTab && typeof activeTopTab.scrollIntoView === "function") {
+    activeTopTab.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }
+
+  // Mobil başparmak bölgesi alt navigasyon barını oluştur (sıralama: 1-4. Gün, Özet, 21'ler, Besin)
+  if (elements.mobileBottomNav) {
+    const mobileOrder = ["day-1", "day-2", "day-3", "day-4", "summary", "core-guide", "nutrition"];
+    const mobileTabs = mobileOrder
+      .map((id) => TABS.find((t) => t.id === id))
+      .filter(Boolean);
+
+    elements.mobileBottomNav.innerHTML = mobileTabs
+      .map(
+        (tab) => `
+        <button
+          type="button"
+          class="mobile-nav-btn ${state.activeTab === tab.id && !hasSearch ? "active" : ""}"
+          data-mobile-tab="${escapeHtml(tab.id)}"
+          aria-current="${state.activeTab === tab.id && !hasSearch ? "page" : "false"}"
+        >
+          <span class="mobile-nav-icon" aria-hidden="true">${escapeHtml(tab.mobileIcon)}</span>
+          <span class="mobile-nav-label">${escapeHtml(tab.mobileLabel)}</span>
+        </button>
+      `
+      )
+      .join("");
+
+    elements.mobileBottomNav.querySelectorAll(".mobile-nav-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        selectTab(btn.dataset.mobileTab, { scrollToContent: true });
+      });
+    });
+  }
 }
 
 // Medya sahnesi HTML'ini (Ön/Yan Açı HD MP4 videolar + HD form fotoğrafları) üretir
@@ -515,8 +571,8 @@ function createDaySummaryTableHtml(day, { showDayHeader = false, showJumpBtn = f
 
       return `
         <tr>
-          <td class="col-order"><span class="table-order-badge">${escapeHtml(exercise.order)}</span></td>
-          <td class="col-main">
+          <td class="col-order" data-label="Hareket Sırası"><span class="table-order-badge">${escapeHtml(exercise.order)}</span></td>
+          <td class="col-main" data-label="Ana Hareket & Ekipman">
             <div class="table-ex-name">${escapeHtml(exercise.name)}</div>
             <div class="table-ex-tr">${escapeHtml(exercise.turkishName)}</div>
             <div class="table-meta-row">
@@ -532,10 +588,10 @@ function createDaySummaryTableHtml(day, { showDayHeader = false, showJumpBtn = f
               </button>
             </div>
           </td>
-          <td class="col-pyramid">
+          <td class="col-pyramid" data-label="Piramit Set & Tekrarlar">
             <div class="table-pyramid-list">${pyramidHtml}</div>
           </td>
-          <td class="col-core">
+          <td class="col-core" data-label="Set Arası (21'ler Core)">
             ${
               coreItem
                 ? `
@@ -553,7 +609,7 @@ function createDaySummaryTableHtml(day, { showDayHeader = false, showJumpBtn = f
                 : `<span>${escapeHtml(exercise.coreRestLabel)}</span>`
             }
           </td>
-          <td class="col-alts">
+          <td class="col-alts" data-label="Alternatifler (Doluysa / Yapılamıyorsa)">
             <div class="table-alt-list">${altsHtml}</div>
           </td>
         </tr>
@@ -588,8 +644,10 @@ function createDaySummaryTableHtml(day, { showDayHeader = false, showJumpBtn = f
       </div>
     `;
 
+  const cardIdAttr = showDayHeader ? `id="summary-day-${escapeHtml(day.id)}"` : "";
+
   return `
-    <div class="summary-table-card">
+    <div class="summary-table-card" ${cardIdAttr}>
       ${headerHtml}
       <div class="table-responsive">
         <table class="workout-summary-table">
@@ -680,11 +738,11 @@ function renderFullSummaryTab() {
   const weeklyScheduleRowsHtml = WORKOUT_DAYS.map(
     (day) => `
       <tr>
-        <td><strong>${escapeHtml(day.tabLabel)}</strong><div class="table-alt-meta">${escapeHtml(day.shortTitle)}</div></td>
-        <td>${escapeHtml(day.fullTitle.replace(/^\d+\.\s*GÜN:\s*/i, ""))}</td>
-        <td><span class="tag-chip equipment">${escapeHtml(day.duration)}</span></td>
-        <td>${escapeHtml(day.scheduleNote)}</td>
-        <td>
+        <td data-label="Gün"><strong>${escapeHtml(day.tabLabel)}</strong><div class="table-alt-meta">${escapeHtml(day.shortTitle)}</div></td>
+        <td data-label="Odak Bölgeler">${escapeHtml(day.fullTitle.replace(/^\d+\.\s*GÜN:\s*/i, ""))}</td>
+        <td data-label="Süre"><span class="tag-chip equipment">${escapeHtml(day.duration)}</span></td>
+        <td data-label="Takvim Notu">${escapeHtml(day.scheduleNote)}</td>
+        <td data-label="Hızlı Geçiş">
           <button type="button" class="table-jump-btn" data-jump-day="${escapeHtml(day.id)}">
             Videolu Günü Aç →
           </button>
@@ -724,7 +782,7 @@ function renderFullSummaryTab() {
 
       return `
         <tr>
-          <td class="col-main">
+          <td class="col-main" data-label="Core Hareketi">
             <div class="table-ex-name">${escapeHtml(core.name)}</div>
             <div class="table-ex-tr">${escapeHtml(core.turkishName)}</div>
             <div class="table-meta-row">
@@ -738,13 +796,13 @@ function renderFullSummaryTab() {
               </button>
             </div>
           </td>
-          <td><span class="tag-chip">${escapeHtml(core.target)}</span></td>
-          <td><strong>${escapeHtml(core.reps)}</strong></td>
-          <td class="col-cue">
+          <td data-label="Hedef Bölge"><span class="tag-chip">${escapeHtml(core.target)}</span></td>
+          <td data-label="Tekrar / Süre"><strong>${escapeHtml(core.reps)}</strong></td>
+          <td class="col-cue" data-label="Nasıl Yapılır">
             <div>${escapeHtml(core.formCue)}</div>
             ${core.macfitTip ? `<div class="table-alt-when"><strong>MACFit İpucu:</strong> ${escapeHtml(core.macfitTip)}</div>` : ""}
           </td>
-          <td class="col-alts"><div class="table-alt-list">${altsHtml}</div></td>
+          <td class="col-alts" data-label="Alternatifler"><div class="table-alt-list">${altsHtml}</div></td>
         </tr>
       `;
     })
@@ -762,9 +820,9 @@ function renderFullSummaryTab() {
     .map(
       ([label, value, note]) => `
       <tr>
-        <td><strong>${escapeHtml(label)}</strong></td>
-        <td><span class="table-macro-badge">${escapeHtml(value)}</span></td>
-        <td>${escapeHtml(note)}</td>
+        <td data-label="Kalem"><strong>${escapeHtml(label)}</strong></td>
+        <td data-label="Günlük Hedef"><span class="table-macro-badge">${escapeHtml(value)}</span></td>
+        <td data-label="Amaç / Not">${escapeHtml(note)}</td>
       </tr>
     `
     )
@@ -774,9 +832,9 @@ function renderFullSummaryTab() {
     .map(
       (meal) => `
       <tr>
-        <td><span class="meal-time-badge">${escapeHtml(meal.time)}</span></td>
-        <td><strong>${escapeHtml(meal.title)}</strong></td>
-        <td>
+        <td data-label="Saat"><span class="meal-time-badge">${escapeHtml(meal.time)}</span></td>
+        <td data-label="Öğün"><strong>${escapeHtml(meal.title)}</strong></td>
+        <td data-label="İçerik">
           <ul class="table-bullets">
             ${meal.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
           </ul>
@@ -803,8 +861,19 @@ function renderFullSummaryTab() {
         </div>
       </div>
 
+      <!-- Mobilde ve Masaüstünde Tek Dokunuşla Bölüm Atlama Çubuğu -->
+      <div class="summary-quick-nav" role="navigation" aria-label="Özet Bölümleri Hızlı Geçiş">
+        <button type="button" class="summary-quick-chip" data-scroll-target="summary-sec-weekly">🗓️ Haftalık Şema</button>
+        <button type="button" class="summary-quick-chip" data-scroll-target="summary-day-day-1">1. Gün</button>
+        <button type="button" class="summary-quick-chip" data-scroll-target="summary-day-day-2">2. Gün</button>
+        <button type="button" class="summary-quick-chip" data-scroll-target="summary-day-day-3">3. Gün</button>
+        <button type="button" class="summary-quick-chip" data-scroll-target="summary-day-day-4">4. Gün</button>
+        <button type="button" class="summary-quick-chip" data-scroll-target="summary-sec-core">🔥 21'ler Core</button>
+        <button type="button" class="summary-quick-chip" data-scroll-target="summary-sec-nutrition">🥗 Beslenme</button>
+      </div>
+
       <!-- Bölüm 1: Sistem Özeti, Tanita Özeti & Haftalık Şema -->
-      <section class="summary-section-block">
+      <section id="summary-sec-weekly" class="summary-section-block">
         <div class="summary-section-title-row">
           <h3>1. Sistem Özeti, Tanita Analizi &amp; Haftalık MACFit Şeması</h3>
         </div>
@@ -871,7 +940,7 @@ function renderFullSummaryTab() {
       </section>
 
       <!-- Bölüm 3: 21'ler Aktif Core & Sabah Mide Vakumu Tam Tablosu -->
-      <section class="summary-section-block">
+      <section id="summary-sec-core" class="summary-section-block">
         <div class="summary-section-title-row">
           <h3>3. 21'ler Aktif Core &amp; Sabah Mide Vakumu Tam Tablosu</h3>
         </div>
@@ -896,7 +965,7 @@ function renderFullSummaryTab() {
       </section>
 
       <!-- Bölüm 4: Beslenme, Oruç Saatleri & Göbek Eritme Özeti -->
-      <section class="summary-section-block">
+      <section id="summary-sec-nutrition" class="summary-section-block">
         <div class="summary-section-title-row">
           <h3>4. Beslenme, Aralıklı Oruç Saatleri &amp; Göbek Eritme Protokolü</h3>
         </div>
@@ -1394,15 +1463,17 @@ function bindCardInteractions() {
   // Özet sayfasından ilgili videolu güne hızlı geçiş
   document.querySelectorAll("[data-jump-day]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const targetDayId = btn.dataset.jumpDay;
-      if (!targetDayId) return;
-      state.activeTab = targetDayId;
-      state.searchQuery = "";
-      elements.searchInput.value = "";
-      elements.clearSearchBtn.hidden = true;
-      renderTabs();
-      renderMainContent();
-      elements.contentArea.scrollIntoView({ behavior: "smooth", block: "start" });
+      selectTab(btn.dataset.jumpDay, { scrollToContent: true });
+    });
+  });
+
+  // Özet sayfası içi hızlı bölüm atlama butonları
+  document.querySelectorAll("[data-scroll-target]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetEl = document.getElementById(btn.dataset.scrollTarget);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     });
   });
 
@@ -1597,15 +1668,7 @@ function initEventListeners() {
   // Üst bar "Yazılı & Tablo Özet" kısayol butonu
   if (elements.openSummaryBtn) {
     elements.openSummaryBtn.addEventListener("click", () => {
-      state.activeTab = "summary";
-      if (state.searchQuery) {
-        state.searchQuery = "";
-        elements.searchInput.value = "";
-        elements.clearSearchBtn.hidden = true;
-      }
-      renderTabs();
-      renderMainContent();
-      elements.contentArea.scrollIntoView({ behavior: "smooth", block: "start" });
+      selectTab("summary", { scrollToContent: true });
     });
   }
 
