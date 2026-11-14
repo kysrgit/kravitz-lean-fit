@@ -12,8 +12,10 @@ import {
   MUSCLEWIKI_LICENSE_URL,
   DEFAULT_PROFILE,
   NUTRITION_PROTOCOL,
+  PROGRESSION_MODEL,
   SCIENTIFIC_SOURCES,
   SYSTEM_PILLARS,
+  THREE_DAY_TEMPLATES,
   WORKOUT_DAYS,
   calculateProfileTargets,
   getExerciseMedia,
@@ -691,6 +693,46 @@ function createCoreCardHtml(core, initialVariantIndex = 0) {
   `;
 }
 
+// Çift ilerleme + deload ve 3 günlük alternatif şablon panelini oluşturur
+function createProgressionAndTemplatesHtml() {
+  const templatesHtml = THREE_DAY_TEMPLATES.templates
+    .map(
+      (tpl) => `
+      <div class="template-subcard">
+        <div class="template-subhead">
+          <strong>${escapeHtml(tpl.name)}</strong>
+          <span class="tag-chip">${escapeHtml(tpl.frequencyNote)}</span>
+        </div>
+        <ul class="table-bullets">
+          ${tpl.days.map((d) => `<li>${escapeHtml(d)}</li>`).join("")}
+        </ul>
+      </div>
+    `
+    )
+    .join("");
+
+  return `
+    <section class="progression-section" aria-label="İlerleme kuralı ve 3 günlük alternatif">
+      <div class="two-col-grid">
+        <article class="info-panel">
+          <h3>📈 ${escapeHtml(PROGRESSION_MODEL.title)}</h3>
+          <ul class="table-bullets">
+            <li><strong>Çift İlerleme:</strong> ${escapeHtml(PROGRESSION_MODEL.doubleProgression)}</li>
+            <li><strong>Planlı Deload:</strong> ${escapeHtml(PROGRESSION_MODEL.deloadRule)}</li>
+            <li><strong>Isınma Notu:</strong> ${escapeHtml(PROGRESSION_MODEL.warmupNote)}</li>
+          </ul>
+        </article>
+
+        <article class="info-panel">
+          <h3>📅 Haftada 3 Gün Antrenman Alternatifi (≥2×/Hafta Frekans)</h3>
+          <p class="muted-text" style="margin-bottom:10px;">${escapeHtml(THREE_DAY_TEMPLATES.intro)}</p>
+          <div class="templates-stack">${templatesHtml}</div>
+        </article>
+      </div>
+    </section>
+  `;
+}
+
 // Core kataloğu veya bitiriş kardiyosu öğesini id ile getirir
 function getCoreOrCardioItem(itemId) {
   return CORE_LIBRARY[itemId] || (CARDIO_FINISHER.id === itemId ? CARDIO_FINISHER : null);
@@ -933,6 +975,7 @@ function renderWorkoutDay(day) {
     ${viewModeBarHtml}
     ${tableHtml}
     ${cardsSectionHtml}
+    ${createProgressionAndTemplatesHtml()}
     ${createCardioFinisherSectionHtml()}
   `;
 
@@ -1188,6 +1231,7 @@ function renderFullSummaryTab() {
             </table>
           </div>
         </div>
+        ${createProgressionAndTemplatesHtml()}
       </section>
 
       <!-- Bölüm 2: 4 Günlük Antrenman Programı Tam Tablosu -->

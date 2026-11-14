@@ -841,6 +841,45 @@ export const CARDIO_FINISHER = {
   ],
 };
 
+// Çift ilerleme ve deload kuralı (genel öneri)
+export const PROGRESSION_MODEL = {
+  title: "Çift İlerleme Kuralı & 4-6 Haftalık Deload (Genel Öneri)",
+  doubleProgression:
+    "Çalışma setlerinde (2., 3. ve 4. set) hedef tekrar sayısına form bozulmadan art arda 2 antrenman ulaşırsan, bir sonraki seansta yükü %2,5 - %5 artır (genel öneri).",
+  deloadRule:
+    "Her 4-6 haftada bir 1 hafta planlı deload (toparlanma haftası) uygula: toplam set sayısını %30-40 azalt veya çalışma ağırlıklarını %10-15 düşür (genel öneri).",
+  warmupNote:
+    "1. Set (Isınma Seti) yük artışı hesabına katılmaz; yalnızca eklem hazırlığı ve teknik provadır.",
+};
+
+// Haftada 3 gün gidenler için her kası haftada en az 2 kez çalıştıran alternatif şablonlar
+export const THREE_DAY_TEMPLATES = {
+  intro:
+    "Haftada 3 gün salona gidiyorsan 4 günlük bölünmüş planın 4. günü düşer ve bazı kas grupları haftada 1 kez uyarılır. 3 günlük haftalarda her kas grubunu haftada en az 2 kez çalıştırmak için aşağıdaki iki şablondan birini kullan (genel öneri):",
+  templates: [
+    {
+      id: "full-body-aba",
+      name: "Şablon A · Full-Body A / B / A (Pazartesi – Çarşamba – Cuma)",
+      frequencyNote: "Her kas grubu haftada 3 kez uyarılır (≥2×/hafta).",
+      days: [
+        "1. Gün (Pzt · Full-Body A): Incline DB Press, Seated Cable Row, Leg Press, Lateral Raise, Dumbbell Bicep Curl + Set arası 21× Core",
+        "2. Gün (Çar · Full-Body B): Seated DB Shoulder Press, Wide-Grip Lat Pulldown, Romanian Deadlift, Seated Leg Curl, Rope Triceps Pushdown + Kavramasız Core (Dead Bug / Plank)",
+        "3. Gün (Cum · Full-Body A2): Barbell/Machine Chest Press, Single-Arm/Cable Row, Walking Lunges, Face Pull, Incline Hammer Curl + Bitiriş Kardiyosu",
+      ],
+    },
+    {
+      id: "upper-lower-full",
+      name: "Şablon B · Üst / Alt / Full-Body (Pazartesi – Çarşamba – Cuma)",
+      frequencyNote: "Üst ve alt vücut dahil her büyük kas grubu haftada 2 kez uyarılır.",
+      days: [
+        "1. Gün (Pzt · Üst Vücut): Incline DB Press, Wide-Grip Lat Pulldown, Seated DB Shoulder Press, Seated Cable Row, Face Pull",
+        "2. Gün (Çar · Alt Vücut): Leg Press, Romanian Deadlift (ara dinlenme Dead Bug), Walking Lunges, Seated Leg Curl, Standing Calf Raise",
+        "3. Gün (Cum · Full-Body): Kettlebell Swing, Cable Crossover, Straight-Arm Pulldown (ara dinlenme Pallof Press), Lateral Raise, Dumbbell Bicep Curl + Bitiriş Kardiyosu",
+      ],
+    },
+  ],
+};
+
 // Haftalık 4 günlük MACFit antrenman programı (her ana harekete özel 2 alternatif dahil)
 export const WORKOUT_DAYS = [
   {
@@ -851,7 +890,7 @@ export const WORKOUT_DAYS = [
     duration: "45 - 55 Dakika",
     targetGoal:
       "Omuzları genişletip göğsü şekillendirerek belin optik olarak çok daha dar ('Spider-Man' silüeti) görünmesini sağlamak.",
-    scheduleNote: "Haftada 3 gün gidiyorsan Pazartesi · 4 gün gidiyorsan Pazartesi",
+    scheduleNote: "4 Günlük Plan: Pazartesi · 3 Günlük Gidişlerde: Aşağıdaki Full-Body A / Üst Vücut şablonunu uygula",
     exercises: [
       {
         id: "incline-db-press",
@@ -1123,7 +1162,7 @@ export const WORKOUT_DAYS = [
     duration: "50 - 60 Dakika",
     targetGoal:
       "Vücudundaki en büyük kas grubu olan alt vücut kaslarını çalıştırarak kuvvet, iş kapasitesi ve genel enerji harcamasını artırmak.",
-    scheduleNote: "Haftada 3 gün gidiyorsan Çarşamba · 4 gün gidiyorsan Salı/Çarşamba",
+    scheduleNote: "4 Günlük Plan: Salı/Çarşamba · 3 Günlük Plan: Full-Body B veya Alt Vücut",
     exercises: [
       {
         id: "leg-press",
@@ -1392,7 +1431,7 @@ export const WORKOUT_DAYS = [
     duration: "45 - 55 Dakika",
     targetGoal:
       "Sırt kanatlarını (Lat) açarak bel çevresini daha ince göstermek ve Lenny Kravitz'in 45->5 özel Biceps piramidiyle kolları keskinleştirmek.",
-    scheduleNote: "Haftada 3 gün gidiyorsan Cuma · 4 gün gidiyorsan Perşembe/Cuma",
+    scheduleNote: "4 Günlük Plan: Perşembe/Cuma · 3 Günlük Plan: Full-Body A2 / Cuma Full-Body",
     exercises: [
       {
         id: "wide-grip-lat-pulldown",
@@ -1662,7 +1701,7 @@ export const WORKOUT_DAYS = [
     duration: "45 Dakika (Yüksek İş Kapasitesi)",
     targetGoal:
       "Tüm vücut kaslarını birleştirip günlük enerji açığını ve atletik iş kapasitesini desteklemek (yağ kaybı bölgesel egzersizle değil toplam enerji açığıyla gerçekleşir; Ramirez-Campillo R. ve ark., DOI: 10.5114/hm.2022.110373).",
-    scheduleNote: "4. gün MACFit'e gidebildiğin haftalarda Cumartesi veya Pazar uygula",
+    scheduleNote: "4 Günlük Plan: Cumartesi/Pazar (Haftada 3 gün gidilen dönemlerde 3 Günlük Alternatif Şablon seçilir)",
     exercises: [
       {
         id: "kettlebell-swing",

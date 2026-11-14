@@ -2607,3 +2607,29 @@ body {
   margin-top: 14px;
   border-color: rgba(56, 189, 248, 0.28);
 }
+
+/* P1-6: Çift ilerleme ve 3 günlük şablon panelleri */
+.progression-section {
+  margin-top: 22px;
+}
+
+.templates-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.template-subcard {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+}
+
+.template-subhead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 6px;
+}
