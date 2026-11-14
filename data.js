@@ -1820,23 +1820,25 @@ export const NUTRITION_PROTOCOL = {
   },
   fastingWindows: [
     {
-      name: "Seçenek A: Kravitz Modu (18:6)",
+      name: "Seçenek A: İsteğe Bağlı Geç Pencere (18:6)",
       window: "İlk Öğün: 14:30 - 15:00  |  Son Öğün: 20:30",
       description:
-        "Lenny Kravitz düzenine yakın zamanlama penceresi. Öğlene kadar insülini sıfırda tutarak yağ yakımına odaklanmayı hedefler.",
+        "Kalori uyumunu kolaylaştırmak için tercih edilebilen isteğe bağlı zamanlama penceresi; aynı kalori açığında sürekli beslenme düzeniyle benzer kilo kaybı sağlar (Semnani-Azad Z. ve ark., BMJ 2025;389:e082007, DOI: 10.1136/bmj-2024-082007).",
     },
     {
-      name: "Seçenek B: Standart Mod (16:8)",
+      name: "Seçenek B: İsteğe Bağlı Standart Pencere (16:8)",
       window: "İlk Öğün: 12:30  |  Son Öğün: 20:30",
       description:
-        "İş veya okul temposunda öğlene kadar dayanmakta zorlanıyorsan ideal başlangıç penceresi.",
+        "İş veya okul temposunda öğün sayısını sadeleştirmek için isteğe bağlı zamanlama penceresi. Zorunlu değildir; toplam kalori ve protein sağlandığında standart 3 öğünle eşdeğer sonuç verir (BMJ 2025;389:e082007).",
     },
   ],
+  fastedTrainingNote:
+    "Sabah aç karnına antrenman tercih edilirse seans sonrası öğünde 25-40 g protein alımı önerilir; gün içine yayılmış normal öğün düzeni de aynı ölçüde geçerlidir (genel öneri).",
   morningFastRules: [
     "Su (oda sıcaklığında veya limonlu)",
-    "Şekersiz Sade Kahve (Americano / Filtre / Espresso) — Yağ yakımını hızlandırır",
+    "Şekersiz Sade Kahve (Americano / Filtre / Espresso) — Antrenman öncesi uyanıklığı ve iştah kontrolünü destekleyebilir (genel öneri)",
     "Şekersiz Yeşil Çay veya Sade Maden Suyu",
-    "Açlık penceresinde sıfır kalori (süt, şeker, meyve suyu yok)",
+    "Açlık penceresi tercih edilirse kalori içermeyen içecekler seçilir; sabah aç antrenman yapılırsa sonrasında 25-40 g protein alınır (genel öneri)",
   ],
   dailyMeals: [
     {

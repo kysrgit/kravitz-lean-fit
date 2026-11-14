@@ -951,7 +951,7 @@ function renderFullSummaryTab() {
     })
     .join("");
 
-  const { summary, fastingWindows, morningFastRules, dailyMeals, waistRules } = NUTRITION_PROTOCOL;
+  const { summary, fastingWindows, fastedTrainingNote, morningFastRules, dailyMeals, waistRules } = NUTRITION_PROTOCOL;
   const profileTargets = getActiveProfileTargets();
 
   const macroRowsHtml = [
@@ -1206,7 +1206,7 @@ function renderFullSummaryTab() {
 
         <div class="summary-prose-grid">
           <article class="summary-prose-card">
-            <h4>⏱️ Aralıklı Oruç Pencereleri &amp; Sabah Açlık Kuralları</h4>
+            <h4>⏱️ İsteğe Bağlı Öğün Zamanlaması (Aralıklı Oruç) &amp; Sabah Notları</h4>
             <ul class="table-bullets">
               ${fastingWindows
                 .map(
@@ -1214,8 +1214,9 @@ function renderFullSummaryTab() {
                 )
                 .join("")}
             </ul>
+            <p class="muted-text" style="margin-top:8px;">${escapeHtml(fastedTrainingNote)}</p>
             <hr class="summary-divider" />
-            <p class="summary-prose-subhead">Sabah Açlık Penceresinde Serbest Olanlar:</p>
+            <p class="summary-prose-subhead">Açlık Penceresi Tercih Edenler İçin İçecek Notları:</p>
             <ul class="table-bullets">
               ${morningFastRules.map((rule) => `<li>${escapeHtml(rule)}</li>`).join("")}
             </ul>
@@ -1263,7 +1264,7 @@ function renderCoreGuide(filteredItems = null) {
 
 // Beslenme ve enerji dengesi protokolü sekmesini render eder
 function renderNutritionProtocol() {
-  const { summary, fastingWindows, morningFastRules, dailyMeals, waistRules } = NUTRITION_PROTOCOL;
+  const { summary, fastingWindows, fastedTrainingNote, morningFastRules, dailyMeals, waistRules } = NUTRITION_PROTOCOL;
   const profileTargets = getActiveProfileTargets();
   const trainingDayTotals = dailyMeals.reduce(
     (acc, meal) => ({
@@ -1333,7 +1334,7 @@ function renderNutritionProtocol() {
 
       <div class="two-col-grid">
         <article class="info-panel">
-          <h3>⏱️ Lenny Kravitz Aralıklı Oruç Saatleri</h3>
+          <h3>⏱️ İsteğe Bağlı Öğün Zamanlaması (Aralıklı Oruç)</h3>
           ${fastingWindows
             .map(
               (win) => `
@@ -1345,10 +1346,11 @@ function renderNutritionProtocol() {
           `
             )
             .join("")}
+          <p class="muted-text" style="margin-top:10px;">${escapeHtml(fastedTrainingNote)}</p>
         </article>
 
         <article class="info-panel">
-          <h3>☕ Sabah Açlık Penceresi Kuralları</h3>
+          <h3>☕ Sabah Saatleri &amp; İçecek Rehberi</h3>
           <ul>
             ${morningFastRules.map((rule) => `<li>${escapeHtml(rule)}</li>`).join("")}
           </ul>
