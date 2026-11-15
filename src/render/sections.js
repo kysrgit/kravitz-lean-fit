@@ -421,6 +421,36 @@ export function renderWorkoutDay(day) {
   `;
 }
 
+// Günlük öğün toplamlarını (antrenman veya dinlenme) hesaplar
+function sumMealTotals(meals, useRest = false) {
+  return meals.reduce(
+    (acc, meal) => {
+      const t = useRest ? meal.restDayTotals || meal.totals : meal.totals;
+      return {
+        kcal: acc.kcal + t.kcal,
+        protein: acc.protein + t.protein,
+        carbs: acc.carbs + t.carbs,
+        fat: acc.fat + t.fat,
+      };
+    },
+    { kcal: 0, protein: 0, carbs: 0, fat: 0 }
+  );
+}
+
+// Makro toplamlarını tek satır özet metnine dönüştürür
+function formatMacroSummary(t, spaced = false) {
+  const g = spaced ? " g" : "g";
+  return `${escapeHtml(t.kcal)} kcal (P ${escapeHtml(t.protein)}${g} · K ${escapeHtml(t.carbs)}${g} · Y ${escapeHtml(t.fat)}${g})`;
+}
+
+// Özet tabloları için ortak kart ve duyarlı tablo sarmalayıcısı oluşturur
+function wrapSummaryTableCard(headers, rowsHtml, headingHtml = "") {
+  const head = headingHtml
+    ? `<div class="summary-table-header compact"><div><h3>${headingHtml}</h3></div></div>`
+    : "";
+  return `<div class="summary-table-card">${head}<div class="table-responsive"><table class="workout-summary-table"><thead><tr>${headers.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rowsHtml}</tbody></table></div></div>`;
+}
+
 // Tüm programın yazılı ve tablolu özetini tek sayfada render eder
 export function renderFullSummaryTab() {
   const weeklyScheduleRowsHtml = WORKOUT_DAYS.map(
@@ -538,27 +568,8 @@ export function renderFullSummaryTab() {
     )
     .join("");
 
-  const trainingSum = dailyMeals.reduce(
-    (acc, m) => ({
-      kcal: acc.kcal + m.totals.kcal,
-      protein: acc.protein + m.totals.protein,
-      carbs: acc.carbs + m.totals.carbs,
-      fat: acc.fat + m.totals.fat,
-    }),
-    { kcal: 0, protein: 0, carbs: 0, fat: 0 }
-  );
-  const restSum = dailyMeals.reduce(
-    (acc, m) => {
-      const t = m.restDayTotals || m.totals;
-      return {
-        kcal: acc.kcal + t.kcal,
-        protein: acc.protein + t.protein,
-        carbs: acc.carbs + t.carbs,
-        fat: acc.fat + t.fat,
-      };
-    },
-    { kcal: 0, protein: 0, carbs: 0, fat: 0 }
-  );
+  const trainingSum = sumMealTotals(dailyMeals);
+  const restSum = sumMealTotals(dailyMeals, true);
 
   const mealsRowsHtml =
     dailyMeals
@@ -567,8 +578,8 @@ export function renderFullSummaryTab() {
       <tr>
         <td data-label="Saat">
           <span class="meal-time-badge">${escapeHtml(meal.time)}</span>
-          <div class="meal-totals-chip">Antrenman: ${escapeHtml(meal.totals.kcal)} kcal (P ${escapeHtml(meal.totals.protein)}g · K ${escapeHtml(meal.totals.carbs)}g · Y ${escapeHtml(meal.totals.fat)}g)</div>
-          <div class="meal-totals-chip rest">Dinlenme: ${escapeHtml(meal.restDayTotals.kcal)} kcal (P ${escapeHtml(meal.restDayTotals.protein)}g · K ${escapeHtml(meal.restDayTotals.carbs)}g · Y ${escapeHtml(meal.restDayTotals.fat)}g)</div>
+          <div class="meal-totals-chip">Antrenman: ${formatMacroSummary(meal.totals)}</div>
+          <div class="meal-totals-chip rest">Dinlenme: ${formatMacroSummary(meal.restDayTotals)}</div>
         </td>
         <td data-label="Öğün"><strong>${escapeHtml(meal.title)}</strong></td>
         <td data-label="İçerik (Çiğ / Pişmiş)">
@@ -583,9 +594,9 @@ export function renderFullSummaryTab() {
     `
       <tr class="meals-total-row">
         <td data-label="Günlük Toplam" colspan="3">
-          <strong>Antrenman Günü Toplamı:</strong> ${escapeHtml(trainingSum.kcal)} kcal (P ${escapeHtml(trainingSum.protein)} g · K ${escapeHtml(trainingSum.carbs)} g · Y ${escapeHtml(trainingSum.fat)} g)
+          <strong>Antrenman Günü Toplamı:</strong> ${formatMacroSummary(trainingSum, true)}
           &nbsp;|&nbsp;
-          <strong>Dinlenme Günü Toplamı:</strong> ${escapeHtml(restSum.kcal)} kcal (P ${escapeHtml(restSum.protein)} g · K ${escapeHtml(restSum.carbs)} g · Y ${escapeHtml(restSum.fat)} g)
+          <strong>Dinlenme Günü Toplamı:</strong> ${formatMacroSummary(restSum, true)}
         </td>
       </tr>
     `;
@@ -664,33 +675,14 @@ export function renderFullSummaryTab() {
           </article>
         </div>
 
-        <div class="summary-table-card">
-          <div class="summary-table-header compact">
-            <div>
-              <h3>${lucideIcon("calendar", { size: 18 })} Haftalık Antrenman Günleri Şeması (3 veya 4 Gün)</h3>
-            </div>
-          </div>
-          <div class="table-responsive">
-            <table class="workout-summary-table">
-              <thead>
-                <tr>
-                  <th>Gün</th>
-                  <th>Odak Bölgeler</th>
-                  <th>Süre</th>
-                  <th>Haftalık Takvim Notu</th>
-                  <th>Hızlı Geçiş</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${weeklyScheduleRowsHtml}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        ${wrapSummaryTableCard(
+          ["Gün", "Odak Bölgeler", "Süre", "Haftalık Takvim Notu", "Hızlı Geçiş"],
+          weeklyScheduleRowsHtml,
+          `${lucideIcon("calendar", { size: 18 })} Haftalık Antrenman Günleri Şeması (3 veya 4 Gün)`
+        )}
         ${createProgressionAndTemplatesHtml()}
       </section>
 
-      <!-- Bölüm 2: 4 Günlük Antrenman Programı Tam Tablosu -->
       <section class="summary-section-block">
         <div class="summary-section-title-row">
           <h3>2. 4 Günlük Antrenman Programı Tam Tablosu (1. Gün – 4. Gün)</h3>
@@ -700,29 +692,20 @@ export function renderFullSummaryTab() {
         </div>
       </section>
 
-      <!-- Bölüm 3: 21'ler Aktif Core & Sabah Mide Vakumu Tam Tablosu -->
       <section id="summary-sec-core" class="summary-section-block">
         <div class="summary-section-title-row">
           <h3>3. 21'ler Aktif Core &amp; Sabah Mide Vakumu Tam Tablosu</h3>
         </div>
-        <div class="summary-table-card">
-          <div class="table-responsive">
-            <table class="workout-summary-table">
-              <thead>
-                <tr>
-                  <th>Core Hareketi</th>
-                  <th>Hedef Bölge</th>
-                  <th>Tekrar / Süre</th>
-                  <th>Nasıl Yapılır (Kısa Özet)</th>
-                  <th>Alternatif 1 &amp; Alternatif 2</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${coreRowsHtml}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        ${wrapSummaryTableCard(
+          [
+            "Core Hareketi",
+            "Hedef Bölge",
+            "Tekrar / Süre",
+            "Nasıl Yapılır (Kısa Özet)",
+            "Alternatif 1 &amp; Alternatif 2",
+          ],
+          coreRowsHtml
+        )}
 
         <div class="summary-table-card finisher-summary-card">
           <div class="summary-table-header compact">
@@ -735,55 +718,22 @@ export function renderFullSummaryTab() {
         </div>
       </section>
 
-      <!-- Bölüm 4: Beslenme, Öğün Zamanlaması & Enerji Dengesi Özeti -->
       <section id="summary-sec-nutrition" class="summary-section-block">
         <div class="summary-section-title-row">
           <h3>4. Beslenme, Öğün Zamanlaması &amp; Enerji Dengesi Protokolü</h3>
         </div>
 
-        <div class="summary-table-card">
-          <div class="summary-table-header compact">
-            <div>
-              <h3>${lucideIcon("utensils", { size: 18 })} Günlük Makro &amp; Kalori Hedef Tablosu</h3>
-            </div>
-          </div>
-          <div class="table-responsive">
-            <table class="workout-summary-table">
-              <thead>
-                <tr>
-                  <th>Kalem</th>
-                  <th>Günlük Hedef</th>
-                  <th>Amaç / Not</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${macroRowsHtml}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        ${wrapSummaryTableCard(
+          ["Kalem", "Günlük Hedef", "Amaç / Not"],
+          macroRowsHtml,
+          `${lucideIcon("utensils", { size: 18 })} Günlük Makro &amp; Kalori Hedef Tablosu`
+        )}
 
-        <div class="summary-table-card">
-          <div class="summary-table-header compact">
-            <div>
-              <h3>${lucideIcon("clock", { size: 18 })} Saat Saat Günlük Öğün Tablosu</h3>
-            </div>
-          </div>
-          <div class="table-responsive">
-            <table class="workout-summary-table">
-              <thead>
-                <tr>
-                  <th>Saat</th>
-                  <th>Öğün</th>
-                  <th>İçerik ve Porsiyon Özeti</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${mealsRowsHtml}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        ${wrapSummaryTableCard(
+          ["Saat", "Öğün", "İçerik ve Porsiyon Özeti"],
+          mealsRowsHtml,
+          `${lucideIcon("clock", { size: 18 })} Saat Saat Günlük Öğün Tablosu`
+        )}
 
         <div class="summary-prose-grid">
           <article class="summary-prose-card match-ticket">
@@ -881,32 +831,29 @@ function createMacroGaugeSvgHtml(ratio, labelText, toneClass = "") {
   `;
 }
 
+// Makro hedef kartını ortak HTML şablonuyla oluşturur
+function createMacroCardHtml(label, value, ratio, gaugeLabel, tone, subText) {
+  return `
+    <article class="macro-card">
+      <div class="macro-card-top">
+        <div class="macro-card-meta">
+          <div class="macro-label">${escapeHtml(label)}</div>
+          <div class="macro-val tabular">${escapeHtml(value)}</div>
+        </div>
+        ${createMacroGaugeSvgHtml(ratio, gaugeLabel, tone)}
+      </div>
+      <div class="macro-sub">${subText}</div>
+    </article>
+  `;
+}
+
 // Beslenme ve enerji dengesi protokolü sekmesini render eder
 export function renderNutritionProtocol() {
   const { summary, fastingWindows, fastedTrainingNote, morningFastRules, dailyMeals, waistRules } =
     NUTRITION_PROTOCOL;
   const profileTargets = getActiveProfileTargets();
-  const trainingDayTotals = dailyMeals.reduce(
-    (acc, meal) => ({
-      kcal: acc.kcal + meal.totals.kcal,
-      protein: acc.protein + meal.totals.protein,
-      carbs: acc.carbs + meal.totals.carbs,
-      fat: acc.fat + meal.totals.fat,
-    }),
-    { kcal: 0, protein: 0, carbs: 0, fat: 0 }
-  );
-  const restDayTotals = dailyMeals.reduce(
-    (acc, meal) => {
-      const rt = meal.restDayTotals || meal.totals;
-      return {
-        kcal: acc.kcal + rt.kcal,
-        protein: acc.protein + rt.protein,
-        carbs: acc.carbs + rt.carbs,
-        fat: acc.fat + rt.fat,
-      };
-    },
-    { kcal: 0, protein: 0, carbs: 0, fat: 0 }
-  );
+  const trainingDayTotals = sumMealTotals(dailyMeals);
+  const restDayTotals = sumMealTotals(dailyMeals, true);
 
   const kcalRatio =
     profileTargets.estimatedTdeeKcal > 0
@@ -915,7 +862,43 @@ export function renderNutritionProtocol() {
   const proteinRatio = (summary.proteinG * 4) / summary.targetKcal;
   const carbsRatio = (summary.carbsG * 4) / summary.targetKcal;
   const fatRatio = (summary.fatG * 9) / summary.targetKcal;
-  const waterRatio = 0.88;
+  const macroCardsHtml = [
+    [
+      "Ortalama Kalori Hedefi",
+      `${summary.targetKcal} kcal`,
+      kcalRatio,
+      `%${Math.round(kcalRatio * 100)}`,
+      "tone-volt",
+      `Antrenman: ${escapeHtml(trainingDayTotals.kcal)} · Dinlenme: ${escapeHtml(restDayTotals.kcal)} kcal`,
+    ],
+    [
+      "Günlük Protein",
+      `${summary.proteinG} g`,
+      proteinRatio,
+      `%${Math.round(proteinRatio * 100)}`,
+      "tone-volt",
+      `${escapeHtml(summary.proteinG * 4)} kcal (%${Math.round(proteinRatio * 100)})`,
+    ],
+    [
+      "Karbonhidrat",
+      `${summary.carbsG} g`,
+      carbsRatio,
+      `%${Math.round(carbsRatio * 100)}`,
+      "tone-core",
+      `Antr: ${escapeHtml(trainingDayTotals.carbs)} g · Dinl: ${escapeHtml(restDayTotals.carbs)} g`,
+    ],
+    [
+      "Sağlıklı Yağlar",
+      `${summary.fatG} g`,
+      fatRatio,
+      `%${Math.round(fatRatio * 100)}`,
+      "tone-blaze",
+      `${escapeHtml(summary.fatG * 9)} kcal (zeytinyağı, yumurta, badem)`,
+    ],
+    ["Sıvı Tüketimi", summary.water, 0.88, "3.5L", "tone-core", "Hidrasyon &amp; mineral desteği"],
+  ]
+    .map((args) => createMacroCardHtml(...args))
+    .join("");
 
   elements.contentArea.innerHTML = `
     <div class="nutrition-layout">
@@ -938,56 +921,7 @@ export function renderNutritionProtocol() {
       </div>
 
       <div class="macro-grid">
-        <article class="macro-card">
-          <div class="macro-card-top">
-            <div class="macro-card-meta">
-              <div class="macro-label">Ortalama Kalori Hedefi</div>
-              <div class="macro-val tabular">${escapeHtml(summary.targetKcal)} kcal</div>
-            </div>
-            ${createMacroGaugeSvgHtml(kcalRatio, `%${Math.round(kcalRatio * 100)}`, "tone-volt")}
-          </div>
-          <div class="macro-sub">Antrenman: ${escapeHtml(trainingDayTotals.kcal)} · Dinlenme: ${escapeHtml(restDayTotals.kcal)} kcal</div>
-        </article>
-        <article class="macro-card">
-          <div class="macro-card-top">
-            <div class="macro-card-meta">
-              <div class="macro-label">Günlük Protein</div>
-              <div class="macro-val tabular">${escapeHtml(summary.proteinG)} g</div>
-            </div>
-            ${createMacroGaugeSvgHtml(proteinRatio, `%${Math.round(proteinRatio * 100)}`, "tone-volt")}
-          </div>
-          <div class="macro-sub">${escapeHtml(summary.proteinG * 4)} kcal (%${Math.round(proteinRatio * 100)})</div>
-        </article>
-        <article class="macro-card">
-          <div class="macro-card-top">
-            <div class="macro-card-meta">
-              <div class="macro-label">Karbonhidrat</div>
-              <div class="macro-val tabular">${escapeHtml(summary.carbsG)} g</div>
-            </div>
-            ${createMacroGaugeSvgHtml(carbsRatio, `%${Math.round(carbsRatio * 100)}`, "tone-core")}
-          </div>
-          <div class="macro-sub">Antr: ${escapeHtml(trainingDayTotals.carbs)} g · Dinl: ${escapeHtml(restDayTotals.carbs)} g</div>
-        </article>
-        <article class="macro-card">
-          <div class="macro-card-top">
-            <div class="macro-card-meta">
-              <div class="macro-label">Sağlıklı Yağlar</div>
-              <div class="macro-val tabular">${escapeHtml(summary.fatG)} g</div>
-            </div>
-            ${createMacroGaugeSvgHtml(fatRatio, `%${Math.round(fatRatio * 100)}`, "tone-blaze")}
-          </div>
-          <div class="macro-sub">${escapeHtml(summary.fatG * 9)} kcal (zeytinyağı, yumurta, badem)</div>
-        </article>
-        <article class="macro-card">
-          <div class="macro-card-top">
-            <div class="macro-card-meta">
-              <div class="macro-label">Sıvı Tüketimi</div>
-              <div class="macro-val tabular">${escapeHtml(summary.water)}</div>
-            </div>
-            ${createMacroGaugeSvgHtml(waterRatio, "3.5L", "tone-core")}
-          </div>
-          <div class="macro-sub">Hidrasyon &amp; mineral desteği</div>
-        </article>
+        ${macroCardsHtml}
       </div>
 
       <div class="two-col-grid">
@@ -1037,8 +971,8 @@ export function renderNutritionProtocol() {
             </div>
             <h3>${escapeHtml(meal.title)}</h3>
             <div class="meal-macros-summary">
-              <div class="meal-macro-line"><strong>Antrenman:</strong> ${escapeHtml(meal.totals.kcal)} kcal (P ${escapeHtml(meal.totals.protein)}g · K ${escapeHtml(meal.totals.carbs)}g · Y ${escapeHtml(meal.totals.fat)}g)</div>
-              <div class="meal-macro-line rest"><strong>Dinlenme:</strong> ${escapeHtml(meal.restDayTotals.kcal)} kcal (P ${escapeHtml(meal.restDayTotals.protein)}g · K ${escapeHtml(meal.restDayTotals.carbs)}g · Y ${escapeHtml(meal.restDayTotals.fat)}g)</div>
+              <div class="meal-macro-line"><strong>Antrenman:</strong> ${formatMacroSummary(meal.totals)}</div>
+              <div class="meal-macro-line rest"><strong>Dinlenme:</strong> ${formatMacroSummary(meal.restDayTotals)}</div>
             </div>
             <ul>
               ${meal.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}

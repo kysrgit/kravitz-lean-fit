@@ -179,6 +179,10 @@
     pointer-events: none;
   }
 
+  #content-area {
+    min-height: 100svh;
+  }
+
   .sr-only {
     position: absolute;
     width: 1px;

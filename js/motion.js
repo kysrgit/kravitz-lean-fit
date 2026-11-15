@@ -1,7 +1,4 @@
-/**
- * ARENA Hareket Sistemi — GSAP 3, ScrollTrigger, SplitText, Flip ve
- * prefers-reduced-motion uyumlu GPU mikro etkileşimler.
- */
+/** ARENA Hareket Sistemi — GSAP 3 ve mikro etkileşimler. */
 import { CustomEase, Flip, gsap, ScrollTrigger, SplitText } from "../vendor/gsap/index.js";
 
 CustomEase.create("arenaSnap", "0.2,0.9,0.25,1");
@@ -12,10 +9,11 @@ const BAR_SEL = ".set-bar,.pyramid-bar-fill";
 const FLIP_SEL = '[data-flip-id="tab-indicator"],[data-flip-id="mobile-tab-indicator"]';
 const MAG_SEL = ".video-trigger-btn,.view-card-details-btn,.source-link-btn";
 const CLR_TX = "transform,opacity";
+const mq = (q) => Boolean(window.matchMedia?.(q).matches);
 
 let ready = false;
-let reduced = Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
-let canHover = Boolean(window.matchMedia?.("(hover: hover) and (pointer: fine)").matches);
+let reduced = mq("(prefers-reduced-motion: reduce)");
+let canHover = mq("(hover: hover) and (pointer: fine)");
 let heroSplit = null;
 const triggers = [];
 
@@ -179,19 +177,31 @@ export function refreshMotionForContent() {
   const root = document.getElementById("content-area");
   if (!root) return;
 
-  const cards = gsap.utils.toArray(CARD_SEL, root);
-  if (cards.length) {
-    gsap.set(cards, { y: 18, opacity: 0 });
+  const vis = [];
+  const bel = [];
+  const vh = window.innerHeight * 0.95;
+  root.querySelectorAll(CARD_SEL).forEach((c) => {
+    (c.getBoundingClientRect().top > vh ? bel : vis).push(c);
+  });
+  if (vis.length) {
+    gsap.fromTo(
+      vis,
+      { y: 12 },
+      { y: 0, duration: 0.4, stagger: 0.04, ease: "arenaSnap", clearProps: CLR_TX }
+    );
+  }
+  if (bel.length) {
+    gsap.set(bel, { y: 18, opacity: 0 });
     triggers.push(
-      ...ScrollTrigger.batch(cards, {
+      ...ScrollTrigger.batch(bel, {
         start: "top 92%",
         once: true,
         onEnter: (b) =>
           gsap.to(b, {
             y: 0,
             opacity: 1,
-            duration: 0.42,
-            stagger: 0.045,
+            duration: 0.4,
+            stagger: 0.04,
             ease: "arenaSnap",
             overwrite: "auto",
             clearProps: CLR_TX,

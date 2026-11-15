@@ -38,12 +38,29 @@
       type="font/woff2"
       crossorigin
     />
+    <link
+      rel="preload"
+      href="./assets/fonts/inter-latin-ext.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <title>Kravitz Lean &amp; Fit | MACFit Salonlarında Uygulanmak Üzere Antrenman Rehberi</title>
     <link
       rel="icon"
       type="image/svg+xml"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23090b10'/%3E%3Cpath d='M16 44L26 20h6l-6 14h12l6-14h6L40 44h-6l5-10H27l-5 10h-6z' fill='%23f59e0b'/%3E%3C/svg%3E"
     />
+    <link rel="preload" as="style" href="./styles/tokens.css" />
+    <link rel="preload" as="style" href="./styles/base.css" />
+    <link rel="preload" as="style" href="./styles/components/broadcast-bar.css" />
+    <link rel="preload" as="style" href="./styles/components/hero.css" />
+    <link rel="preload" as="style" href="./styles/components/scoreboard.css" />
+    <link rel="preload" as="style" href="./styles/components/day-poster.css" />
+    <link rel="preload" as="style" href="./styles/components/player-card.css" />
+    <link rel="preload" as="style" href="./styles/components/dialog-modal.css" />
+    <link rel="preload" as="style" href="./styles/components/match-program.css" />
+    <link rel="preload" as="style" href="./styles/motion.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body data-day-theme="day-1">
@@ -254,7 +271,6 @@
         class="disclaimer-banner"
         role="region"
         aria-label="Sağlık ve Tıbbi Sorumluluk Uyarısı"
-        hidden
       >
         <div class="disclaimer-copy">
           <svg
@@ -324,7 +340,45 @@
         </div>
 
         <!-- 3 Temel Sistem Kuralı Kartları -->
-        <div id="pillars-grid" class="pillars-grid"></div>
+        <div id="pillars-grid" class="pillars-grid">
+          <article class="pillar-card">
+            <div class="pillar-card-head">
+              <span class="pillar-badge">01 · UYARLANMIŞ PİRAMİT</span>
+              <span class="pillar-index display-type tabular" aria-hidden="true">01</span>
+            </div>
+            <h3>30 → 15 → 10 → 5 Tekrar</h3>
+            <p>
+              Kravitz'ten Esinlenilmiş Uyarlama: Basında (Men's Health AU; Fitbook, 2026)
+              50-35-21-14-10 / 50-25-12-5 ve haftada 5-6 gün aktarılsa da burada sürdürülebilir 4
+              günlük 30-15-10-5 uyarlaması uygulanır.
+            </p>
+          </article>
+          <article class="pillar-card">
+            <div class="pillar-card-head">
+              <span class="pillar-badge">02 · DİNLENME VE CORE PENCERESİ</span>
+              <span class="pillar-index display-type tabular" aria-hidden="true">02</span>
+            </div>
+            <h3>21× Core + Tam Toparlanma</h3>
+            <p>
+              Bileşik hareketlerde 2-3 dk (150 sn), izolasyonlarda 60-90 sn (75 sn) dinlenme
+              penceresinin başında 21 core yap, kalan sürede dinlenip ağır sete toparlanmış gir
+              (Schoenfeld B.J. ve ark., J Strength Cond Res 2016;30(7):1805-12, DOI:
+              10.1519/JSC.0000000000001272).
+            </p>
+          </article>
+          <article class="pillar-card">
+            <div class="pillar-card-head">
+              <span class="pillar-badge">03 · KOT PANTOLON TESTİ</span>
+              <span class="pillar-index display-type tabular" aria-hidden="true">03</span>
+            </div>
+            <h3>45-60 Dk Odaklı Seans</h3>
+            <p>
+              Basın kaynaklarında Kravitz'in bilinçli aralıklı oruç uygulamadığı belirtilir;
+              buradaki 18:6 / 16:8 pencereleri isteğe bağlıdır. Gelişimi tartıdan çok bel
+              mezurasıyla izle.
+            </p>
+          </article>
+        </div>
       </section>
 
       <!-- Açılır/Kapanır Profilim & Hedef Hesaplama Bölümü (Yalnızca localStorage) -->

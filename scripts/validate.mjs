@@ -36,16 +36,17 @@ function collectProjectTextFiles() {
     path.join(rootDir, "sw.js"),
     path.join(rootDir, "README.md"),
   ];
-  const srcRoot = path.join(rootDir, "src");
-  if (fs.existsSync(srcRoot)) {
-    const walk = (dir) => {
-      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-        const full = path.join(dir, entry.name);
-        if (entry.isDirectory()) walk(full);
-        else if (entry.name.endsWith(".js")) targets.push(full);
-      }
-    };
-    walk(srcRoot);
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (entry.name === "vendor") continue;
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.name.endsWith(".js") || entry.name.endsWith(".css")) targets.push(full);
+    }
+  };
+  for (const sub of ["src", "js", "styles"]) {
+    const subRoot = path.join(rootDir, sub);
+    if (fs.existsSync(subRoot)) walk(subRoot);
   }
   return targets.filter((p) => fs.existsSync(p));
 }
@@ -205,6 +206,21 @@ check(
   "Sağlık uyarısı metni",
   disclaimerCount >= 2,
   `index.html içinde ${disclaimerCount} konumda mevcut (banner + footer)`
+);
+
+// 8. Service Worker önbellek dosyaları diskte mevcut mu?
+const swText = fs.readFileSync(path.join(rootDir, "sw.js"), "utf8");
+const swBlock = swText.match(/APP_SHELL_URLS\s*=\s*\[([\s\S]*?)\]/);
+const swUrls = swBlock ? [...swBlock[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]) : [];
+const missingSw = swUrls
+  .filter((u) => u !== "./")
+  .filter((u) => !fs.existsSync(path.join(rootDir, u.replace(/^\.\//, ""))));
+check(
+  "Service Worker önbellek dosyaları",
+  swUrls.length > 0 && missingSw.length === 0,
+  missingSw.length === 0
+    ? `${swUrls.length} önbellek girdisi doğrulandı`
+    : `eksik=${missingSw.join(",")}`
 );
 
 for (const line of passes) {
