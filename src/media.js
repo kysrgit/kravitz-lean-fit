@@ -27,7 +27,8 @@ export function observeVisibleVideos() {
   }
 
   const videos = Array.from(document.querySelectorAll(".media-video"));
-  if (videos.length === 0) return;
+  const photoStages = Array.from(document.querySelectorAll(".is-photo-stage"));
+  if (videos.length === 0 && photoStages.length === 0) return;
 
   const disableAutoplay = shouldDisableAutoplay();
   if (disableAutoplay) {
@@ -40,25 +41,46 @@ export function observeVisibleVideos() {
 
   if (typeof IntersectionObserver === "undefined") return;
 
+  const toggleStagePhase = (stage, forceStart = false) => {
+    const next = forceStart || stage.dataset.photoPhase === "end" ? "start" : "end";
+    stage.dataset.photoPhase = next;
+    const badge = stage.querySelector("[data-phase-badge]");
+    if (badge) badge.textContent = next === "start" ? "BAŞLANGIÇ" : "BİTİŞ";
+  };
+
   mediaVisibilityObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        const videoEl = entry.target;
-        if (videoEl.classList.contains("is-hidden")) {
-          videoEl.pause();
+        const el = entry.target;
+        if (el.classList.contains("is-photo-stage")) {
+          if (entry.isIntersecting) {
+            if (!el._photoTimer) {
+              el._photoTimer = window.setInterval(() => toggleStagePhase(el), 1600);
+              state.photoTimers.push(el._photoTimer);
+            }
+          } else if (el._photoTimer) {
+            window.clearInterval(el._photoTimer);
+            el._photoTimer = null;
+            toggleStagePhase(el, true);
+          }
+          return;
+        }
+        if (el.classList.contains("is-hidden")) {
+          el.pause();
           return;
         }
         if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-          videoEl.play().catch(() => {});
+          el.play().catch(() => {});
         } else {
-          videoEl.pause();
+          el.pause();
         }
       });
     },
-    { threshold: [0, 0.5] }
+    { threshold: [0, 0.25, 0.5] }
   );
 
   videos.forEach((videoEl) => mediaVisibilityObserver.observe(videoEl));
+  photoStages.forEach((stage) => mediaVisibilityObserver.observe(stage));
 }
 
 // Günlere özel mobil ikonlar
@@ -269,6 +291,53 @@ export function createMediaStageHtml({
   triggerAttr,
 }) {
   const media = getExerciseMedia({ videoKey, sourceUrl });
+
+  if (media.startImg && media.endImg) {
+    return `
+      <div class="media-stage is-photo-stage" data-photo-phase="start">
+        <div class="photo-stage-frame">
+          <img
+            class="stage-photo stage-photo-start"
+            src="${escapeHtml(media.startImgSmall)}"
+            srcset="${escapeHtml(media.startImgSmall)} 480w, ${escapeHtml(media.startImg)} 960w"
+            sizes="(max-width: 768px) 100vw, 440px"
+            alt="${escapeHtml(name)} başlangıç pozisyonu"
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="stage-photo stage-photo-end"
+            src="${escapeHtml(media.endImgSmall)}"
+            srcset="${escapeHtml(media.endImgSmall)} 480w, ${escapeHtml(media.endImg)} 960w"
+            sizes="(max-width: 768px) 100vw, 440px"
+            alt="${escapeHtml(name)} bitiş pozisyonu"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="photo-stage-vignette" aria-hidden="true"></div>
+          <span class="order-badge">${escapeHtml(badgeText)}</span>
+          <span class="photo-phase-badge" data-phase-badge>BAŞLANGIÇ</span>
+        </div>
+        <div class="media-controls-bar">
+          <button
+            type="button"
+            class="video-trigger-btn"
+            ${triggerAttr}
+          >
+            ${lucideIcon("maximize-2", { size: 14 })} Detay
+          </button>
+          <a
+            href="${escapeHtml(media.sourceUrl || "https://musclewiki.com/")}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="source-link-btn"
+          >
+            Formu izle ${lucideIcon("arrow-up-right", { size: 14 })}
+          </a>
+        </div>
+      </div>
+    `;
+  }
 
   if (media.frontMp4) {
     return `
