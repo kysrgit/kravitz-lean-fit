@@ -131,6 +131,7 @@ export function initArenaMotion() {
           `${CARD_SEL},.hero-word-solid,.hero-rule-num,[data-hero-line="outline"],${BAR_SEL},.score-progress-fill,.macro-gauge-fill`,
           { clearProps: "all" }
         );
+        gsap.globalTimeline.clear();
         return resetMotion;
       }
 
