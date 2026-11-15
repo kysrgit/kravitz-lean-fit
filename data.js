@@ -77,6 +77,8 @@ const EXERCISE_SOURCE_URLS = {
 
 // Yardımcı fonksiyon: Egzersizin dış kaynak form sayfası bağlantısını ve lisans bilgisini döndürür.
 // Üçüncü taraf video/görseller telif ve lisans uyumu nedeniyle bu repoda barındırılmaz.
+const NO_IMAGE_KEYS = new Set(["cable_bayesian_curl", "plank_pullthrough"]);
+
 export function getExerciseMedia(keyOrItem) {
   const isObj = keyOrItem && typeof keyOrItem === "object";
   const videoKey = isObj ? keyOrItem.videoKey : keyOrItem;
@@ -84,14 +86,16 @@ export function getExerciseMedia(keyOrItem) {
   const sourceUrl =
     directSourceUrl ||
     (videoKey ? EXERCISE_SOURCE_URLS[videoKey] || "https://musclewiki.com/" : null);
+  const hasImages = Boolean(videoKey && !NO_IMAGE_KEYS.has(videoKey));
 
   return {
+    startImg: hasImages ? `./assets/exercises/${videoKey}/start.webp` : null,
+    endImg: hasImages ? `./assets/exercises/${videoKey}/end.webp` : null,
+    startImgSmall: hasImages ? `./assets/exercises/${videoKey}/start-480.webp` : null,
+    endImgSmall: hasImages ? `./assets/exercises/${videoKey}/end-480.webp` : null,
     sourceUrl,
     licenseUrl: MUSCLEWIKI_LICENSE_URL,
-    frontMp4: null,
-    sideMp4: null,
-    frontImg: null,
-    sideImg: null,
+    credit: "free-exercise-db (public domain)",
   };
 }
 

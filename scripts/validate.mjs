@@ -255,6 +255,26 @@ check(
     : templateFreqIssues.join("; ")
 );
 
+// 10. Eşleşmesi olan her videoKey için 4 WebP görsel dosyasının diskte varlığı
+const fedbMapping = JSON.parse(
+  fs.readFileSync(path.join(rootDir, "data", "fedb-mapping.json"), "utf8")
+);
+const missingImages = [];
+for (const [key, val] of Object.entries(fedbMapping)) {
+  if (!val) continue;
+  for (const name of ["start.webp", "end.webp", "start-480.webp", "end-480.webp"]) {
+    const imgPath = path.join(rootDir, "assets", "exercises", key, name);
+    if (!fs.existsSync(imgPath)) missingImages.push(`${key}/${name}`);
+  }
+}
+check(
+  "Egzersiz görsel dosyaları (free-exercise-db)",
+  missingImages.length === 0,
+  missingImages.length === 0
+    ? `${Object.values(fedbMapping).filter(Boolean).length * 4} WebP görseli doğrulandı`
+    : `eksik=${missingImages.slice(0, 5).join(",")}`
+);
+
 for (const line of passes) {
   console.log(line);
 }
