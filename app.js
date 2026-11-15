@@ -171,12 +171,40 @@ function initDisclaimerBanner() {
   }
 }
 
+// Bekleyen yeni Service Worker için yenileme bildirimi gösterir
+function showSwUpdateBanner(waitingWorker) {
+  if (!waitingWorker || document.getElementById("sw-update-banner")) return;
+  const bar = document.createElement("aside");
+  bar.id = "sw-update-banner";
+  bar.className = "disclaimer-banner";
+  bar.setAttribute("role", "status");
+  bar.innerHTML = `<div class="disclaimer-copy"><strong>Yeni sürüm hazır</strong> — Güncel içeriği görmek için yenileyin.</div><button type="button" class="disclaimer-btn">Yenile</button>`;
+  bar.querySelector("button")?.addEventListener("click", () => {
+    waitingWorker.postMessage({ type: "SKIP_WAITING" });
+    window.location.reload();
+  });
+  document.querySelector("main")?.prepend(bar);
+}
+
 // Çevrimdışı PWA desteği için Service Worker kaydını yapar
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   try {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js").catch(() => {});
+      navigator.serviceWorker
+        .register("./sw.js")
+        .then((reg) => {
+          if (reg.waiting) showSwUpdateBanner(reg.waiting);
+          reg.addEventListener("updatefound", () => {
+            const nw = reg.installing;
+            nw?.addEventListener("statechange", () => {
+              if (nw.state === "installed" && navigator.serviceWorker.controller) {
+                showSwUpdateBanner(nw);
+              }
+            });
+          });
+        })
+        .catch(() => {});
     });
   } catch {
     // Ortam desteklemiyorsa sessizce atla
