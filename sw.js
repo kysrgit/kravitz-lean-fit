@@ -5,8 +5,8 @@
  * üçüncü taraf veya lisanssız medya dosyalarını kesinlikle önbelleğe almaz.
  */
 
-const SHELL_CACHE = "klf-shell-bf89b921";
-const DATA_CACHE = "klf-data-bf89b921";
+const SHELL_CACHE = "klf-shell-d97ab686";
+const DATA_CACHE = "klf-data-d97ab686";
 
 const APP_SHELL_URLS = [
   "./",
@@ -99,6 +99,30 @@ self.addEventListener("fetch", (event) => {
           })
           .catch(() => cached);
         return cached || networkPromise;
+      })
+    );
+    return;
+  }
+
+  // Egzersiz fotoğrafları (/assets/exercises/*.webp) için runtime cache-first (en fazla 120 dosya LRU)
+  if (url.pathname.includes("/assets/exercises/")) {
+    event.respondWith(
+      caches.open("klf-media-v1").then(async (cache) => {
+        const cached = await cache.match(request);
+        if (cached) return cached;
+        try {
+          const response = await fetch(request);
+          if (response && response.ok) {
+            const keys = await cache.keys();
+            if (keys.length >= 120) {
+              await cache.delete(keys[0]);
+            }
+            cache.put(request, response.clone());
+          }
+          return response;
+        } catch {
+          return undefined;
+        }
       })
     );
     return;
