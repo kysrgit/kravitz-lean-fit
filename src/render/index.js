@@ -114,10 +114,13 @@ export function renderTabs() {
     });
   });
 
-  // Aktif üst sekme butonunu yatay şeritte ortala
+  // Aktif üst sekme butonunu yalnızca yatay şeritte ortala (sayfayı dikeyde kaydırmadan)
   const activeTopTab = elements.tabsNav.querySelector(".tab-btn.active");
-  if (activeTopTab && typeof activeTopTab.scrollIntoView === "function") {
-    activeTopTab.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  if (activeTopTab && typeof elements.tabsNav.scrollTo === "function") {
+    const nav = elements.tabsNav;
+    const left = activeTopTab.offsetLeft - (nav.clientWidth - activeTopTab.clientWidth) / 2;
+    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    nav.scrollTo({ left: Math.max(0, left), behavior: prefersReducedMotion ? "auto" : "smooth" });
   }
 
   // Mobil başparmak bölgesi alt navigasyon barını oluştur (sıralama: 1-4. Gün, Özet, 21'ler, Besin)
