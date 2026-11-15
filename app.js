@@ -220,7 +220,12 @@ function bootstrap() {
   initRestTimerControls();
   renderTabs();
   renderMainContent();
-  initArenaMotion();
+  // Hareket sistemini ilk boyamadan sonra boşta çalıştır (açılış uzun görevlerini önler)
+  if (typeof window.requestIdleCallback === "function") {
+    window.requestIdleCallback(() => initArenaMotion(), { timeout: 250 });
+  } else {
+    window.setTimeout(() => initArenaMotion(), 0);
+  }
   initEventListeners();
 }
 
