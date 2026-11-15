@@ -899,7 +899,7 @@ export const PROGRESSION_MODEL = {
   deloadRule:
     "Her 4-6 haftada bir 1 hafta planlı deload (toparlanma haftası) uygula: toplam set sayısını %30-40 azalt veya çalışma ağırlıklarını %10-15 düşür (genel öneri).",
   warmupNote:
-    "1. Set (Isınma Seti) yük artışı hesabına katılmaz; yalnızca eklem hazırlığı ve teknik provadır.",
+    "Isınma seti (ISINMA) yalnızca günün ilk 1-2 bileşik hareketinde yer alır ve yük artışı hesabına katılmaz; izole ve bitiriş hareketlerindeki ilk setler hafif çalışma setidir.",
 };
 
 // Haftada 3 gün gidenler için her kası haftada en az 2 kez çalıştıran alternatif şablonlar
@@ -1064,7 +1064,7 @@ export const WORKOUT_DAYS = [
         videoKey: "dumbbell_lateral_raise",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-lateral-raise",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "35 Tekrar", load: "Çok Hafif (2.5 - 4 kg)" },
+          { set: 1, reps: "35 Tekrar", load: "Çok Hafif (2.5 - 4 kg)" },
           { set: 2, reps: "20 Tekrar", load: "Hafif-Orta" },
           { set: 3, reps: "15 Tekrar", load: "Orta Ağırlık" },
           { set: 4, reps: "10 Tekrar", load: "Kontrollü Ağır (Omuz güvenliği için min 10)" },
@@ -1118,7 +1118,7 @@ export const WORKOUT_DAYS = [
         videoKey: "cable_crossover",
         sourceUrl: "https://musclewiki.com/exercise/cable-pec-fly",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif" },
+          { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
           { set: 3, reps: "10 Tekrar", load: "Zorlayıcı" },
         ],
@@ -1171,7 +1171,7 @@ export const WORKOUT_DAYS = [
         videoKey: "rope_triceps_pushdown",
         sourceUrl: "https://musclewiki.com/exercise/cable-cross-pushdown",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "35 Tekrar", load: "Hafif" },
+          { set: 1, reps: "35 Tekrar", load: "Hafif" },
           { set: 2, reps: "20 Tekrar", load: "Orta" },
           { set: 3, reps: "12 Tekrar", load: "Orta-Ağır" },
           { set: 4, reps: "6 Tekrar", load: "Ağır" },
@@ -1347,7 +1347,7 @@ export const WORKOUT_DAYS = [
         pyramidSets: [
           {
             set: 1,
-            isWarmup: true,
+
             reps: "20 Tekrar",
             load: "Vücut Ağırlığı / Hafif (Her Bacak 10)",
           },
@@ -1403,7 +1403,7 @@ export const WORKOUT_DAYS = [
         videoKey: "seated_leg_curl",
         sourceUrl: "https://musclewiki.com/exercise/machine-seated-leg-curl",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif" },
+          { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
           { set: 3, reps: "10 Tekrar", load: "Zorlayıcı" },
         ],
@@ -1455,7 +1455,7 @@ export const WORKOUT_DAYS = [
         videoKey: "standing_calf_raise",
         sourceUrl: "https://musclewiki.com/exercise/machine-standing-calf-raises",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif" },
+          { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "20 Tekrar", load: "Orta" },
           { set: 3, reps: "12 Tekrar", load: "Ağır (Tepe ve Dipte 1 sn Bekle)" },
         ],
@@ -1629,7 +1629,7 @@ export const WORKOUT_DAYS = [
         videoKey: "face_pull",
         sourceUrl: "https://musclewiki.com/exercise/machine-face-pulls",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif" },
+          { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "20 Tekrar", load: "Orta" },
           { set: 3, reps: "15 Tekrar", load: "Orta-Zorlayıcı" },
         ],
@@ -1682,7 +1682,7 @@ export const WORKOUT_DAYS = [
         videoKey: "dumbbell_bicep_curl",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-curl",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "45 Tekrar", load: "4-5 kg (Tam Lenny Kravitz Pompası)" },
+          { set: 1, reps: "45 Tekrar", load: "4-5 kg (Tam Lenny Kravitz Pompası)" },
           { set: 2, reps: "20 Tekrar", load: "9-10 kg" },
           { set: 3, reps: "10 Tekrar", load: "12.5-15 kg" },
           { set: 4, reps: "5 Tekrar", load: "17.5-20 kg (Sallanmadan)" },
@@ -1736,7 +1736,7 @@ export const WORKOUT_DAYS = [
         videoKey: "incline_hammer_curl",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-incline-hammer-curl",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "25 Tekrar", load: "Hafif" },
+          { set: 1, reps: "25 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
           { set: 3, reps: "8 Tekrar", load: "Ağır" },
         ],
@@ -1857,7 +1857,7 @@ export const WORKOUT_DAYS = [
         pyramidSets: [
           {
             set: 1,
-            isWarmup: true,
+
             reps: "20 Tekrar (Toplam)",
             load: "Hafif Dambıl (7.5 - 10 kg) · İsteğe Bağlı Arada Şınav",
           },
@@ -1913,7 +1913,7 @@ export const WORKOUT_DAYS = [
         videoKey: "straight_arm_pulldown",
         sourceUrl: "https://musclewiki.com/exercise/cable-bent-over-bar-pullover",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif" },
+          { set: 1, reps: "30 Tekrar", load: "Hafif" },
           { set: 2, reps: "15 Tekrar", load: "Orta" },
           { set: 3, reps: "10 Tekrar", load: "Orta-Ağır" },
         ],
@@ -1967,7 +1967,7 @@ export const WORKOUT_DAYS = [
         videoKey: "farmers_walk",
         sourceUrl: "https://musclewiki.com/exercise/kettlebell-farmers-carry",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "45 Saniye Yürüyüş", load: "Orta-Ağır (2× 20 kg)" },
+          { set: 1, reps: "45 Saniye Yürüyüş", load: "Orta-Ağır (2× 20 kg)" },
           { set: 2, reps: "45 Saniye Yürüyüş", load: "Ağır (2× 25 kg)" },
           { set: 3, reps: "45 Saniye Yürüyüş", load: "Maksimum Temiz (2× 27.5-30 kg)" },
         ],
@@ -2022,7 +2022,7 @@ export const WORKOUT_DAYS = [
         pyramidSets: [
           {
             set: 1,
-            isWarmup: true,
+
             reps: "20-30 Sn Tutuş",
             load: "Sabah Aç Karnına / Finisher - Set 1",
           },

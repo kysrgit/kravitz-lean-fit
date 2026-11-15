@@ -145,18 +145,27 @@ check(
   personalHits.length === 0 ? "0 kişisel değer kaldı" : personalHits.join(", ")
 );
 
-// 5. Her harekette pyramidSets (ilk set isWarmup) ve restSeconds
+// 5. Her harekette pyramidSets, restSeconds ve gün başına en fazla 2 ısınma hareketi
 const exStructureIssues = [];
+const noWarmupIds = new Set(["stomach-vacuum-card", "farmers-walk", "renegade-row-pushup"]);
 for (const day of WORKOUT_DAYS) {
+  let warmupCount = 0;
   for (const ex of day.exercises) {
     if (!Array.isArray(ex.pyramidSets) || ex.pyramidSets.length === 0) {
       exStructureIssues.push(`${ex.id}: pyramidSets eksik`);
-    } else if (!ex.pyramidSets[0].isWarmup) {
-      exStructureIssues.push(`${ex.id}: ilk set isWarmup degil`);
+    } else {
+      const hasWarmup = ex.pyramidSets.some((s) => s.isWarmup);
+      if (hasWarmup) warmupCount += 1;
+      if (noWarmupIds.has(ex.id) && hasWarmup) {
+        exStructureIssues.push(`${ex.id}: isinma seti olmamali`);
+      }
     }
     if (typeof ex.restSeconds !== "number" || ex.restSeconds <= 0) {
       exStructureIssues.push(`${ex.id}: restSeconds eksik`);
     }
+  }
+  if (warmupCount > 2) {
+    exStructureIssues.push(`${day.id}: isinma seti olan hareket sayisi=${warmupCount} (>2)`);
   }
 }
 check(
