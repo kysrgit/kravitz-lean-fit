@@ -86,6 +86,53 @@ export function openMediaModal({ variants, initialVariantIndex = 0 }) {
       }
       updateExternalLink(media);
       elements.modalPlaybackBar.hidden = false;
+    } else if (media.startImg && media.endImg) {
+      elements.modalPlaybackBar.hidden = true;
+      elements.modalExternalActions.innerHTML = "";
+      let activePos = "start";
+      const renderPhotoModal = () => {
+        const isStart = activePos === "start";
+        const mainSrc = isStart ? media.startImg : media.endImg;
+        const thumbSrc = isStart ? media.endImgSmall : media.startImgSmall;
+        elements.modalVideoContainer.innerHTML = `
+          <div class="modal-photo-stage">
+            <div class="modal-photo-tabs" role="tablist" aria-label="Pozisyon seçimi">
+              <button type="button" role="tab" aria-selected="${isStart}" class="pose-btn ${isStart ? "active" : ""}" data-modal-pos="start">Başlangıç</button>
+              <button type="button" role="tab" aria-selected="${!isStart}" class="pose-btn ${!isStart ? "active" : ""}" data-modal-pos="end">Bitiş</button>
+            </div>
+            <div class="modal-photo-grid">
+              <img class="modal-photo-main" src="${escapeHtml(mainSrc)}" alt="${escapeHtml(variant.name)} ${isStart ? "başlangıç" : "bitiş"} pozisyonu" />
+              <button type="button" class="modal-photo-thumb-btn" data-modal-pos="${isStart ? "end" : "start"}" aria-label="${isStart ? "Bitiş pozisyonuna geç" : "Başlangıç pozisyonuna geç"}">
+                <img class="modal-photo-thumb" src="${escapeHtml(thumbSrc)}" alt="${escapeHtml(variant.name)} ${isStart ? "bitiş" : "başlangıç"} önizleme" />
+                <span>${isStart ? "Bitiş" : "Başlangıç"}</span>
+              </button>
+            </div>
+            <div class="modal-photo-credit">
+              <span>Görsel: ${escapeHtml(media.credit || "free-exercise-db (public domain)")}</span>
+              <a href="${escapeHtml(resolvedSourceUrl)}" target="_blank" rel="noopener noreferrer" class="license-terms-link">
+                Videolu anlatım: Formu izle ${lucideIcon("arrow-up-right", { size: 13 })} (MuscleWiki)
+              </a>
+            </div>
+          </div>
+        `;
+        elements.modalVideoContainer.querySelectorAll("[data-modal-pos]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            activePos = btn.dataset.modalPos;
+            renderPhotoModal();
+          });
+          btn.addEventListener("keydown", (ev) => {
+            if (ev.key === "ArrowRight" || ev.key === "ArrowLeft") {
+              ev.preventDefault();
+              activePos = activePos === "start" ? "end" : "start";
+              renderPhotoModal();
+              elements.modalVideoContainer
+                .querySelector(`[role="tab"][data-modal-pos="${activePos}"]`)
+                ?.focus();
+            }
+          });
+        });
+      };
+      renderPhotoModal();
     } else {
       elements.modalPlaybackBar.hidden = true;
       elements.modalExternalActions.innerHTML = "";

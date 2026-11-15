@@ -396,4 +396,70 @@
       grid-template-columns: 1fr;
     }
   }
+
+  /* M-4: Modal başlangıç/bitiş fotoğraf sekmesi */
+  .modal-photo-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .modal-photo-tabs {
+    display: flex;
+    gap: 8px;
+  }
+
+  .modal-photo-grid {
+    display: grid;
+    grid-template-columns: 1fr 120px;
+    gap: 10px;
+    align-items: start;
+  }
+
+  .modal-photo-main {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border: 1px solid var(--accent-border);
+    filter: grayscale(0.25) contrast(1.08);
+  }
+
+  .modal-photo-thumb-btn {
+    padding: 0;
+    border: 1px solid var(--line);
+    background: var(--void);
+    color: var(--text-2);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    font-size: var(--fs-12);
+  }
+
+  .modal-photo-thumb {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    opacity: 0.8;
+  }
+
+  .modal-photo-thumb-btn span {
+    padding: 4px 6px;
+    text-align: center;
+  }
+
+  .modal-photo-credit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: var(--fs-12);
+    color: var(--text-2);
+  }
+
+  @media (max-width: 640px) {
+    .modal-photo-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 }
