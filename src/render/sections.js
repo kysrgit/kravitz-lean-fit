@@ -23,6 +23,7 @@ import {
   getActiveProfileTargets,
   loadBodyLogs,
   saveBodyLogs,
+  scaleMealPlanForProfile,
   state,
   syncProfileForm,
 } from "../state.js";
@@ -537,24 +538,32 @@ export function renderFullSummaryTab() {
   const { summary, fastingWindows, fastedTrainingNote, morningFastRules, dailyMeals, waistRules } =
     NUTRITION_PROTOCOL;
   const profileTargets = getActiveProfileTargets();
+  const {
+    trainingTargetKcal,
+    restTargetKcal,
+    proteinTargetG,
+    carbsTargetG,
+    fatTargetG,
+    scaledMeals,
+  } = scaleMealPlanForProfile(dailyMeals, profileTargets);
 
   const macroRowsHtml = [
     [
-      "Günlük Kalori Hedefi",
-      `${profileTargets.targetCalories} kcal (Örnek Plan: ${summary.calories})`,
+      "Günlük Kalori Hedefin",
+      `Antrenman: ${trainingTargetKcal} kcal · Dinlenme: ${restTargetKcal} kcal`,
       `Profil BMR (${profileTargets.bmrKcal} kcal) ve tahmini TDEE (${profileTargets.estimatedTdeeKcal} kcal) baz alınır · Haftalık hedef: vücut ağırlığının %0,5-1'i`,
     ],
     [
       "Günlük Protein",
-      summary.protein,
-      `${profileTargets.muscleMassKg.toFixed(1)} kg kas kütleni korumaya destek olur (örnek planda 180 g; ~1,8-2,2 g/kg)`,
+      `${proteinTargetG} g (2,0 g/kg)`,
+      `${profileTargets.muscleMassKg.toFixed(1)} kg kas kütleni korumaya destek olur`,
     ],
     [
       "Karbonhidrat (Çiğ/Kuru Bazlı)",
-      summary.carbs,
+      `${carbsTargetG} g`,
       "Antrenman günlerinde yüksek, dinlenme günlerinde kontrollü (~4 kcal/g)",
     ],
-    ["Sağlıklı Yağlar", summary.fats, "Hormon dengesi ve tokluk (~9 kcal/g)"],
+    ["Sağlıklı Yağlar", `${fatTargetG} g`, "Hormon dengesi ve tokluk (~9 kcal/g)"],
     ["Sıvı Tüketimi", summary.water, "Gün boyu dengeli hidrasyon ve elektrolit desteği"],
   ]
     .map(
@@ -568,11 +577,11 @@ export function renderFullSummaryTab() {
     )
     .join("");
 
-  const trainingSum = sumMealTotals(dailyMeals);
-  const restSum = sumMealTotals(dailyMeals, true);
+  const trainingSum = sumMealTotals(scaledMeals);
+  const restSum = sumMealTotals(scaledMeals, true);
 
   const mealsRowsHtml =
-    dailyMeals
+    scaledMeals
       .map(
         (meal) => `
       <tr>
@@ -852,36 +861,43 @@ export function renderNutritionProtocol() {
   const { summary, fastingWindows, fastedTrainingNote, morningFastRules, dailyMeals, waistRules } =
     NUTRITION_PROTOCOL;
   const profileTargets = getActiveProfileTargets();
-  const trainingDayTotals = sumMealTotals(dailyMeals);
-  const restDayTotals = sumMealTotals(dailyMeals, true);
+  const {
+    trainingTargetKcal,
+    proteinTargetG,
+    carbsTargetG,
+    fatTargetG,
+    scaledMeals,
+  } = scaleMealPlanForProfile(dailyMeals, profileTargets);
+  const trainingDayTotals = sumMealTotals(scaledMeals);
+  const restDayTotals = sumMealTotals(scaledMeals, true);
 
   const kcalRatio =
     profileTargets.estimatedTdeeKcal > 0
-      ? summary.targetKcal / profileTargets.estimatedTdeeKcal
+      ? trainingTargetKcal / profileTargets.estimatedTdeeKcal
       : 0.85;
-  const proteinRatio = (summary.proteinG * 4) / summary.targetKcal;
-  const carbsRatio = (summary.carbsG * 4) / summary.targetKcal;
-  const fatRatio = (summary.fatG * 9) / summary.targetKcal;
+  const proteinRatio = (proteinTargetG * 4) / trainingTargetKcal;
+  const carbsRatio = (carbsTargetG * 4) / trainingTargetKcal;
+  const fatRatio = (fatTargetG * 9) / trainingTargetKcal;
   const macroCardsHtml = [
     [
-      "Ortalama Kalori Hedefi",
-      `${summary.targetKcal} kcal`,
+      "Günlük Kalori Hedefin",
+      `${trainingTargetKcal} kcal`,
       kcalRatio,
-      `%${Math.round(kcalRatio * 100)}`,
+      `TDEE %${Math.round(kcalRatio * 100)}`,
       "tone-volt",
       `Antrenman: ${escapeHtml(trainingDayTotals.kcal)} · Dinlenme: ${escapeHtml(restDayTotals.kcal)} kcal`,
     ],
     [
-      "Günlük Protein",
-      `${summary.proteinG} g`,
+      "Günlük Protein (2,0 g/kg)",
+      `${proteinTargetG} g`,
       proteinRatio,
       `%${Math.round(proteinRatio * 100)}`,
       "tone-volt",
-      `${escapeHtml(summary.proteinG * 4)} kcal (%${Math.round(proteinRatio * 100)})`,
+      `${escapeHtml(proteinTargetG * 4)} kcal (%${Math.round(proteinRatio * 100)})`,
     ],
     [
       "Karbonhidrat",
-      `${summary.carbsG} g`,
+      `${carbsTargetG} g`,
       carbsRatio,
       `%${Math.round(carbsRatio * 100)}`,
       "tone-core",
@@ -961,7 +977,7 @@ export function renderNutritionProtocol() {
       </div>
 
       <div class="nutrition-timeline">
-        ${dailyMeals
+        ${scaledMeals
           .map(
             (meal, idx) => `
           <article class="info-panel meal-timeline-card">
