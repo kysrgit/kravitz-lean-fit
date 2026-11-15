@@ -102,7 +102,6 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
                   aria-label="${escapeHtml(exercise.name)} ${escapeHtml(step.set)}. set kg"
                   data-log-field="kg"
                   value="${escapeHtml(todaySet?.kg ?? "")}"
-                  placeholder="kg"
                 />
               </label>
               <label class="set-log-field">
@@ -116,7 +115,6 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
                   aria-label="${escapeHtml(exercise.name)} ${escapeHtml(step.set)}. set tekrar"
                   data-log-field="reps"
                   value="${escapeHtml(todaySet?.reps ?? "")}"
-                  placeholder="tek."
                 />
               </label>
             </div>
@@ -155,19 +153,13 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
       <div class="card-body">
         <div class="exercise-header">
           <span class="card-seq-num display-type tabular" aria-hidden="true">${escapeHtml(seqLabel)}</span>
-          <div class="exercise-tags">
-            <span class="tag-chip">${escapeHtml(activeVariant.primaryTag)}</span>
-            <span class="tag-chip equipment">${escapeHtml(activeVariant.secondaryTag)}</span>
-          </div>
           <h3 class="exercise-title">${escapeHtml(activeVariant.name)}</h3>
           <p class="exercise-subtitle">${escapeHtml(activeVariant.turkishName)}</p>
         </div>
 
-        ${alternativesHtml}
-
         <div class="pyramid-box">
           <div class="pyramid-box-title-row">
-            <span class="pyramid-box-title">Piramit Merdiveni (${maxSets} Set · 1. Set Isınma)</span>
+            <span class="pyramid-box-title">Piramit Merdiveni (${maxSets} Set)</span>
             <div class="rest-timer-trigger-wrap">
               <span class="rest-duration-badge">${lucideIcon("clock", { size: 14 })} Dinlenme: ${escapeHtml(restWindowLabel)}</span>
               <button
@@ -184,7 +176,16 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
           <div class="pyramid-steps">${pyramidHtml}</div>
         </div>
 
-        <ul class="tips-list">${tipsHtml}</ul>
+        <details class="card-details">
+          <summary class="card-details-summary">
+            <span>Form İpuçları &amp; Alternatifler</span>
+            ${lucideIcon("chevron-down", { size: 15 })}
+          </summary>
+          <div class="card-details-body">
+            ${alternativesHtml}
+            <ul class="tips-list">${tipsHtml}</ul>
+          </div>
+        </details>
 
         ${
           coreItem
