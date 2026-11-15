@@ -249,19 +249,19 @@ export const SYSTEM_PILLARS = [
     badge: "01 · UYARLANMIŞ PİRAMİT",
     title: "30 → 15 → 10 → 5 Tekrar",
     description:
-      "Kravitz'ten Esinlenilmiş Uyarlama: Basında (Men's Health AU; Fitbook, 2026) 50-35-21-14-10 / 50-25-12-5 ve haftada 5-6 gün aktarılsa da burada sürdürülebilir 4 günlük 30-15-10-5 uyarlaması uygulanır.",
+      "Basındaki 5–6 günlük program yerine haftada 4 güne sığdırılmış sürdürülebilir 30-15-10-5 piramit uyarlaması.",
   },
   {
     badge: "02 · DİNLENME VE CORE PENCERESİ",
     title: "21× Core + Tam Toparlanma",
     description:
-      "Bileşik hareketlerde 2-3 dk (150 sn), izolasyonlarda 60-90 sn (75 sn) dinlenme penceresinin başında 21 core yap, kalan sürede dinlenip ağır sete toparlanmış gir (Schoenfeld B.J. ve ark., J Strength Cond Res 2016;30(7):1805-12, DOI: 10.1519/JSC.0000000000001272).",
+      "Bileşiklerde 2–3 dk (150 sn), izolasyonlarda 60–90 sn (75 sn) dinlenme penceresinin başında 21 core yap, kalan sürede ağır sete toparlanmış gir.",
   },
   {
     badge: "03 · KOT PANTOLON TESTİ",
     title: "45-60 Dk Odaklı Seans",
     description:
-      "Basın kaynaklarında Kravitz'in bilinçli aralıklı oruç uygulamadığı belirtilir; buradaki 18:6 / 16:8 pencereleri isteğe bağlıdır. Gelişimi tartıdan çok bel mezurasıyla izle.",
+      "18:6 / 16:8 öğün pencereleri isteğe bağlıdır. Gelişimi tartıdan çok bel mezurasıyla izle.",
   },
 ];
 
