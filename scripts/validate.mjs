@@ -12,7 +12,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, "..");
 
-const { CORE_LIBRARY, NUTRITION_PROTOCOL, WORKOUT_DAYS } = await import(
+const { CORE_LIBRARY, NUTRITION_PROTOCOL, THREE_DAY_TEMPLATES, WORKOUT_DAYS } = await import(
   pathToFileURL(path.join(rootDir, "data.js")).href
 );
 
@@ -221,6 +221,29 @@ check(
   missingSw.length === 0
     ? `${swUrls.length} önbellek girdisi doğrulandı`
     : `eksik=${missingSw.join(",")}`
+);
+
+// 9. 3 günlük şablonlarda her büyük kas grubu haftada en az 2 kez geçmeli
+const templateFreqIssues = [];
+const musclePatterns = [
+  ["Göğüs", /(Incline DB Press|Chest Press|Cable Crossover)/i],
+  ["Sırt", /(Cable Row|Lat Pulldown|Single-Arm\/Cable Row|Straight-Arm Pulldown)/i],
+  ["Omuz", /(Lateral Raise|Shoulder Press|Face Pull)/i],
+  ["Quadriceps", /(Leg Press|Walking Lunges|Goblet Squat)/i],
+  ["Arka Bacak/Kalça", /(Romanian Deadlift|Leg Curl|Hip Thrust|Back Extension|Kettlebell Swing)/i],
+];
+for (const tpl of THREE_DAY_TEMPLATES.templates) {
+  for (const [group, re] of musclePatterns) {
+    const count = tpl.days.filter((d) => re.test(d)).length;
+    if (count < 2) templateFreqIssues.push(`${tpl.id}: ${group} (${count}x)`);
+  }
+}
+check(
+  "3 günlük şablon kas sıklığı (≥2×/hafta)",
+  templateFreqIssues.length === 0,
+  templateFreqIssues.length === 0
+    ? `${THREE_DAY_TEMPLATES.templates.length} şablonda tüm büyük kas grupları ≥2×/hafta`
+    : templateFreqIssues.join("; ")
 );
 
 for (const line of passes) {

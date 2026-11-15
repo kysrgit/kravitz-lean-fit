@@ -910,11 +910,11 @@ export const THREE_DAY_TEMPLATES = {
     {
       id: "full-body-aba",
       name: "Şablon A · Full-Body A / B / A (Pazartesi – Çarşamba – Cuma)",
-      frequencyNote: "Her kas grubu haftada 3 kez uyarılır (≥2×/hafta).",
+      frequencyNote: "Her büyük kas grubu haftada en az 2 kez uyarılır.",
       days: [
-        "1. Gün (Pzt · Full-Body A): Incline DB Press, Seated Cable Row, Leg Press, Lateral Raise, Dumbbell Bicep Curl + Set arası 21× Core",
+        "1. Gün (Pzt · Full-Body A): Incline DB Press, Seated Cable Row, Leg Press, Hip Thrust, Lateral Raise, Dumbbell Bicep Curl + Set arası 21× Core",
         "2. Gün (Çar · Full-Body B): Seated DB Shoulder Press, Wide-Grip Lat Pulldown, Romanian Deadlift, Seated Leg Curl, Rope Triceps Pushdown + Kavramasız Core (Dead Bug / Plank)",
-        "3. Gün (Cum · Full-Body A2): Barbell/Machine Chest Press, Single-Arm/Cable Row, Walking Lunges, Face Pull, Incline Hammer Curl + Bitiriş Kardiyosu",
+        "3. Gün (Cum · Full-Body A2): Barbell/Machine Chest Press, Single-Arm/Cable Row, Walking Lunges, 45° Back Extension, Face Pull, Incline Hammer Curl + Bitiriş Kardiyosu",
       ],
     },
     {
@@ -924,7 +924,7 @@ export const THREE_DAY_TEMPLATES = {
       days: [
         "1. Gün (Pzt · Üst Vücut): Incline DB Press, Wide-Grip Lat Pulldown, Seated DB Shoulder Press, Seated Cable Row, Face Pull",
         "2. Gün (Çar · Alt Vücut): Leg Press, Romanian Deadlift (ara dinlenme Dead Bug), Walking Lunges, Seated Leg Curl, Standing Calf Raise",
-        "3. Gün (Cum · Full-Body): Kettlebell Swing, Cable Crossover, Straight-Arm Pulldown (ara dinlenme Pallof Press), Lateral Raise, Dumbbell Bicep Curl + Bitiriş Kardiyosu",
+        "3. Gün (Cum · Full-Body): Goblet Squat, Kettlebell Swing, Cable Crossover, Straight-Arm Pulldown (ara dinlenme Pallof Press), Lateral Raise, Dumbbell Bicep Curl + Bitiriş Kardiyosu",
       ],
     },
   ],
