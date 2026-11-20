@@ -17,13 +17,20 @@ const listMatch = swText.match(/const APP_SHELL_URLS\s*=\s*\[([\s\S]*?)\];/);
 const urls = listMatch ? [...listMatch[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]) : [];
 const hashTargets = [...new Set([...urls, "./data.js"])];
 
+const TEXT_EXTS = new Set([".html", ".css", ".js", ".mjs", ".json", ".webmanifest", ".svg"]);
+
 const hash = crypto.createHash("sha256");
 for (const entry of hashTargets) {
   const rel = entry === "./" ? "index.html" : entry.replace(/^\.\//, "");
   const full = path.join(rootDir, rel);
   if (fs.existsSync(full) && fs.statSync(full).isFile()) {
     hash.update(rel);
-    hash.update(fs.readFileSync(full));
+    const ext = path.extname(full).toLowerCase();
+    if (TEXT_EXTS.has(ext)) {
+      hash.update(fs.readFileSync(full, "utf8").replace(/\r\n/g, "\n"), "utf8");
+    } else {
+      hash.update(fs.readFileSync(full));
+    }
   }
 }
 const stamp = hash.digest("hex").slice(0, 8);
