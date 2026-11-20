@@ -65,17 +65,6 @@
       radial-gradient(circle at 50% 42%, var(--accent-wash), transparent 68%), var(--void);
   }
 
-  .media-video,
-  .media-frame {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    background: var(--void);
-    transition: opacity var(--dur-micro) var(--ease-out);
-  }
-
   .is-hidden {
     opacity: 0;
     pointer-events: none;
@@ -187,15 +176,6 @@
     padding: 10px 12px;
     border-top: none;
     background: linear-gradient(to top, var(--void), transparent);
-  }
-
-  .pose-toggle-group {
-    display: inline-flex;
-    background: var(--void);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-cut);
-    padding: 2px;
-    gap: 2px;
   }
 
   .pose-btn {
@@ -833,25 +813,6 @@
       aspect-ratio: auto;
       display: flex;
       flex-direction: column;
-    }
-
-    .media-stage:not(.is-reference-stage) .media-video {
-      position: relative;
-      inset: auto;
-      width: 100%;
-      height: auto;
-      aspect-ratio: 16 / 9;
-      display: block;
-    }
-
-    .media-stage:not(.is-reference-stage) .media-frame {
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: auto;
-      width: 100%;
-      height: auto;
-      aspect-ratio: 16 / 9;
     }
 
     .media-stage:not(.is-reference-stage) .media-controls-bar {

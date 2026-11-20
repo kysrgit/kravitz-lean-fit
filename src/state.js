@@ -90,12 +90,7 @@ export const elements = {
   modalSubtitle: document.getElementById("modal-subtitle"),
   modalVariantsBar: document.getElementById("modal-variants-bar"),
   modalVideoContainer: document.getElementById("modal-video-container"),
-  modalPlaybackBar: document.getElementById("modal-playback-bar"),
-  modalFramesSection: document.getElementById("modal-frames-section"),
-  modalImgFront: document.getElementById("modal-img-front"),
-  modalImgSide: document.getElementById("modal-img-side"),
   modalTipsList: document.getElementById("modal-tips-list"),
-  modalExternalActions: document.getElementById("modal-external-actions"),
 };
 
 // HTML özel karakterlerini güvenli metne dönüştürür
@@ -126,7 +121,7 @@ export function getExerciseVariants(item, kind) {
       whenToUse: null,
       videoKey: item.videoKey,
       sourceUrl: item.sourceUrl || getExerciseMedia(item.videoKey).sourceUrl,
-      tips: [item.formCue, `Salon İpucu: ${item.macfitTip}`],
+      tips: [item.formCue, `Salon İpucu: ${item.gymTip}`],
     };
 
     const alts = (item.alternatives || []).map((alt, i) => ({
@@ -141,7 +136,7 @@ export function getExerciseVariants(item, kind) {
       whenToUse: alt.whenToUse,
       videoKey: alt.videoKey,
       sourceUrl: alt.sourceUrl || getExerciseMedia(alt.videoKey).sourceUrl,
-      tips: [alt.formCue, `Salon İpucu: ${alt.macfitTip}`],
+      tips: [alt.formCue, `Salon İpucu: ${alt.gymTip}`],
     }));
 
     return [primary, ...alts];

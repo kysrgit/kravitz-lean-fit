@@ -20,12 +20,7 @@ import {
   saveSetLogEntry,
   state,
 } from "../state.js";
-import {
-  clearPhotoTimers,
-  observeVisibleVideos,
-  shouldDisableAutoplay,
-  startRestTimer,
-} from "../media.js";
+import { clearPhotoTimers, observeVisibleStages, startRestTimer } from "../media.js";
 import { openMediaModal } from "../modal.js";
 import { applyVariantToCard } from "./cards.js";
 import { lucideIcon } from "./icons.js";
@@ -162,74 +157,7 @@ export function renderTabs() {
 
 export function bindCardInteractions() {
   clearPhotoTimers();
-
-  document.querySelectorAll(".media-stage").forEach((stage) => {
-    const videoEl = stage.querySelector(".media-video");
-    const frontImg = stage.querySelector(".frame-front");
-    const sideImg = stage.querySelector(".frame-side");
-    const indicator = stage.querySelector(".pose-indicator");
-    const modeButtons = stage.querySelectorAll(".pose-btn");
-    let photoLoopTimer = null;
-
-    const stopPhotoLoop = () => {
-      if (photoLoopTimer) {
-        window.clearInterval(photoLoopTimer);
-        photoLoopTimer = null;
-      }
-    };
-
-    // Seçilen görünüme göre video açısını veya HD fotoğraf karesini uygular
-    const applyMode = (mode) => {
-      stopPhotoLoop();
-      if (!videoEl) return;
-
-      if (mode === "front" || mode === "side") {
-        const targetSrc = mode === "front" ? videoEl.dataset.frontSrc : videoEl.dataset.sideSrc;
-        if (videoEl.getAttribute("src") !== targetSrc) {
-          videoEl.setAttribute("src", targetSrc);
-          videoEl.load();
-        }
-        videoEl.classList.remove("is-hidden");
-        if (!shouldDisableAutoplay()) {
-          videoEl.play().catch(() => {});
-        }
-        if (frontImg) frontImg.classList.add("is-hidden");
-        if (sideImg) sideImg.classList.add("is-hidden");
-        indicator.textContent = mode === "front" ? "Ön Açı · Video" : "Yan Açı · Video";
-        return;
-      }
-
-      // Kare modu: Ön ve yan açı kareleri arasında akıcı geçiş
-      videoEl.classList.add("is-hidden");
-      videoEl.pause();
-
-      let showSide = false;
-      const showFrame = (isSide) => {
-        if (frontImg) frontImg.classList.toggle("is-hidden", isSide);
-        if (sideImg) sideImg.classList.toggle("is-hidden", !isSide);
-        indicator.textContent = isSide ? "Kare · Yan Açı" : "Kare · Ön Açı";
-      };
-
-      showFrame(false);
-      if (!shouldDisableAutoplay()) {
-        photoLoopTimer = window.setInterval(() => {
-          showSide = !showSide;
-          showFrame(showSide);
-        }, 1700);
-        state.photoTimers.push(photoLoopTimer);
-      }
-    };
-
-    modeButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        modeButtons.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        applyMode(btn.dataset.mode);
-      });
-    });
-  });
-
-  observeVisibleVideos();
+  observeVisibleStages();
 
   // Kart içi Alternatif Hareketler seçicisi
   document.querySelectorAll("[data-variant-kind]").forEach((cardEl) => {

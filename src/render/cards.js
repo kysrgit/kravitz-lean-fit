@@ -6,7 +6,7 @@
 
 import { CORE_LIBRARY, getExerciseMedia } from "../../data.js";
 import { escapeHtml, getExerciseSetHistory, getExerciseVariants } from "../state.js";
-import { createMediaStageHtml, observeVisibleVideos } from "../media.js";
+import { createMediaStageHtml, observeVisibleStages } from "../media.js";
 import { openMediaModal } from "../modal.js";
 import { lucideIcon } from "./icons.js";
 
@@ -462,7 +462,7 @@ export function applyVariantToCard(cardEl, variants, variantIndex) {
           openMediaModal({ variants, initialVariantIndex: variant.index });
         });
       }
-      observeVisibleVideos();
+      observeVisibleStages();
     }
   }
 

@@ -527,7 +527,7 @@ export function renderFullSummaryTab() {
           <td data-label="Tekrar / Süre"><strong>${escapeHtml(core.reps)}</strong></td>
           <td class="col-cue" data-label="Nasıl Yapılır">
             <div>${escapeHtml(core.formCue)}</div>
-            ${core.macfitTip ? `<div class="table-alt-when"><strong>Salon İpucu:</strong> ${escapeHtml(core.macfitTip)}</div>` : ""}
+            ${core.gymTip ? `<div class="table-alt-when"><strong>Salon İpucu:</strong> ${escapeHtml(core.gymTip)}</div>` : ""}
           </td>
           <td class="col-alts" data-label="Alternatifler"><div class="table-alt-list">${altsHtml}</div></td>
         </tr>
@@ -720,7 +720,7 @@ export function renderFullSummaryTab() {
           <div class="summary-table-header compact">
             <div>
               <h3>${lucideIcon("zap", { size: 18 })} Bitiriş Kardiyosu (Core Listesinden Ayrı · Seans Sonu)</h3>
-              <p>${escapeHtml(CARDIO_FINISHER.turkishName)} (${escapeHtml(CARDIO_FINISHER.reps)}) — ${escapeHtml(CARDIO_FINISHER.macfitTip)}</p>
+              <p>${escapeHtml(CARDIO_FINISHER.turkishName)} (${escapeHtml(CARDIO_FINISHER.reps)}) — ${escapeHtml(CARDIO_FINISHER.gymTip)}</p>
             </div>
             <button type="button" class="table-video-btn" data-open-core="${escapeHtml(CARDIO_FINISHER.id)}">Form &amp; Alternatifler</button>
           </div>

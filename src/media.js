@@ -19,27 +19,19 @@ export function shouldDisableAutoplay() {
   return reducedMotion || saveData;
 }
 
-// Görünürlük bazlı video oynatma gözlemcisini temizler ve yeniden kurar
-export function observeVisibleVideos() {
+// Görünürlük bazlı egzersiz fotoğraf sahnesi gözlemcisini temizler ve yeniden kurar
+export function observeVisibleStages() {
   if (mediaVisibilityObserver) {
     mediaVisibilityObserver.disconnect();
     mediaVisibilityObserver = null;
   }
 
-  const videos = Array.from(document.querySelectorAll(".media-video"));
   const photoStages = Array.from(document.querySelectorAll(".is-photo-stage"));
-  if (videos.length === 0 && photoStages.length === 0) return;
+  if (photoStages.length === 0) return;
 
-  const disableAutoplay = shouldDisableAutoplay();
-  if (disableAutoplay) {
-    videos.forEach((videoEl) => {
-      videoEl.autoplay = false;
-      videoEl.pause();
-    });
+  if (shouldDisableAutoplay() || typeof IntersectionObserver === "undefined") {
     return;
   }
-
-  if (typeof IntersectionObserver === "undefined") return;
 
   const toggleStagePhase = (stage, forceStart = false) => {
     const next = forceStart || stage.dataset.photoPhase === "end" ? "start" : "end";
@@ -52,34 +44,22 @@ export function observeVisibleVideos() {
     (entries) => {
       entries.forEach((entry) => {
         const el = entry.target;
-        if (el.classList.contains("is-photo-stage")) {
-          if (entry.isIntersecting) {
-            if (!el._photoTimer) {
-              el._photoTimer = window.setInterval(() => toggleStagePhase(el), 1600);
-              state.photoTimers.push(el._photoTimer);
-            }
-          } else if (el._photoTimer) {
-            window.clearInterval(el._photoTimer);
-            el._photoTimer = null;
-            toggleStagePhase(el, true);
+        if (!el.classList.contains("is-photo-stage")) return;
+        if (entry.isIntersecting) {
+          if (!el._photoTimer) {
+            el._photoTimer = window.setInterval(() => toggleStagePhase(el), 1600);
+            state.photoTimers.push(el._photoTimer);
           }
-          return;
-        }
-        if (el.classList.contains("is-hidden")) {
-          el.pause();
-          return;
-        }
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-          el.play().catch(() => {});
-        } else {
-          el.pause();
+        } else if (el._photoTimer) {
+          window.clearInterval(el._photoTimer);
+          el._photoTimer = null;
+          toggleStagePhase(el, true);
         }
       });
     },
     { threshold: [0, 0.25, 0.5] }
   );
 
-  videos.forEach((videoEl) => mediaVisibilityObserver.observe(videoEl));
   photoStages.forEach((stage) => mediaVisibilityObserver.observe(stage));
 }
 
@@ -334,68 +314,6 @@ export function createMediaStageHtml({
           >
             Formu izle ${lucideIcon("arrow-up-right", { size: 14 })}
           </a>
-        </div>
-      </div>
-    `;
-  }
-
-  if (media.frontMp4) {
-    return `
-      <div class="media-stage" data-media-mode="front">
-        <video
-          class="media-video"
-          src="${escapeHtml(media.frontMp4)}"
-          poster="${escapeHtml(media.frontImg || "")}"
-          data-front-src="${escapeHtml(media.frontMp4)}"
-          data-side-src="${escapeHtml(media.sideMp4 || "")}"
-          ${shouldDisableAutoplay() ? "controls" : ""}
-          loop
-          muted
-          playsinline
-          preload="metadata"
-          aria-label="${escapeHtml(name)} hareket videosu"
-        ></video>
-
-        ${
-          media.frontImg
-            ? `<img
-                class="media-frame frame-front is-hidden"
-                src="${escapeHtml(media.frontImg)}"
-                alt="${escapeHtml(name)} ön açı karesi"
-                loading="lazy"
-              />`
-            : ""
-        }
-        ${
-          media.sideImg
-            ? `<img
-                class="media-frame frame-side is-hidden"
-                src="${escapeHtml(media.sideImg)}"
-                alt="${escapeHtml(name)} yan açı karesi"
-                loading="lazy"
-              />`
-            : ""
-        }
-
-        <div class="media-overlay-top">
-          <span class="order-badge">${escapeHtml(badgeText)}</span>
-          <span class="pose-indicator">Ön Açı · Video</span>
-        </div>
-
-        <div class="media-controls-bar">
-          <div class="pose-toggle-group" role="group" aria-label="Kamera ve görünüm seçici">
-            <button type="button" class="pose-btn active" data-mode="front">Ön Açı</button>
-            <button type="button" class="pose-btn" data-mode="side">Yan Açı</button>
-            <button type="button" class="pose-btn" data-mode="photo">Kare</button>
-          </div>
-
-          <button
-            type="button"
-            class="video-trigger-btn"
-            ${triggerAttr}
-          >
-            <span>Form &amp; Detay</span>
-          </button>
         </div>
       </div>
     `;
