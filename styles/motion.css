@@ -1,3 +1,9 @@
+/**
+ * Dosya: styles/motion.css
+ * Açıklama: ARENA GPU composited hareket katmanı, dokunsal buton tepkileri,
+ * set tamamlama yay animasyonu, görünüm geçişleri ve prefers-reduced-motion korumaları.
+ */
+
 @layer motion {
   /* ==========================================================================
      ARENA Hareket & Gecis Katmani — GPU composited ve erisilebilir
@@ -8,8 +14,10 @@
     will-change: transform;
   }
 
-  /* Etkilesimli butonlarda dokunma geri bildirimi */
+  /* Etkilesimli butonlarda dokunma geri bildirimi (Emil Kowalski dokunsal kuralı) */
   .hero-btn:active,
+  .hero-cta-primary:active,
+  .hero-cta-secondary:active,
   .alt-pill-btn:active,
   .video-trigger-btn:active,
   .view-card-details-btn:active,
@@ -17,10 +25,18 @@
   .mobile-nav-btn:active,
   .source-link-btn:active,
   .timer-btn:active,
+  .timer-mini-btn:active,
   .modal-close-btn:active,
   .btn-primary:active,
-  .btn-ghost:active {
-    transform: scale(0.96);
+  .btn-primary-small:active,
+  .btn-outline:active,
+  .btn-ghost:active,
+  .stepper-btn:active,
+  .mode-switch-btn:active,
+  .view-mode-btn:active,
+  .set-done-btn:active,
+  .summary-quick-chip:active {
+    transform: scale(0.97);
   }
 
   .tab-btn,
@@ -39,6 +55,17 @@
   }
 
   @media (prefers-reduced-motion: no-preference) {
+    .set-done-btn[aria-pressed="true"] {
+      animation: arena-check-pop 220ms var(--ease-out, ease) both;
+    }
+
+    .day-progress-strip.is-complete {
+      box-shadow: 0 0 24px -6px var(--accent-glow);
+      transition:
+        border-color var(--dur-transition) var(--ease-out),
+        box-shadow var(--dur-transition) var(--ease-out);
+    }
+
     #content-area {
       view-transition-name: content-panel;
     }
@@ -84,6 +111,18 @@
     }
   }
 
+  @keyframes arena-check-pop {
+    0% {
+      transform: scale(0.88);
+    }
+    55% {
+      transform: scale(1.06);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
   @keyframes arena-view-rise {
     from {
       opacity: 0.45;
@@ -113,6 +152,8 @@
     }
 
     .hero-btn:active,
+    .hero-cta-primary:active,
+    .hero-cta-secondary:active,
     .alt-pill-btn:active,
     .video-trigger-btn:active,
     .view-card-details-btn:active,
@@ -120,9 +161,17 @@
     .mobile-nav-btn:active,
     .source-link-btn:active,
     .timer-btn:active,
+    .timer-mini-btn:active,
     .modal-close-btn:active,
     .btn-primary:active,
-    .btn-ghost:active {
+    .btn-primary-small:active,
+    .btn-outline:active,
+    .btn-ghost:active,
+    .stepper-btn:active,
+    .mode-switch-btn:active,
+    .view-mode-btn:active,
+    .set-done-btn:active,
+    .summary-quick-chip:active {
       transform: none;
     }
   }

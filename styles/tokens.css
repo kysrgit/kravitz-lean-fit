@@ -7,12 +7,12 @@
 
 @layer tokens {
   :root {
-    /* Yüzeyler (Stadyum karanlığı) */
-    --void: oklch(0.1 0.005 260);
-    --stage-1: oklch(0.15 0.01 260);
-    --stage-2: oklch(0.2 0.012 260);
-    --stage-3: oklch(0.24 0.012 260);
-    --line: oklch(0.32 0.01 260);
+    /* Yüzeyler (OLED derinlikli stadyum karanlığı) */
+    --void: oklch(0.085 0.006 260);
+    --stage-1: oklch(0.135 0.01 260);
+    --stage-2: oklch(0.175 0.012 260);
+    --stage-3: oklch(0.22 0.014 260);
+    --line: oklch(0.3 0.012 260);
 
     /* Metin hiyerarşisi (WCAG AA >= 4.5:1) */
     --text-1: oklch(0.97 0 0);
@@ -32,14 +32,20 @@
     --day-4: oklch(0.8 0.16 75);
     --day-accent: var(--day-1);
 
-    /* Token türevleri (oklch / color-mix) */
-    --scrim-void: oklch(0.1 0.005 260 / 0.8);
-    --bar-bg: oklch(0.15 0.01 260 / 0.94);
-    --stage-1-glass: oklch(0.15 0.01 260 / 0.86);
-    --line-soft: oklch(0.32 0.01 260 / 0.55);
+    /* Mimari derinlik, saç teli çizgiler ve okunaklı cam yüzeyler */
+    --scrim-void: oklch(0.085 0.006 260 / 0.84);
+    --bar-bg: oklch(0.115 0.009 260 / 0.9);
+    --stage-1-glass: oklch(0.135 0.01 260 / 0.84);
+    --line-soft: oklch(0.3 0.012 260 / 0.55);
+    --line-hairline: oklch(0.97 0 0 / 0.085);
+    --line-highlight: oklch(0.97 0 0 / 0.16);
+    --surface-elevated: linear-gradient(180deg, oklch(0.16 0.011 260), oklch(0.13 0.01 260));
+    --grid-dot: oklch(0.97 0 0 / 0.028);
     --text-ghost: oklch(0.52 0.012 260);
     --specular-white: oklch(0.97 0 0 / 0.14);
-    --shadow-deep: oklch(0.05 0.005 260 / 0.65);
+    --shadow-deep: oklch(0.04 0.005 260 / 0.72);
+    --shadow-card: 0 20px 44px -24px oklch(0.03 0.005 260 / 0.85);
+    --shadow-float: 0 24px 52px -14px oklch(0.02 0.005 260 / 0.92);
 
     --accent-wash: color-mix(in oklch, var(--day-accent) 12%, transparent);
     --accent-tint: color-mix(in oklch, var(--day-accent) 20%, var(--stage-1));
