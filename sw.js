@@ -5,8 +5,8 @@
  * üçüncü taraf veya lisanssız medya dosyalarını kesinlikle önbelleğe almaz.
  */
 
-const SHELL_CACHE = "klf-shell-b60fe259";
-const DATA_CACHE = "klf-data-b60fe259";
+const SHELL_CACHE = "klf-shell-762fa4a2";
+const DATA_CACHE = "klf-data-762fa4a2";
 const MEDIA_CACHE = "klf-media-v1";
 
 const APP_SHELL_URLS = [
@@ -31,6 +31,7 @@ const APP_SHELL_URLS = [
   "./vendor/gsap/SplitText.min.js",
   "./vendor/gsap/Flip.min.js",
   "./src/state.js",
+  "./src/nutrition.js",
   "./src/media.js",
   "./src/modal.js",
   "./src/render/icons.js",

@@ -413,8 +413,19 @@
         <form id="profile-form" class="profile-form">
           <div class="profile-form-grid">
             <label class="profile-field">
+              <span>Cinsiyet</span>
+              <select name="sex">
+                <option value="male">Erkek</option>
+                <option value="female">Kadın</option>
+              </select>
+            </label>
+            <label class="profile-field">
               <span>Yaş</span>
               <input type="number" name="age" min="16" max="85" step="1" required />
+            </label>
+            <label class="profile-field">
+              <span>Boy (cm)</span>
+              <input type="number" name="heightCm" min="140" max="220" step="1" required />
             </label>
             <label class="profile-field">
               <span>Kilo (kg)</span>
@@ -425,12 +436,24 @@
               <input type="number" name="bodyFatPct" min="5" max="55" step="0.1" required />
             </label>
             <label class="profile-field">
-              <span>Kas Kütlesi (kg)</span>
-              <input type="number" name="muscleMassKg" min="25" max="120" step="0.1" required />
+              <span>Kas Kütlesi (kg · Opsiyonel)</span>
+              <input
+                type="number"
+                name="muscleMassKg"
+                min="20"
+                max="120"
+                step="0.1"
+                placeholder="Otomatik (yağsız kütle)"
+              />
             </label>
-            <label class="profile-field">
+            <label class="profile-field profile-field-bmr">
               <span>BMR (kcal/gün)</span>
-              <input type="number" name="bmrKcal" min="1000" max="3500" step="10" required />
+              <div class="bmr-input-row">
+                <input type="number" name="bmrKcal" min="950" max="3500" step="10" required />
+                <button type="button" id="calc-bmr-btn" class="btn-outline btn-calc-bmr">
+                  Mifflin-St Jeor ile Hesapla
+                </button>
+              </div>
             </label>
             <label class="profile-field">
               <span>Bel Çevresi (cm)</span>

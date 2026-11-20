@@ -99,6 +99,43 @@
     box-shadow: 0 0 0 1px var(--volt);
   }
 
+  .profile-field-bmr {
+    grid-column: span 2;
+  }
+
+  .bmr-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .bmr-input-row input {
+    flex: 0 1 130px;
+    min-width: 90px;
+  }
+
+  .btn-calc-bmr {
+    flex: 1 1 auto;
+    font-size: var(--fs-12);
+    padding: 8px 10px;
+    white-space: normal;
+    text-align: center;
+  }
+
+  @media (max-width: 520px) {
+    .profile-field-bmr {
+      grid-column: span 1;
+    }
+
+    .bmr-input-row {
+      flex-direction: column;
+    }
+
+    .bmr-input-row input {
+      flex: 1 1 auto;
+    }
+  }
+
   .profile-form-actions {
     display: flex;
     flex-wrap: wrap;

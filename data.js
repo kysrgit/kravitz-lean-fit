@@ -4,6 +4,8 @@
  * her hareket için 2'şer alternatif egzersiz, 21'ler Core rehberi ve beslenme protokolünü içerir.
  */
 
+import { scaleMealPlanForProfile } from "./src/nutrition.js";
+
 export const MUSCLEWIKI_LICENSE_URL = "https://api.musclewiki.com/api-terms";
 
 const EXERCISE_SOURCE_URLS = {
@@ -102,10 +104,12 @@ export function getExerciseMedia(keyOrItem) {
 // Varsayılan anonim örnek profil (Kullanıcı kendi verisini tarayıcıdaki "Profilim" formundan girer; yalnızca localStorage'da saklanır)
 export const DEFAULT_PROFILE = {
   isCustom: false,
+  sex: "male",
   age: 28,
+  heightCm: 178,
   weightKg: 80,
   bodyFatPct: 18,
-  muscleMassKg: 62,
+  muscleMassKg: null,
   bmrKcal: 1800,
   waistCm: 86,
   activityMultiplier: 1.45,
@@ -116,17 +120,24 @@ export const DEFAULT_PROFILE = {
 // Profil verilerinden hedef kilo, tahmini TDEE, günlük kalori ve protein hedeflerini hesaplar
 export function calculateProfileTargets(profile = DEFAULT_PROFILE) {
   const safe = { ...DEFAULT_PROFILE, ...(profile || {}) };
+  const sex = safe.sex === "female" ? "female" : "male";
   const age = Math.max(16, Math.min(85, Number(safe.age) || DEFAULT_PROFILE.age));
+  const heightCm = Math.max(140, Math.min(220, Number(safe.heightCm) || DEFAULT_PROFILE.heightCm));
   const weightKg = Math.max(40, Math.min(200, Number(safe.weightKg) || DEFAULT_PROFILE.weightKg));
   const bodyFatPct = Math.max(
     5,
     Math.min(55, Number(safe.bodyFatPct) || DEFAULT_PROFILE.bodyFatPct)
   );
-  const muscleMassKg = Math.max(
-    25,
-    Math.min(120, Number(safe.muscleMassKg) || DEFAULT_PROFILE.muscleMassKg)
-  );
-  const bmrKcal = Math.max(1000, Math.min(3500, Number(safe.bmrKcal) || DEFAULT_PROFILE.bmrKcal));
+  const leanMassKg = Number((weightKg * (1 - bodyFatPct / 100)).toFixed(1));
+  const hasCustomMuscle =
+    safe.muscleMassKg !== null &&
+    safe.muscleMassKg !== undefined &&
+    safe.muscleMassKg !== "" &&
+    Number(safe.muscleMassKg) > 0;
+  const muscleMassKg = hasCustomMuscle
+    ? Math.max(20, Math.min(120, Number(safe.muscleMassKg)))
+    : leanMassKg;
+  const bmrKcal = Math.max(950, Math.min(3500, Number(safe.bmrKcal) || DEFAULT_PROFILE.bmrKcal));
   const waistCm = Math.max(55, Math.min(160, Number(safe.waistCm) || DEFAULT_PROFILE.waistCm));
   const activityMultiplier = Math.max(
     1.2,
@@ -137,7 +148,6 @@ export function calculateProfileTargets(profile = DEFAULT_PROFILE) {
     Math.min(30, Number(safe.targetBodyFatPct) || DEFAULT_PROFILE.targetBodyFatPct)
   );
 
-  const leanMassKg = Number((weightKg * (1 - bodyFatPct / 100)).toFixed(1));
   const fatMassKg = Number((weightKg - leanMassKg).toFixed(1));
   const targetWeightKg = Number((leanMassKg / (1 - targetBodyFatPct / 100)).toFixed(1));
   const estimatedTdeeKcal = Math.round(bmrKcal * activityMultiplier);
@@ -151,10 +161,13 @@ export function calculateProfileTargets(profile = DEFAULT_PROFILE) {
   return {
     ...safe,
     isCustom: Boolean(safe.isCustom),
+    sex,
     age,
+    heightCm,
     weightKg,
     bodyFatPct,
     muscleMassKg,
+    hasCustomMuscle,
     bmrKcal,
     waistCm,
     activityMultiplier,
@@ -190,7 +203,7 @@ export function calculateProfileTargets(profile = DEFAULT_PROFILE) {
         highlight: false,
       },
       {
-        label: "Kas Kütlesi / Yağsız Kütle",
+        label: hasCustomMuscle ? "Kas Kütlesi (BIA)" : "Yağsız Kütle (Tahmini)",
         current: `${muscleMassKg.toFixed(1)} kg`,
         target: "Mevcudu Koru",
         note: `Günlük ~${proteinTargetG} g protein (~2 g/kg, genel öneri) ile desteklenir`,
@@ -2033,19 +2046,216 @@ export const WORKOUT_DAYS = [
   },
 ];
 
+// Yapılandırılmış günlük öğün şablonu (tüm gramaj ve makrolar seçili profile göre ölçeklenir)
+const DAILY_MEALS_BASE = [
+  {
+    time: "Öğün 1 · 14:00 - 15:00",
+    title: "İlk Öğün: Sebzeli Omlet & Yulaf",
+    ingredients: [
+      {
+        id: "egg_whole",
+        label: "tam orta yumurta (omlet)",
+        unitEquiv: "adet",
+        unitGrams: 50,
+        role: "fixed",
+        roundStep: 50,
+        baseG: 50,
+        per100: { p: 12.6, c: 0.7, f: 9.5 },
+      },
+      {
+        id: "egg_white",
+        label: "yumurta beyazı (tavada omlet)",
+        unitSuffix: "çiğ",
+        role: "protein",
+        roundStep: 10,
+        minG: 60,
+        baseG: 160,
+        per100: { p: 11.0, c: 0.7, f: 0.2 },
+      },
+      {
+        id: "morning_veg",
+        label: "sebze karışımı (ıspanak, yeşil biber, mantar)",
+        unitSuffix: "çiğ",
+        role: "fixed",
+        roundStep: 10,
+        baseG: 250,
+        per100: { p: 2.1, c: 3.2, f: 0.2 },
+      },
+      {
+        id: "lor_cheese",
+        label: "az yağlı lor veya light beyaz peynir",
+        unitSuffix: "süzülmüş",
+        role: "protein",
+        roundStep: 5,
+        minG: 40,
+        baseG: 80,
+        per100: { p: 17.0, c: 3.0, f: 2.5 },
+      },
+      {
+        id: "oats",
+        label: "yulaf ezmesi",
+        unitSuffix: "kuru/çiğ",
+        role: "carb",
+        roundStep: 5,
+        minG: 25,
+        baseG: 75,
+        restG: 65,
+        per100: { p: 13.0, c: 66.0, f: 7.0 },
+      },
+      {
+        id: "olive_oil_1",
+        label: "sızma zeytinyağı (omlet tavası)",
+        role: "fat",
+        roundStep: 1,
+        minG: 3,
+        baseG: 6,
+        per100: { p: 0, c: 0, f: 100.0 },
+      },
+      {
+        id: "almonds",
+        label: "çiğ badem",
+        role: "fat",
+        roundStep: 5,
+        minG: 5,
+        baseG: 20,
+        per100: { p: 21.0, c: 22.0, f: 50.0 },
+      },
+    ],
+  },
+  {
+    time: "Öğün 2 · 17:30",
+    title: "Antrenman Çevresi Hızlı Yakıt",
+    ingredients: [
+      {
+        id: "whey",
+        label: "whey protein tozu (su ile shake)",
+        unitEquiv: "ölçek",
+        unitGrams: 30,
+        role: "protein",
+        roundStep: 5,
+        minG: 30,
+        baseG: 50,
+        per100: { p: 78.0, c: 6.0, f: 4.5 },
+      },
+      {
+        id: "banana",
+        label: "soyulmuş muz",
+        unitEquiv: "orta boy",
+        unitGrams: 120,
+        role: "carb",
+        roundStep: 10,
+        minG: 80,
+        baseG: 130,
+        restG: 0,
+        per100: { p: 1.1, c: 22.8, f: 0.3 },
+      },
+      {
+        id: "rice_cakes",
+        label: "tam pirinç patlağı",
+        unitSuffix: "kuru",
+        unitEquiv: "adet",
+        unitGrams: 9,
+        role: "carb",
+        roundStep: 5,
+        minG: 15,
+        baseG: 35,
+        restG: 0,
+        per100: { p: 8.0, c: 81.0, f: 2.8 },
+      },
+      {
+        id: "green_apple",
+        label: "yeşil elma",
+        unitEquiv: "orta boy",
+        unitGrams: 150,
+        role: "carb",
+        roundStep: 10,
+        minG: 100,
+        baseG: 0,
+        restG: 170,
+        per100: { p: 0.3, c: 13.8, f: 0.2 },
+      },
+    ],
+  },
+  {
+    time: "Öğün 3 · 20:00",
+    title: "Akşam Protein + Büyük Salata + Ölçülü Karbonhidrat",
+    ingredients: [
+      {
+        id: "chicken_breast",
+        label: "derisiz tavuk veya hindi göğsü (ızgara/sote)",
+        unitSuffix: "çiğ ağırlık",
+        role: "protein",
+        roundStep: 10,
+        minG: 120,
+        baseG: 200,
+        per100: { p: 23.0, c: 0, f: 1.5 },
+      },
+      {
+        id: "evening_salad",
+        label: "büyük yeşil salata ve haşlanmış brokoli (roka, marul, salatalık)",
+        role: "fixed",
+        roundStep: 10,
+        baseG: 450,
+        per100: { p: 2.0, c: 3.5, f: 0.2 },
+      },
+      {
+        id: "basmati_rice",
+        label: "basmati pirinç, bulgur veya karabuğday",
+        unitSuffix: "çiğ/kuru",
+        role: "carb",
+        roundStep: 5,
+        minG: 35,
+        baseG: 100,
+        restG: 90,
+        per100: { p: 7.5, c: 78.0, f: 0.7 },
+      },
+      {
+        id: "olive_oil_3",
+        label: "sızma zeytinyağı (salata ve ızgara)",
+        role: "fat",
+        roundStep: 1,
+        minG: 4,
+        baseG: 14,
+        per100: { p: 0, c: 0, f: 100.0 },
+      },
+      {
+        id: "walnuts",
+        label: "çiğ ceviz içi",
+        role: "fat",
+        roundStep: 5,
+        minG: 5,
+        baseG: 15,
+        per100: { p: 15.0, c: 14.0, f: 65.0 },
+      },
+    ],
+  },
+];
+
+const DEFAULT_TARGETS = calculateProfileTargets(DEFAULT_PROFILE);
+const DEFAULT_SCALED_PLAN = scaleMealPlanForProfile(DAILY_MEALS_BASE, DEFAULT_TARGETS);
+const DEFAULT_TRAIN_SUM = DEFAULT_SCALED_PLAN.scaledMeals.reduce(
+  (acc, meal) => ({
+    kcal: acc.kcal + meal.totals.kcal,
+    protein: acc.protein + meal.totals.protein,
+    carbs: acc.carbs + meal.totals.carbs,
+    fat: acc.fat + meal.totals.fat,
+  }),
+  { kcal: 0, protein: 0, carbs: 0, fat: 0 }
+);
+
 // Beslenme, makro-kalori dengesi ve porsiyon protokolü verileri
 export const NUTRITION_PROTOCOL = {
   summary: {
-    targetKcal: 2100,
-    trainingDayTargetKcal: 2150,
-    restDayTargetKcal: 1975,
-    proteinG: 180,
-    carbsG: 190,
-    fatG: 68,
-    calories: "2.100 kcal (Antrenman: 2.150 · Dinlenme: 1.975)",
-    protein: "180 g",
-    carbs: "190 g (Antrenman: 205 g · Dinlenme: 158 g)",
-    fats: "68 g",
+    targetKcal: DEFAULT_SCALED_PLAN.trainingTargetKcal,
+    trainingDayTargetKcal: DEFAULT_SCALED_PLAN.trainingTargetKcal,
+    restDayTargetKcal: DEFAULT_SCALED_PLAN.restTargetKcal,
+    proteinG: DEFAULT_TRAIN_SUM.protein,
+    carbsG: DEFAULT_TRAIN_SUM.carbs,
+    fatG: DEFAULT_TRAIN_SUM.fat,
+    calories: `${DEFAULT_SCALED_PLAN.trainingTargetKcal} kcal (Antrenman) · ${DEFAULT_SCALED_PLAN.restTargetKcal} kcal (Dinlenme)`,
+    protein: `${DEFAULT_SCALED_PLAN.proteinTargetG} g (2,0 g/kg)`,
+    carbs: `${DEFAULT_TRAIN_SUM.carbs} g`,
+    fats: `${DEFAULT_TRAIN_SUM.fat} g`,
     water: "3,0 – 3,5 Litre + 1-2 Maden Suyu",
   },
   fastingWindows: [
@@ -2070,43 +2280,7 @@ export const NUTRITION_PROTOCOL = {
     "Şekersiz Yeşil Çay veya Sade Maden Suyu",
     "Açlık penceresi tercih edilirse kalori içermeyen içecekler seçilir; sabah aç antrenman yapılırsa sonrasında 25-40 g protein alınır (genel öneri)",
   ],
-  dailyMeals: [
-    {
-      time: "Öğün 1 · 14:00 - 15:00",
-      title: "İlk Öğün: Sebzeli Omlet & Yulaf",
-      totals: { kcal: 685, protein: 48, carbs: 56, fat: 30 },
-      restDayTotals: { kcal: 685, protein: 48, carbs: 56, fat: 30 },
-      items: [
-        "4 yumurta beyazı (~130 g çiğ) + 2 tam orta yumurta (~100 g çiğ, tavada omlet)",
-        "150 g çiğ ıspanak, 1 yeşil biber, 80 g taze mantar + 1 tatlı kaşığı (5 g) sızma zeytinyağı",
-        "75 g yarım yağlı lor veya light beyaz peynir (pişmemiş)",
-        "65 g (kuru/çiğ ağırlık) yulaf ezmesi + 15 g çiğ badem (VEYA 2 dilim (~70 g) tam buğday ekmeği + 10 g badem)",
-      ],
-    },
-    {
-      time: "Öğün 2 · 17:30",
-      title: "Antrenman Çevresi Hızlı Yakıt",
-      totals: { kcal: 445, protein: 40, carbs: 62, fat: 4 },
-      restDayTotals: { kcal: 275, protein: 38, carbs: 22, fat: 4 },
-      items: [
-        "1,5 ölçek (45 g toz, su ile) Whey Protein Shake",
-        "Antrenman günleri: 1 orta boy muz (~120 g soyulmuş) + 3 adet tam pirinç patlağı (~27 g kuru) veya 45 g kuru ağırlık yulaf",
-        "Dinlenme günleri: Karbonhidratı düşürmek için pirinç patlağı çıkarılır; yalnızca 1 orta boy yeşil elma (~150 g taze) eklenir",
-      ],
-    },
-    {
-      time: "Öğün 3 · 20:00",
-      title: "Akşam Protein + Büyük Salata + Ölçülü Karbonhidrat",
-      totals: { kcal: 1020, protein: 92, carbs: 87, fat: 34 },
-      restDayTotals: { kcal: 1015, protein: 94, carbs: 80, fat: 35 },
-      items: [
-        "350 g çiğ ağırlık (~260 g pişmiş) derisiz ızgara tavuk göğsü, hindi göğsü veya yağsız dana eti",
-        "Büyük Yeşil Salata: 150 g taze roka/marul, 150 g salatalık, 150 g haşlanmış brokoli + 1,5 yemek kaşığı (15 g) sızma zeytinyağı + limon/elma sirkesi",
-        "Antrenman günleri: 95 g çiğ/kuru ağırlık (~280 g pişmiş) basmati pirinç, bulgur veya karabuğday",
-        "Dinlenme günleri: 75 g çiğ/kuru ağırlık (~220 g pişmiş) basmati pirinç/bulgur + 10 g çiğ ceviz içi",
-      ],
-    },
-  ],
+  dailyMeals: DEFAULT_SCALED_PLAN.scaledMeals,
   waistRules: [
     {
       title: "Birincil İlerleme Ölçütü: Bel Mezurası & BIA Şartları",

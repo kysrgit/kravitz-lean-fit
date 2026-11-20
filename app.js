@@ -4,6 +4,7 @@
  * global olay dinleyicilerini (profil, bel/kilo formu, arama, modal odak tuzağı, SW kaydı) bağlar.
  */
 
+import { calculateMifflinBmr } from "./src/nutrition.js";
 import {
   DISCLAIMER_ACK_KEY,
   clearStoredProfile,
@@ -55,17 +56,38 @@ function initEventListeners() {
     }
   });
 
-  // Profilim formu kaydetme ve sıfırlama
+  // Profilim formu kaydetme, BMR tahmini ve sıfırlama
+  const calcBmrBtn = document.getElementById("calc-bmr-btn");
+  if (calcBmrBtn && elements.profileForm) {
+    calcBmrBtn.addEventListener("click", () => {
+      const formData = new FormData(elements.profileForm);
+      const bmr = calculateMifflinBmr({
+        sex: String(formData.get("sex") || "male"),
+        weightKg: Number(formData.get("weightKg")),
+        heightCm: Number(formData.get("heightCm")),
+        age: Number(formData.get("age")),
+      });
+      const bmrInput = elements.profileForm.elements.namedItem("bmrKcal");
+      if (bmrInput) bmrInput.value = String(bmr);
+      if (elements.profileSaveStatus) {
+        elements.profileSaveStatus.textContent = `Mifflin-St Jeor BMR hesaplandı (~${bmr} kcal). Uygulamak için Profili Kaydet'e bas.`;
+      }
+    });
+  }
+
   if (elements.profileForm) {
     elements.profileForm.addEventListener("submit", (event) => {
       event.preventDefault();
       const formData = new FormData(elements.profileForm);
+      const rawMuscle = String(formData.get("muscleMassKg") || "").trim();
       const nextProfile = {
         isCustom: true,
+        sex: String(formData.get("sex") || "male"),
         age: Number(formData.get("age")),
+        heightCm: Number(formData.get("heightCm")),
         weightKg: Number(formData.get("weightKg")),
         bodyFatPct: Number(formData.get("bodyFatPct")),
-        muscleMassKg: Number(formData.get("muscleMassKg")),
+        muscleMassKg: rawMuscle !== "" ? Number(rawMuscle) : null,
         bmrKcal: Number(formData.get("bmrKcal")),
         waistCm: Number(formData.get("waistCm")),
         activityMultiplier: Number(formData.get("activityMultiplier")),

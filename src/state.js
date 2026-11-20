@@ -320,74 +320,19 @@ export function getActiveProfileTargets() {
   return calculateProfileTargets(loadStoredProfile());
 }
 
-// Öğün planını aktif profilin kalori ve protein hedefine göre ölçekler (gramajlar 5 g'a yuvarlanır)
-export function scaleMealPlanForProfile(dailyMeals, profileTargets) {
-  const round5 = (n) => Math.max(5, Math.round(n / 5) * 5);
-  const trainingTargetKcal = profileTargets.targetCalories;
-  const restTargetKcal = round5(trainingTargetKcal * 0.92);
-  const proteinTargetG = profileTargets.proteinTargetG;
-  const fatTargetG = Math.round((trainingTargetKcal * 0.28) / 9);
-  const carbsTargetG = Math.max(
-    80,
-    Math.round((trainingTargetKcal - proteinTargetG * 4 - fatTargetG * 9) / 4)
-  );
+import { scaleMealPlanForProfile } from "./nutrition.js";
 
-  const tScale = trainingTargetKcal / 2150;
-  const rScale = restTargetKcal / 1975;
-  const pScale = proteinTargetG / 180;
-
-  const scaleItems = (items) =>
-    items.map((line) =>
-      line
-        .replace(
-          /(\d+)\s*g\s*\(kuru\/çiğ ağırlık\)\s*yulaf/gi,
-          (_, g) => `${round5(Number(g) * tScale)} g (kuru/çiğ ağırlık) yulaf`
-        )
-        .replace(
-          /(\d+)\s*g\s*çiğ ağırlık/gi,
-          (_, g) => `${round5(Number(g) * pScale)} g çiğ ağırlık`
-        )
-        .replace(
-          /(\d+)\s*g\s*çiğ\/kuru ağırlık/gi,
-          (_, g) => `${round5(Number(g) * tScale)} g çiğ/kuru ağırlık`
-        )
-    );
-
-  const scaledMeals = dailyMeals.map((meal) => ({
-    ...meal,
-    totals: {
-      kcal: Math.round(meal.totals.kcal * tScale),
-      protein: Math.round(meal.totals.protein * pScale),
-      carbs: Math.round(meal.totals.carbs * tScale),
-      fat: Math.round(meal.totals.fat * tScale),
-    },
-    restDayTotals: {
-      kcal: Math.round((meal.restDayTotals || meal.totals).kcal * rScale),
-      protein: Math.round((meal.restDayTotals || meal.totals).protein * pScale),
-      carbs: Math.round((meal.restDayTotals || meal.totals).carbs * rScale),
-      fat: Math.round((meal.restDayTotals || meal.totals).fat * rScale),
-    },
-    items: scaleItems(meal.items),
-  }));
-
-  return {
-    trainingTargetKcal,
-    restTargetKcal,
-    proteinTargetG,
-    carbsTargetG,
-    fatTargetG,
-    scaledMeals,
-  };
-}
+export { scaleMealPlanForProfile };
 
 // Profil formunu mevcut veya örnek değerlerle doldurur
 export function syncProfileForm(profileTargets) {
   if (!elements.profileForm) return;
   const fieldNames = [
+    "sex",
     "age",
+    "heightCm",
     "weightKg",
     "bodyFatPct",
-    "muscleMassKg",
     "bmrKcal",
     "waistCm",
     "activityMultiplier",
@@ -399,6 +344,10 @@ export function syncProfileForm(profileTargets) {
       input.value = String(profileTargets[name]);
     }
   });
+  const muscleInput = elements.profileForm.elements.namedItem("muscleMassKg");
+  if (muscleInput) {
+    muscleInput.value = profileTargets.hasCustomMuscle ? String(profileTargets.muscleMassKg) : "";
+  }
 }
 
 // Profilim & hedefler bölümünü render eder
