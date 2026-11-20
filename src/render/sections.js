@@ -115,6 +115,13 @@ export function createBodyTrendSvgHtml(logs) {
   const waistPts = mapPoints(waists, minWst, maxWst);
   const weightPts = mapPoints(weights, minWgt, maxWgt);
   const toPolyline = (pts) => pts.map((p) => `${p.x},${p.y}`).join(" ");
+  const baselineY = height - padY;
+  const waistAreaPts = [
+    `${waistPts[0].x},${baselineY}`,
+    ...waistPts.map((p) => `${p.x},${p.y}`),
+    `${waistPts[waistPts.length - 1].x},${baselineY}`,
+  ].join(" ");
+  const guideYs = [0.25, 0.5, 0.75].map((f) => Number((padY + plotH * f).toFixed(1)));
 
   return `
     <div class="svg-trend-legend">
@@ -122,8 +129,21 @@ export function createBodyTrendSvgHtml(logs) {
       <span class="legend-weight">● Kilo (kg)</span>
     </div>
     <svg class="body-trend-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Haftalık bel çevresi ve kilo trend grafiği">
-      <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${height - padY}" stroke="var(--line)" stroke-width="1" />
-      <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="var(--line)" stroke-width="1" />
+      <defs>
+        <linearGradient id="waist-area-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--day-accent)" stop-opacity="0.28" />
+          <stop offset="100%" stop-color="var(--day-accent)" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+      ${guideYs
+        .map(
+          (gy) =>
+            `<line x1="${padX}" y1="${gy}" x2="${width - padX}" y2="${gy}" stroke="var(--line-hairline)" stroke-width="1" stroke-dasharray="3 3" />`
+        )
+        .join("")}
+      <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${baselineY}" stroke="var(--line)" stroke-width="1" />
+      <line x1="${padX}" y1="${baselineY}" x2="${width - padX}" y2="${baselineY}" stroke="var(--line)" stroke-width="1" />
+      <polygon points="${escapeHtml(waistAreaPts)}" fill="url(#waist-area-grad)" />
       <polyline fill="none" stroke="var(--day-accent)" stroke-width="2.5" points="${escapeHtml(toPolyline(waistPts))}" />
       <polyline fill="none" stroke="var(--set-core)" stroke-width="2.2" stroke-dasharray="4 3" points="${escapeHtml(toPolyline(weightPts))}" />
       ${waistPts.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="3.5" fill="var(--day-accent)" />`).join("")}
@@ -206,6 +226,7 @@ export function renderTanitaSection() {
   const metricsHtml = profile.metrics
     .map((item, idx) => {
       const progressRatio = getMetricProgressRatio(profile, idx).toFixed(2);
+      const cardNum = String(idx + 1).padStart(2, "0");
       const priorityBadge = item.highlight
         ? '<span class="tanita-priority-tag"><span class="tanita-priority-dot" aria-hidden="true"></span>ANA HEDEF</span>'
         : "";
@@ -213,7 +234,10 @@ export function renderTanitaSection() {
       <article class="tanita-card ${item.highlight ? "highlight" : ""}">
         <div class="tanita-card-head">
           <div class="tanita-label">${escapeHtml(item.label)}</div>
-          ${priorityBadge}
+          <div class="tanita-head-right">
+            ${priorityBadge}
+            <span class="tanita-card-index display-type tabular" aria-hidden="true">${cardNum}</span>
+          </div>
         </div>
         <div class="tanita-values">
           <div class="tanita-score-line">
@@ -861,32 +885,35 @@ export function renderCoreGuide(filteredItems = null) {
   `;
 }
 
-// Dairesel SVG makro ilerleme halkasını üretir (stroke-dasharray/dashoffset)
-function createMacroGaugeSvgHtml(ratio, labelText, toneClass = "") {
-  const circumference = 157.08;
+// Dairesel SVG makro ilerleme halkasını üretir (2 katmanlı ortalanmış metin ile taşma yapmaz)
+function createMacroGaugeSvgHtml(ratio, mainLabel, subLabel = "", toneClass = "") {
+  const circumference = 182.21;
   const clamped = Math.max(0.05, Math.min(1, Number(ratio) || 0.05));
   const dashoffset = (circumference * (1 - clamped)).toFixed(1);
   return `
     <div class="macro-gauge ${escapeHtml(toneClass)}" aria-hidden="true">
-      <svg class="macro-gauge-svg" viewBox="0 0 64 64" width="56" height="56">
-        <circle class="macro-gauge-track" cx="32" cy="32" r="25" />
+      <svg class="macro-gauge-svg" viewBox="0 0 72 72" width="66" height="66">
+        <circle class="macro-gauge-track" cx="36" cy="36" r="29" />
         <circle
           class="macro-gauge-fill"
-          cx="32"
-          cy="32"
-          r="25"
+          cx="36"
+          cy="36"
+          r="29"
           stroke-dasharray="${circumference}"
           stroke-dashoffset="${dashoffset}"
-          transform="rotate(-90 32 32)"
+          transform="rotate(-90 36 36)"
         />
       </svg>
-      <span class="macro-gauge-pct display-type tabular">${escapeHtml(labelText)}</span>
+      <span class="macro-gauge-center">
+        <strong class="macro-gauge-val display-type tabular">${escapeHtml(mainLabel)}</strong>
+        ${subLabel ? `<span class="macro-gauge-cap">${escapeHtml(subLabel)}</span>` : ""}
+      </span>
     </div>
   `;
 }
 
 // Makro hedef kartını ortak HTML şablonuyla oluşturur
-function createMacroCardHtml(label, value, ratio, gaugeLabel, tone, subText) {
+function createMacroCardHtml(label, value, ratio, mainLabel, subLabel, tone, subText) {
   return `
     <article class="macro-card">
       <div class="macro-card-top">
@@ -894,7 +921,7 @@ function createMacroCardHtml(label, value, ratio, gaugeLabel, tone, subText) {
           <div class="macro-label">${escapeHtml(label)}</div>
           <div class="macro-val tabular">${escapeHtml(value)}</div>
         </div>
-        ${createMacroGaugeSvgHtml(ratio, gaugeLabel, tone)}
+        ${createMacroGaugeSvgHtml(ratio, mainLabel, subLabel, tone)}
       </div>
       <div class="macro-sub">${subText}</div>
     </article>
@@ -903,7 +930,7 @@ function createMacroCardHtml(label, value, ratio, gaugeLabel, tone, subText) {
 
 // Beslenme ve enerji dengesi protokolü sekmesini render eder
 export function renderNutritionProtocol() {
-  const { summary, fastingWindows, fastedTrainingNote, morningFastRules, dailyMeals, waistRules } =
+  const { fastingWindows, fastedTrainingNote, morningFastRules, dailyMeals, waistRules } =
     NUTRITION_PROTOCOL;
   const profileTargets = getActiveProfileTargets();
   const { trainingTargetKcal, proteinTargetG, carbsTargetG, fatTargetG, scaledMeals } =
@@ -918,12 +945,17 @@ export function renderNutritionProtocol() {
   const proteinRatio = (proteinTargetG * 4) / trainingTargetKcal;
   const carbsRatio = (carbsTargetG * 4) / trainingTargetKcal;
   const fatRatio = (fatTargetG * 9) / trainingTargetKcal;
+  const pShare = Math.round(proteinRatio * 100);
+  const cShare = Math.round(carbsRatio * 100);
+  const fShare = Math.max(0, 100 - pShare - cShare);
+
   const macroCardsHtml = [
     [
       "Günlük Kalori Hedefin",
       `${trainingTargetKcal} kcal`,
       kcalRatio,
-      `TDEE %${Math.round(kcalRatio * 100)}`,
+      `%${Math.round(kcalRatio * 100)}`,
+      "TDEE",
       "tone-volt",
       `Antrenman: ${escapeHtml(trainingDayTotals.kcal)} · Dinlenme: ${escapeHtml(restDayTotals.kcal)} kcal`,
     ],
@@ -931,15 +963,17 @@ export function renderNutritionProtocol() {
       "Günlük Protein (2,0 g/kg)",
       `${proteinTargetG} g`,
       proteinRatio,
-      `%${Math.round(proteinRatio * 100)}`,
+      `%${pShare}`,
+      "PAY",
       "tone-volt",
-      `${escapeHtml(proteinTargetG * 4)} kcal (%${Math.round(proteinRatio * 100)})`,
+      `${escapeHtml(proteinTargetG * 4)} kcal (%${pShare})`,
     ],
     [
       "Karbonhidrat",
       `${carbsTargetG} g`,
       carbsRatio,
-      `%${Math.round(carbsRatio * 100)}`,
+      `%${cShare}`,
+      "PAY",
       "tone-core",
       `Antr: ${escapeHtml(trainingDayTotals.carbs)} g · Dinl: ${escapeHtml(restDayTotals.carbs)} g`,
     ],
@@ -947,14 +981,41 @@ export function renderNutritionProtocol() {
       "Sağlıklı Yağlar",
       `${fatTargetG} g`,
       fatRatio,
-      `%${Math.round(fatRatio * 100)}`,
+      `%${fShare}`,
+      "PAY",
       "tone-blaze",
       `${escapeHtml(fatTargetG * 9)} kcal (zeytinyağı, yumurta, badem)`,
     ],
-    ["Sıvı Tüketimi", summary.water, 0.88, "3.5L", "tone-core", "Hidrasyon &amp; mineral desteği"],
+    [
+      "Sıvı Tüketimi",
+      "3,0–3,5 L",
+      0.88,
+      "3.5L",
+      "GÜN",
+      "tone-core",
+      "+ 1-2 maden suyu · Hidrasyon &amp; mineral",
+    ],
   ]
     .map((args) => createMacroCardHtml(...args))
     .join("");
+
+  const macroSplitBarHtml = `
+    <div class="macro-split-panel" aria-label="Günlük Kalori Makro Dağılımı">
+      <div class="macro-split-head">
+        <span class="macro-split-title">MAKRO KALORİ DAĞILIMI (ANTRENMAN GÜNÜ)</span>
+        <div class="macro-split-legend tabular">
+          <span class="legend-item tone-volt"><i></i>Protein %${pShare} (${escapeHtml(proteinTargetG)} g)</span>
+          <span class="legend-item tone-core"><i></i>Karbonhidrat %${cShare} (${escapeHtml(carbsTargetG)} g)</span>
+          <span class="legend-item tone-blaze"><i></i>Yağ %${fShare} (${escapeHtml(fatTargetG)} g)</span>
+        </div>
+      </div>
+      <div class="macro-split-bar" aria-hidden="true">
+        <span class="split-seg tone-volt" style="flex-grow: ${pShare}"></span>
+        <span class="split-seg tone-core" style="flex-grow: ${cShare}"></span>
+        <span class="split-seg tone-blaze" style="flex-grow: ${fShare}"></span>
+      </div>
+    </div>
+  `;
 
   elements.contentArea.innerHTML = `
     <div class="nutrition-layout">
@@ -972,13 +1033,15 @@ export function renderNutritionProtocol() {
         </div>
         <div class="day-meta-badges">
           <span class="meta-pill">${lucideIcon("target", { size: 14 })} Kişisel Kalori Hedefi: ${escapeHtml(profileTargets.targetCalories)} kcal</span>
-          <span class="meta-pill">${lucideIcon("trending-down", { size: 14 })} Örnek Plan: ${escapeHtml(trainingDayTotals.kcal)} / ${escapeHtml(restDayTotals.kcal)} kcal</span>
+          <span class="meta-pill">${lucideIcon("trending-down", { size: 14 })} Ölçekli Öğün Planı: ${escapeHtml(trainingDayTotals.kcal)} / ${escapeHtml(restDayTotals.kcal)} kcal</span>
         </div>
       </div>
 
       <div class="macro-grid">
         ${macroCardsHtml}
       </div>
+
+      ${macroSplitBarHtml}
 
       <div class="two-col-grid">
         <article class="info-panel">

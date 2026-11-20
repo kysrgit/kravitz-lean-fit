@@ -180,11 +180,12 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background: var(--stage-2);
+    background: var(--surface-elevated);
     border: 1px solid var(--line);
-    border-top: 2px solid var(--line);
+    border-top: 2px solid var(--line-highlight);
     border-radius: var(--radius-sharp);
     padding: 16px;
+    box-shadow: var(--shadow-card);
   }
 
   .tanita-card.highlight {
@@ -198,6 +199,19 @@
     align-items: center;
     justify-content: space-between;
     gap: 8px;
+  }
+
+  .tanita-head-right {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .tanita-card-index {
+    font-size: var(--fs-16);
+    line-height: 1;
+    color: var(--text-ghost);
   }
 
   .tanita-label {
@@ -256,9 +270,9 @@
 
   .tanita-current {
     font-family: var(--font-display);
-    font-size: var(--fs-score);
+    font-size: clamp(2rem, 3.6vw, 3.1rem);
     font-weight: 700;
-    line-height: 0.9;
+    line-height: 0.92;
     letter-spacing: -0.02em;
     color: var(--text-1);
     overflow-wrap: anywhere;

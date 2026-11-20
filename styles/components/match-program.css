@@ -78,11 +78,12 @@
     flex-direction: column;
     justify-content: space-between;
     gap: 10px;
-    background: var(--stage-1);
+    background: var(--surface-elevated);
     border: 1px solid var(--line);
     border-top: 2px solid var(--day-accent);
     border-radius: var(--radius-sharp);
     padding: 14px 16px;
+    box-shadow: var(--shadow-card);
   }
 
   .macro-card-top {
@@ -111,6 +112,7 @@
     font-weight: 700;
     line-height: 1;
     color: var(--day-accent);
+    white-space: nowrap;
   }
 
   .macro-sub {
@@ -119,19 +121,19 @@
     line-height: 1.4;
   }
 
-  /* Dairesel SVG makro ilerleme halkası (4 DOM düğümü / gösterge) */
+  /* Dairesel SVG makro ilerleme halkası (2 satırlı taşmasız merkez yerleşim) */
   .macro-gauge {
     position: relative;
-    flex: 0 0 56px;
-    width: 56px;
-    height: 56px;
+    flex: 0 0 66px;
+    width: 66px;
+    height: 66px;
     display: grid;
     place-items: center;
   }
 
   .macro-gauge-svg {
-    width: 56px;
-    height: 56px;
+    width: 66px;
+    height: 66px;
     display: block;
   }
 
@@ -157,13 +159,112 @@
     stroke: var(--blaze);
   }
 
-  .macro-gauge-pct {
+  .macro-gauge-center {
     position: absolute;
-    font-size: var(--fs-12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    line-height: 1;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .macro-gauge-val {
+    font-size: var(--fs-16);
     font-weight: 700;
     line-height: 1;
     color: var(--text-1);
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
+  }
+
+  .macro-gauge-cap {
+    font-size: 0.5625rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+
+  /* Makro kalori dağılımı 3 parçalı oransal şerit */
+  .macro-split-panel {
+    background: var(--stage-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sharp);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .macro-split-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 14px;
+  }
+
+  .macro-split-title {
+    font-size: var(--fs-12);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+
+  .macro-split-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    font-size: var(--fs-12);
+    font-weight: 600;
+    color: var(--text-1);
+  }
+
+  .macro-split-legend .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .macro-split-legend .legend-item i {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-cut);
+  }
+
+  .macro-split-legend .tone-volt i,
+  .macro-split-bar .tone-volt {
+    background: var(--volt);
+  }
+
+  .macro-split-legend .tone-core i,
+  .macro-split-bar .tone-core {
+    background: var(--set-core);
+  }
+
+  .macro-split-legend .tone-blaze i,
+  .macro-split-bar .tone-blaze {
+    background: var(--blaze);
+  }
+
+  .macro-split-bar {
+    display: flex;
+    gap: 2px;
+    height: 8px;
+    width: 100%;
+    background: var(--void);
+    overflow: hidden;
+  }
+
+  .split-seg {
+    flex-basis: 0;
+    min-width: 4px;
+    height: 100%;
   }
 
   .two-col-grid {
