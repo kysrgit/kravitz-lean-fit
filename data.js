@@ -251,21 +251,21 @@ export const SCIENTIFIC_SOURCES = [
 export const SYSTEM_PILLARS = [
   {
     badge: "01 · UYARLANMIŞ PİRAMİT",
-    title: "30 → 15 → 10 → 5 Tekrar",
+    title: "12-15 → 8-10 → 5-7 Tekrar",
     description:
-      "Basındaki 5–6 günlük program yerine haftada 4 güne sığdırılmış sürdürülebilir 30-15-10-5 piramit uyarlaması.",
+      "Basındaki 5–6 günlük program yerine haftada 4 güne sığdırılmış, ısınma sonrası çift ilerlemeye uygun artan yük piramidi.",
   },
   {
-    badge: "02 · DİNLENME VE CORE PENCERESİ",
-    title: "21× Core + Tam Toparlanma",
+    badge: "02 · AKILLI CORE & TOPARLANMA",
+    title: "Seçici 21× Core + Tam Dinlenme",
     description:
-      "Bileşiklerde 2–3 dk (150 sn), izolasyonlarda 60–90 sn (75 sn) dinlenme penceresinin başında 21 core yap, kalan sürede ağır sete toparlanmış gir.",
+      "Ağır bileşiklerde omurga kilidi için tam pasif dinlenme (150 sn); uygun izolasyonlarda set arası 21× core ile gereksiz yorgunluğu önle.",
   },
   {
     badge: "03 · KOT PANTOLON TESTİ",
     title: "45-60 Dk Odaklı Seans",
     description:
-      "18:6 / 16:8 öğün pencereleri isteğe bağlıdır. Gelişimi tartıdan çok bel mezurasıyla izle.",
+      "Her büyük kas grubu haftada en az 2 kez çalışır. 18:6 / 16:8 pencereleri isteğe bağlıdır; gelişimi bel mezurasıyla izle.",
   },
 ];
 
@@ -871,11 +871,11 @@ export const LIFESTYLE_AND_WARMUP = {
   },
   warmupProtocol: {
     title: "Antrenman Öncesi Isınma Protokolü (Genel Öneri)",
-    summary: "5 dk genel ısınma + dinamik eklem mobilitesi + harekete özel 1. ısınma seti",
+    summary: "5 dk genel ısınma + dinamik eklem mobilitesi + ilk 1-2 bileşikte ısınma seti",
     steps: [
       "5 dakika genel ısınma: koşu bandı hafif tempolu yürüyüş veya sabit bisiklet",
       "2-3 dakika dinamik mobilite: omuz rotasyonları, band pull-apart ve kalça esnetme",
-      "Harekete özel ısınma: her ana hareketin '1. Set (Isınma Seti)' basamağıyla hafif kiloda teknik prova",
+      "Harekete özel ısınma: günün ilk 1-2 bileşik hareketinin '1. Set (Isınma Seti)' basamağıyla hafif kiloda teknik prova",
     ],
   },
 };
@@ -884,11 +884,11 @@ export const LIFESTYLE_AND_WARMUP = {
 export const PROGRESSION_MODEL = {
   title: "Çift İlerleme Kuralı & 4-6 Haftalık Deload (Genel Öneri)",
   doubleProgression:
-    "Çalışma setlerinde (2., 3. ve 4. set) hedef tekrar sayısına form bozulmadan art arda 2 antrenman ulaşırsan, bir sonraki seansta yükü %2,5 - %5 artır (genel öneri).",
+    "Çalışma setlerinde (ısınma harici 2., 3. ve 4. set) belirlenen tekrar aralığının üst sınırına (ör. 12-15 tekrarda 15'e, 8-10 tekrarda 10'a) form bozulmadan art arda 2 antrenman ulaşırsan, bir sonraki seansta ağırlığı %2,5 - %5 artır (genel öneri).",
   deloadRule:
     "Her 4-6 haftada bir 1 hafta planlı deload (toparlanma haftası) uygula: toplam set sayısını %30-40 azalt veya çalışma ağırlıklarını %10-15 düşür (genel öneri).",
   warmupNote:
-    "Isınma seti (ISINMA) yalnızca günün ilk 1-2 bileşik hareketinde yer alır ve yük artışı hesabına katılmaz; izole ve bitiriş hareketlerindeki ilk setler hafif çalışma setidir.",
+    "Isınma seti (ISINMA) yalnızca günün ilk 1-2 bileşik hareketinin 1. setinde yer alır ve yük artışı hesabına katılmaz; izole ve bitiriş hareketlerindeki tüm setler çalışma setidir. Ağır bileşik hareketlerin set aralarında omurga kilidi (bracing) için core eklenmez.",
 };
 
 // Haftada 3 gün gidenler için her kası haftada en az 2 kez çalıştıran alternatif şablonlar
@@ -926,11 +926,11 @@ export const WORKOUT_DAYS = [
     tabLabel: "1. Gün",
     shortTitle: "Üst İtiş & V-Taper",
     fullTitle: "1. GÜN: Üst Vücut İtiş & V-Taper (Göğüs + Omuz + Triceps)",
-    duration: "45 - 55 Dakika",
+    duration: "50 - 60 Dakika",
     targetGoal:
-      "Omuzları genişletip göğsü şekillendirerek belin optik olarak çok daha dar ('Spider-Man' silüeti) görünmesini sağlamak.",
+      "Omuzları genişletip göğsü şekillendirerek belin optik olarak daha dar ('Spider-Man' silüeti) görünmesini sağlamak; göğüs ve omuz haftada 2× frekansın ilk ayağıdır.",
     scheduleNote:
-      "4 Günlük Plan: Pazartesi · 3 Günlük Gidişlerde: Aşağıdaki Full-Body A / Üst Vücut şablonunu uygula",
+      "4 Günlük Plan: Pazartesi · 3 Günlük Gidişlerde: Program modu seçiciden 3 Günlük Şablonu aç",
     exercises: [
       {
         id: "incline-db-press",
@@ -943,17 +943,18 @@ export const WORKOUT_DAYS = [
         videoKey: "incline_db_press",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-incline-bench-press",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Çok Hafif (Isınma & Kan Pompalama)" },
-          { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
-          { set: 3, reps: "10 Tekrar", load: "Zorlayıcı Ağırlık" },
-          { set: 4, reps: "5 Tekrar", load: "Ağır / Kusursuz Form" },
+          { set: 1, isWarmup: true, reps: "20-30 Tekrar", load: "Çok Hafif — Isınma & Teknik" },
+          { set: 2, reps: "12-15 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "8-10 Tekrar", load: "Zorlayıcı Ağırlık" },
+          { set: 4, reps: "5-7 Tekrar", load: "Ağır / Kusursuz Form" },
         ],
-        coreRestId: "hanging_leg_raise",
-        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Hanging Leg / Knee Raise (3 Set)",
+        coreRestId: null,
+        coreRestLabel:
+          "Tam Pasif Dinlenme — Ağır bileşik sette omurga kilidi (bracing) ve kuvvet üretimi için core eklenmez.",
         tips: [
           "Sehpa açısını 30 dereceye ayarla (45 derecede yük omuza kayar).",
           "Dambılları indirirken dirseklerini gövdeye 45° açıda tut, göğüs hizasına kadar indir.",
-          "İlk 30 tekrar setinde kasın ısınmasını hisset, ağır 5 tekrarda patlayıcı it.",
+          "İlk ısınma setinde formu oturt; 2-4. setlerde tekrar aralığının üst sınırına çıkınca %2,5-%5 artır.",
         ],
         alternatives: [
           {
@@ -962,7 +963,7 @@ export const WORKOUT_DAYS = [
             turkishName: "Eğimli Sehpada Bar İle Üst Göğüs İtiş",
             equipment: "Eğimli Sehpa + Olimpik Bar",
             whenToUse:
-              "İstediğin ağırlıktaki dambıllar doluysa veya ağır 5 tekrarlık sette dengeyi daha kolay kurmak istediğinde.",
+              "İstediğin ağırlıktaki dambıllar doluysa veya ağır 5-7 tekrarlık sette dengeyi daha kolay kurmak istediğinde.",
             videoKey: "barbell_incline_press",
             sourceUrl: "https://musclewiki.com/exercise/barbell-incline-bench-press",
             tips: [
@@ -997,13 +998,13 @@ export const WORKOUT_DAYS = [
         videoKey: "seated_db_shoulder_press",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-seated-overhead-press",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif Ağırlık" },
-          { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
-          { set: 3, reps: "10 Tekrar", load: "Orta-Ağır" },
-          { set: 4, reps: "5 Tekrar", load: "Ağır Kilogram" },
+          { set: 1, isWarmup: true, reps: "20-30 Tekrar", load: "Çok Hafif — Isınma & Teknik" },
+          { set: 2, reps: "12-15 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "8-10 Tekrar", load: "Zorlayıcı Ağırlık" },
+          { set: 4, reps: "5-7 Tekrar", load: "Ağır Kilogram" },
         ],
         coreRestId: "cable_crunch",
-        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Cable Crunch (3 Set)",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Cable Crunch",
         tips: [
           "Sırtını sehpaya tam yasla, belini aşırı çukurlaştırmamak için karnını sık.",
           "Dambılları tepe noktada birbirine çarpmadan kontrollü durdur.",
@@ -1050,15 +1051,14 @@ export const WORKOUT_DAYS = [
         videoKey: "dumbbell_lateral_raise",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-lateral-raise",
         pyramidSets: [
-          { set: 1, reps: "35 Tekrar", load: "Çok Hafif (2.5 - 4 kg)" },
-          { set: 2, reps: "20 Tekrar", load: "Hafif-Orta" },
-          { set: 3, reps: "15 Tekrar", load: "Orta Ağırlık" },
-          { set: 4, reps: "10 Tekrar", load: "Kontrollü Ağır (Omuz güvenliği için min 10)" },
+          { set: 1, reps: "15-20 Tekrar", load: "Hafif-Orta" },
+          { set: 2, reps: "12-15 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "10-12 Tekrar", load: "Kontrollü Ağır (Omuz güvenliği için min 10)" },
         ],
         coreRestId: "bicycle_crunch",
         coreRestLabel: "Set Arası Aktif Dinlenme: 21× Bicycle Crunch (Sağ-Sol Toplam 21)",
         tips: [
-          "Yan omuz eklemini korumak için bu harekette 5 tekrara inme; minimum 10 tekrarda kal.",
+          "Yan omuz eklemini korumak için bu harekette 10 tekrarın altına inme; minimum 10 tekrarda kal.",
           "Dambılları yukarı değil, odanın iki yan duvarına doğru uzatarak kaldır.",
         ],
         alternatives: [
@@ -1103,12 +1103,13 @@ export const WORKOUT_DAYS = [
         videoKey: "cable_crossover",
         sourceUrl: "https://musclewiki.com/exercise/cable-pec-fly",
         pyramidSets: [
-          { set: 1, reps: "30 Tekrar", load: "Hafif" },
-          { set: 2, reps: "15 Tekrar", load: "Orta" },
-          { set: 3, reps: "10 Tekrar", load: "Zorlayıcı" },
+          { set: 1, reps: "15-20 Tekrar", load: "Hafif-Orta" },
+          { set: 2, reps: "12-15 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "10-12 Tekrar", load: "Zorlayıcı Ağırlık" },
         ],
-        coreRestId: "plank",
-        coreRestLabel: "Set Arası Aktif Dinlenme: 45 Saniye Vakumlu Plank",
+        coreRestId: null,
+        coreRestLabel:
+          "Tam Pasif Dinlenme — İtiş performansı ve nefes toparlanması için set arası core eklenmez.",
         tips: [
           "Bir adım öne çık, göğsünü dik tut ve dirseklerdeki hafif bükülmeyi sabit tut.",
           "Ellerini göğüs önünde birleştirirken 1 saniye sıkıştır.",
@@ -1155,10 +1156,9 @@ export const WORKOUT_DAYS = [
         videoKey: "rope_triceps_pushdown",
         sourceUrl: "https://musclewiki.com/exercise/cable-cross-pushdown",
         pyramidSets: [
-          { set: 1, reps: "35 Tekrar", load: "Hafif" },
-          { set: 2, reps: "20 Tekrar", load: "Orta" },
-          { set: 3, reps: "12 Tekrar", load: "Orta-Ağır" },
-          { set: 4, reps: "6 Tekrar", load: "Ağır" },
+          { set: 1, reps: "15-20 Tekrar", load: "Hafif-Orta" },
+          { set: 2, reps: "10-12 Tekrar", load: "Orta-Ağır" },
+          { set: 3, reps: "8-10 Tekrar", load: "Ağır & Kontrollü" },
         ],
         coreRestId: "hanging_leg_raise",
         coreRestLabel: "Set Arası Aktif Dinlenme: 21× Hanging Knee Raise (Bitirici)",
@@ -1220,13 +1220,14 @@ export const WORKOUT_DAYS = [
         videoKey: "leg_press",
         sourceUrl: "https://musclewiki.com/exercise/leg-press",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif (Diz & Kalça Isındırma)" },
-          { set: 2, reps: "15 Tekrar", load: "Orta Plaka" },
-          { set: 3, reps: "10 Tekrar", load: "Yüksek Plaka" },
-          { set: 4, reps: "5 Tekrar", load: "Ağır & Kontrollü İniş" },
+          { set: 1, isWarmup: true, reps: "20-30 Tekrar", load: "Çok Hafif — Isınma & Teknik" },
+          { set: 2, reps: "12-15 Tekrar", load: "Orta Plaka" },
+          { set: 3, reps: "8-10 Tekrar", load: "Yüksek Plaka" },
+          { set: 4, reps: "5-7 Tekrar", load: "Ağır & Kontrollü İniş" },
         ],
-        coreRestId: "decline_crunch",
-        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Sit-Up / Mekik (3 Set)",
+        coreRestId: null,
+        coreRestLabel:
+          "Tam Pasif Dinlenme — Ağır bileşik sette omurga kilidi (bracing) ve kuvvet üretimi için core eklenmez.",
         tips: [
           "En üst noktada dizlerini tamamen kilitleme, hafif kırık bırak.",
           "Aşağı inerken kalçan sehpadan kalkmasın; gücü topuklarından iterek üret.",
@@ -1243,7 +1244,7 @@ export const WORKOUT_DAYS = [
             sourceUrl: "https://musclewiki.com/exercise/machine-hack-squat",
             tips: [
               "Belini pedle tam bütünleştir, topukları kaldırmadan dizlerin yönünde derinleş.",
-              "Yine piramit 30-15-10-5 düzeniyle kası yanana kadar uygula.",
+              "Yine ısınma sonrası 12-15 / 8-10 / 5-7 piramit düzeniyle uygula.",
             ],
           },
           {
@@ -1273,13 +1274,14 @@ export const WORKOUT_DAYS = [
         videoKey: "romanian_deadlift",
         sourceUrl: "https://musclewiki.com/exercise/barbell-romanian-deadlift",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "25 Tekrar", load: "Hafif (Form Provası)" },
-          { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
-          { set: 3, reps: "10 Tekrar", load: "Zorlayıcı Ağırlık" },
-          { set: 4, reps: "6 Tekrar", load: "Ağır Kilogram" },
+          { set: 1, isWarmup: true, reps: "20-30 Tekrar", load: "Çok Hafif — Isınma & Teknik" },
+          { set: 2, reps: "12-15 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "8-10 Tekrar", load: "Zorlayıcı Ağırlık" },
+          { set: 4, reps: "5-7 Tekrar", load: "Ağır Kilogram" },
         ],
-        coreRestId: "dead_bug",
-        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Dead Bug (Kavrama Gerektirmez)",
+        coreRestId: null,
+        coreRestLabel:
+          "Tam Pasif Dinlenme — Ağır bileşik sette omurga kilidi (bracing) ve kuvvet üretimi için core eklenmez.",
         tips: [
           "Sırtını tamamen düz kilitle, barı bacaklarına sürtercesine yakın indir.",
           "Eğilmek için belini bükme; kalçanı geriye iterek arka bacağındaki gerilmeyi hisset.",
@@ -1326,17 +1328,13 @@ export const WORKOUT_DAYS = [
         videoKey: "walking_lunges",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-forward-lunge",
         pyramidSets: [
-          {
-            set: 1,
-
-            reps: "20 Tekrar",
-            load: "Vücut Ağırlığı / Hafif (Her Bacak 10)",
-          },
-          { set: 2, reps: "12 Tekrar", load: "Orta Dambıl (Her Bacak 6)" },
-          { set: 3, reps: "8 Tekrar", load: "Ağır Dambıl (Her Bacak 8)" },
+          { set: 1, reps: "12-15 Tekrar / Bacak", load: "Hafif-Orta Dambıl" },
+          { set: 2, reps: "10-12 Tekrar / Bacak", load: "Orta-Ağır Dambıl" },
+          { set: 3, reps: "8-10 Tekrar / Bacak", load: "Zorlayıcı Dambıl" },
         ],
-        coreRestId: "russian_twist",
-        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Russian Twist (3 Set)",
+        coreRestId: null,
+        coreRestLabel:
+          "Tam Pasif Dinlenme — Ağır bileşik sette omurga kilidi (bracing) ve kuvvet üretimi için core eklenmez.",
         tips: [
           "Adımını çok dar atma; öndeki dizin parmak ucunu aşırı geçmesin, gövde dik kalsın.",
           "Alt vücut kas kuvveti ve kalça stabilitesi için yüksek metabolik iş yükü sunar.",
@@ -1383,9 +1381,9 @@ export const WORKOUT_DAYS = [
         videoKey: "seated_leg_curl",
         sourceUrl: "https://musclewiki.com/exercise/machine-seated-leg-curl",
         pyramidSets: [
-          { set: 1, reps: "30 Tekrar", load: "Hafif" },
-          { set: 2, reps: "15 Tekrar", load: "Orta" },
-          { set: 3, reps: "10 Tekrar", load: "Zorlayıcı" },
+          { set: 1, reps: "15-20 Tekrar", load: "Hafif-Orta" },
+          { set: 2, reps: "12-15 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "10-12 Tekrar", load: "Zorlayıcı Ağırlık" },
         ],
         coreRestId: "plank",
         coreRestLabel: "Set Arası Aktif Dinlenme: 45 Saniye Plank",
@@ -1428,22 +1426,22 @@ export const WORKOUT_DAYS = [
         restSeconds: 75,
         order: 5,
         name: "Standing Calf Raise + Eğimli Yürüyüş",
-        turkishName: "Ayakta Kalf & 10 Dk Yağ Yakım Yürüyüşü",
+        turkishName: "Ayakta Kalf & 10 Dk Eğimli Yürüyüş",
         muscleGroup: "Kalf & Kardiyovasküler Sistem",
         equipment: "Calf Makinesi + Koşu Bandı",
         videoKey: "standing_calf_raise",
         sourceUrl: "https://musclewiki.com/exercise/machine-standing-calf-raises",
         pyramidSets: [
-          { set: 1, reps: "30 Tekrar", load: "Hafif" },
-          { set: 2, reps: "20 Tekrar", load: "Orta" },
-          { set: 3, reps: "12 Tekrar", load: "Ağır (Tepe ve Dipte 1 sn Bekle)" },
+          { set: 1, reps: "15-20 Tekrar", load: "Hafif-Orta" },
+          { set: 2, reps: "12-15 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "10-12 Tekrar", load: "Ağır (Tepe ve Dipte 1 sn Bekle)" },
         ],
         coreRestId: "reverse_crunch",
         coreRestLabel:
-          "Set Arası Aktif Dinlenme: 21× Reverse Crunch (3 Set) + Sonra Bitiriş Kardiyosu",
+          "Set Arası Aktif Dinlenme: 21× Reverse Crunch + Sonra Bitiriş Kardiyosu",
         tips: [
           "Kalf hareketini zıplayarak değil, topuğu tam aşağı esnetip tam parmak ucuna çıkarak yap.",
-          "Hemen ardından koşu bandında tutunmadan 10 dakika eğimli yürüyüşle yağ yakımını kapat.",
+          "Hemen ardından koşu bandında tutunmadan 10 dakika eğimli yürüyüşle seansı kapat.",
         ],
         alternatives: [
           {
@@ -1483,9 +1481,9 @@ export const WORKOUT_DAYS = [
     tabLabel: "3. Gün",
     shortTitle: "Sırt & Kol (Bruce Lee)",
     fullTitle: "3. GÜN: Bruce Lee Sırt & Kol Detayı (Sırt + Arka Omuz + Biceps)",
-    duration: "45 - 55 Dakika",
+    duration: "50 - 60 Dakika",
     targetGoal:
-      "Sırt kanatlarını (Lat) açarak bel çevresini daha ince göstermek ve Lenny Kravitz'in 45->5 özel Biceps piramidiyle kolları keskinleştirmek.",
+      "Sırt kanatlarını (Lat) açarak bel çevresini daha ince göstermek ve çift ilerlemeye uygun Biceps piramidiyle kolları keskinleştirmek.",
     scheduleNote: "4 Günlük Plan: Perşembe/Cuma · 3 Günlük Plan: Full-Body A2 / Cuma Full-Body",
     exercises: [
       {
@@ -1499,13 +1497,14 @@ export const WORKOUT_DAYS = [
         videoKey: "wide_grip_lat_pulldown",
         sourceUrl: "https://musclewiki.com/exercise/machine-pulldown",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif (Kanat Aktivasyonu)" },
-          { set: 2, reps: "15 Tekrar", load: "Orta Ağırlık" },
-          { set: 3, reps: "10 Tekrar", load: "Zorlayıcı Ağırlık" },
-          { set: 4, reps: "5 Tekrar", load: "Ağır & Kontrollü" },
+          { set: 1, isWarmup: true, reps: "20-30 Tekrar", load: "Çok Hafif — Isınma & Kanat Aktivasyonu" },
+          { set: 2, reps: "12-15 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "8-10 Tekrar", load: "Zorlayıcı Ağırlık" },
+          { set: 4, reps: "5-7 Tekrar", load: "Ağır & Kontrollü" },
         ],
-        coreRestId: "lying_leg_raise",
-        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Lying Leg Raise (3 Set)",
+        coreRestId: null,
+        coreRestLabel:
+          "Tam Pasif Dinlenme — Ağır bileşik sette omurga kilidi (bracing) ve kavrama toparlanması için core eklenmez.",
         tips: [
           "Barı ensene değil, göğsünün üst kısmına doğru çek; omuzlarını kulaklarından uzak tut.",
           "Ellerini bir kanca gibi düşün ve dirseklerini aşağı doğru çekmeye odaklan.",
@@ -1552,10 +1551,10 @@ export const WORKOUT_DAYS = [
         videoKey: "seated_cable_row",
         sourceUrl: "https://musclewiki.com/exercise/seated-cable-row",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "Hafif" },
-          { set: 2, reps: "15 Tekrar", load: "Orta" },
-          { set: 3, reps: "10 Tekrar", load: "Orta-Ağır" },
-          { set: 4, reps: "5 Tekrar", load: "Ağır" },
+          { set: 1, isWarmup: true, reps: "20-30 Tekrar", load: "Çok Hafif — Isınma & Teknik" },
+          { set: 2, reps: "12-15 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "8-10 Tekrar", load: "Orta-Ağır" },
+          { set: 4, reps: "5-7 Tekrar", load: "Ağır" },
         ],
         coreRestId: "cable_woodchopper",
         coreRestLabel: "Set Arası Aktif Dinlenme: 21× Cable Woodchopper (Bel Simidi / Oblik)",
@@ -1605,12 +1604,12 @@ export const WORKOUT_DAYS = [
         videoKey: "face_pull",
         sourceUrl: "https://musclewiki.com/exercise/machine-face-pulls",
         pyramidSets: [
-          { set: 1, reps: "30 Tekrar", load: "Hafif" },
-          { set: 2, reps: "20 Tekrar", load: "Orta" },
-          { set: 3, reps: "15 Tekrar", load: "Orta-Zorlayıcı" },
+          { set: 1, reps: "15-20 Tekrar", load: "Hafif-Orta" },
+          { set: 2, reps: "12-15 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "10-12 Tekrar", load: "Orta-Zorlayıcı" },
         ],
-        coreRestId: "reverse_crunch",
-        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Reverse Crunch (Alt Karın - 3 Set)",
+        coreRestId: "dead_bug",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Dead Bug (Kavrama Gerektirmez)",
         tips: [
           "Kabloyu göz hizasına ayarla, ipi başparmakların geriye bakacak şekilde alnına/kulak hizana çek.",
           "Omuzları geriye açarak Bruce Lee tarzı atletik üst vücut duruşunu oturtur.",
@@ -1640,7 +1639,7 @@ export const WORKOUT_DAYS = [
             videoKey: "dumbbell_rear_delt_fly",
             sourceUrl: "https://musclewiki.com/exercise/dumbbell-rear-delt-fly",
             tips: [
-              "Hafif ağırlık seç ki ivme almadan arka omuzların 30-15 tekrarda tam yansın.",
+              "Hafif ağırlık seç ki ivme almadan arka omuzların 15-20 tekrarda tam yansın.",
               "Hareketi durdurmadan akıcı ve kontrollü uygula.",
             ],
           },
@@ -1651,22 +1650,22 @@ export const WORKOUT_DAYS = [
         restSeconds: 75,
         order: 4,
         name: "Dumbbell Bicep Curl (Kravitz Özel Seti)",
-        turkishName: "Dambıl Biceps Curl — Lenny Kravitz Piramidi",
+        turkishName: "Dambıl Biceps Curl — Çift İlerleme Piramidi",
         muscleGroup: "Biceps (Ön Kol)",
-        equipment: "Dambıl (4-5 kg'dan 17.5-20 kg'a)",
+        equipment: "Dambıl (Hafiften Ağıra)",
         videoKey: "dumbbell_bicep_curl",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-curl",
         pyramidSets: [
-          { set: 1, reps: "45 Tekrar", load: "4-5 kg (Tam Lenny Kravitz Pompası)" },
-          { set: 2, reps: "20 Tekrar", load: "9-10 kg" },
-          { set: 3, reps: "10 Tekrar", load: "12.5-15 kg" },
-          { set: 4, reps: "5 Tekrar", load: "17.5-20 kg (Sallanmadan)" },
+          { set: 1, reps: "15-20 Tekrar", load: "Hafif-Orta · Kontrollü Tempoyla Pump" },
+          { set: 2, reps: "10-12 Tekrar", load: "Orta-Ağır" },
+          { set: 3, reps: "8-10 Tekrar", load: "Ağır (Sallanmadan)" },
         ],
-        coreRestId: "bicycle_crunch",
-        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Bicycle Crunch (3 Set)",
+        coreRestId: null,
+        coreRestLabel:
+          "Tam Pasif Dinlenme — Ön kol ve kavrama yükünü bölmeden biceps set kalitesini korumak için core eklenmez.",
         tips: [
-          "Kravitz'ten esinlenilmiş yüksek tekrarlı başlangıç setidir: kontrollü tempoyla kası ısıt.",
-          "Dirseklerini bel hizasında sabitle; son 5 tekrarlık ağır sette belinden güç alma.",
+          "Kravitz'ten esinlenilmiş artan yük piramididir; ilk sette 20 tekrara yakın akıcı pump yakalayıp sonraki setlerde yükü artır.",
+          "Dirseklerini bel hizasında sabitle; son 8-10 tekrarlık ağır sette belinden güç alma.",
         ],
         alternatives: [
           {
@@ -1679,7 +1678,7 @@ export const WORKOUT_DAYS = [
             videoKey: "barbell_curl",
             sourceUrl: "https://musclewiki.com/exercise/barbell-curl",
             tips: [
-              "Boş bar (~10-15 kg) veya Z-bar (~7.5 kg) ile 35-45 tekrarla başla, plaka takarak 5 tekrara in.",
+              "İlk sette 15-20 tekrar çıkacak kiloyla başla, plaka takarak 8-10 tekrara in.",
               "Bilek hassasiyetinde Z-bar kavrayışı çok rahattır.",
             ],
           },
@@ -1710,12 +1709,12 @@ export const WORKOUT_DAYS = [
         videoKey: "incline_hammer_curl",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-incline-hammer-curl",
         pyramidSets: [
-          { set: 1, reps: "25 Tekrar", load: "Hafif" },
-          { set: 2, reps: "15 Tekrar", load: "Orta" },
-          { set: 3, reps: "8 Tekrar", load: "Ağır" },
+          { set: 1, reps: "15-20 Tekrar", load: "Hafif-Orta" },
+          { set: 2, reps: "10-12 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "8-10 Tekrar", load: "Ağır" },
         ],
-        coreRestId: "plank",
-        coreRestLabel: "Set Arası Aktif Dinlenme: 45 Saniye Vakumlu Plank",
+        coreRestId: "lying_leg_raise",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Lying Leg Raise (Kavrama Gerektirmez)",
         tips: [
           "Avuç içleri birbirine baksın; kollarını tam aşağı sarkıtıp gerilimi hisset.",
           "Tişört içinde ön kol ve biceps ayrımını en keskin gösteren harekettir.",
@@ -1757,31 +1756,139 @@ export const WORKOUT_DAYS = [
     id: "day-4",
     tabLabel: "4. Gün",
     shortTitle: "Full-Body & Kondisyon",
-    fullTitle: "4. GÜN: Full-Body Fonksiyonel Kondisyon & Metabolik Antrenman",
-    duration: "45 Dakika (Yüksek İş Kapasitesi)",
+    fullTitle: "4. GÜN: Full-Body Güç, V-Taper & Kondisyon (Haftada 2× Frekans Kapanışı)",
+    duration: "45 - 55 Dakika",
     targetGoal:
-      "Tüm vücut kaslarını birleştirip günlük enerji açığını ve atletik iş kapasitesini desteklemek (yağ kaybı bölgesel egzersizle değil toplam enerji açığıyla gerçekleşir; Ramirez-Campillo R. ve ark., DOI: 10.5114/hm.2022.110373).",
+      "Bacak, göğüs, arka zincir, sırt ve yan omzu aynı seansta çalıştırarak tüm büyük kas gruplarında haftada ≥2× frekansı tamamlar ve toplam enerji harcamasını destekler (Ramirez-Campillo R. ve ark., DOI: 10.5114/hm.2022.110373).",
     scheduleNote:
-      "4 Günlük Plan: Cumartesi/Pazar (Haftada 3 gün gidilen dönemlerde 3 Günlük Alternatif Şablon seçilir)",
+      "4 Günlük Plan: Cumartesi/Pazar (3 Günlük Şablonda bu gün birleşik güne dağıtılır)",
     exercises: [
       {
-        id: "kettlebell-swing",
+        id: "goblet-squat-day4",
         restSeconds: 150,
         order: 1,
+        name: "Dumbbell Goblet Squat",
+        turkishName: "Göğüste Dambıl İle Derin Squat",
+        muscleGroup: "Ön Bacak (Quadriceps) & Kalça",
+        equipment: "Tek Ağır Dambıl veya Kettlebell",
+        videoKey: "goblet_squat",
+        sourceUrl: "https://musclewiki.com/exercise/dumbbell-goblet-squat",
+        pyramidSets: [
+          { set: 1, isWarmup: true, reps: "20-30 Tekrar", load: "Çok Hafif — Isınma & Kalça Mobilitesi" },
+          { set: 2, reps: "12-15 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "8-10 Tekrar", load: "Zorlayıcı Ağırlık" },
+          { set: 4, reps: "5-7 Tekrar", load: "Ağır / Dik Gövde" },
+        ],
+        coreRestId: null,
+        coreRestLabel:
+          "Tam Pasif Dinlenme — Ağır bileşik sette omurga kilidi (bracing) ve kuvvet üretimi için core eklenmez.",
+        tips: [
+          "Dambılı göğsüne yakın tut, dirseklerini diz içlerine doğru indir ve topuklardan güç alarak kalk.",
+          "1. ve 2. günden sonra quadriceps ve kalça için haftalık 2× uyarım sağlar.",
+        ],
+        alternatives: [
+          {
+            id: "goblet-day4-alt-1",
+            name: "Machine Hack Squat",
+            turkishName: "Hack Squat Makinesi",
+            equipment: "Hack Squat Makinesi",
+            whenToUse:
+              "Ağır serbest dambılı göğüste tutmak yerine sırt desteğiyle güvenli ön bacak yüklemesi istediğinde.",
+            videoKey: "hack_squat",
+            sourceUrl: "https://musclewiki.com/exercise/machine-hack-squat",
+            tips: [
+              "Belini pedle sabitle, topukları kaldırmadan tam derinliğe in.",
+              "Dizleri içe kaçırmadan ayak parmakları yönünde it.",
+            ],
+          },
+          {
+            id: "goblet-day4-alt-2",
+            name: "Dumbbell Bulgarian Split Squat",
+            turkishName: "Arka Ayak Sehpada Tek Bacak Squat",
+            equipment: "Düz Sehpa + Dambıl",
+            whenToUse:
+              "Sağ ve sol bacak arasındaki kuvvet farkını eşitlemek ve ekstra kalça aktivasyonu aradığında.",
+            videoKey: "bulgarian_split_squat",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-bulgarian-split-squat",
+            tips: [
+              "Arka ayağın üstünü sehpaya koy, gövdeyi hafif öne vererek ön topuktan it.",
+              "Her iki bacakta aynı tekrar sayısını koru.",
+            ],
+          },
+        ],
+      },
+      {
+        id: "chest-press-day4",
+        restSeconds: 150,
+        order: 2,
+        name: "Machine Chest Press",
+        turkishName: "Makinede Göğüs İtiş (Haftalık 2× Göğüs)",
+        muscleGroup: "Göğüs, Ön Omuz & Triceps",
+        equipment: "Chest Press Makinesi",
+        videoKey: "machine_chest_press",
+        sourceUrl: "https://musclewiki.com/exercise/machine-chest-press",
+        pyramidSets: [
+          { set: 1, isWarmup: true, reps: "20-30 Tekrar", load: "Çok Hafif — Isınma & Teknik" },
+          { set: 2, reps: "12-15 Tekrar", load: "Orta Ağırlık" },
+          { set: 3, reps: "8-10 Tekrar", load: "Zorlayıcı Ağırlık" },
+          { set: 4, reps: "5-7 Tekrar", load: "Ağır / Kontrollü Negatif" },
+        ],
+        coreRestId: null,
+        coreRestLabel:
+          "Tam Pasif Dinlenme — Ağır bileşik sette omurga kilidi (bracing) ve itiş kuvveti için core eklenmez.",
+        tips: [
+          "Koltuk yüksekliğini tutamaklar orta göğüs hizana gelecek şekilde ayarla.",
+          "Kürek kemiklerini arkada sehpaya bastırarak omuz yerine göğsü ve triceps'i çalıştır.",
+        ],
+        alternatives: [
+          {
+            id: "chest-day4-alt-1",
+            name: "Bodyweight Strict Push-Up",
+            turkishName: "Vücut Ağırlığı İle Şınav",
+            equipment: "Ekipmansız",
+            whenToUse:
+              "İtiş makineleri doluysa ek yük ve gövde stabilitesiyle hızlı göğüs/triceps uyarımı için.",
+            videoKey: "bodyweight_pushup",
+            sourceUrl: "https://musclewiki.com/exercise/push-up",
+            tips: [
+              "Karın ve kalçayı plank gibi sık, dirsekleri gövdeye 45° açıda geriye bük.",
+              "Göğüs yere yaklaşırken kontrollü inip patlayıcı it.",
+            ],
+          },
+          {
+            id: "chest-day4-alt-2",
+            name: "Incline Barbell Bench Press",
+            turkishName: "Eğimli Sehpada Bar İle Üst Göğüs İtiş",
+            equipment: "Eğimli Sehpa + Olimpik Bar",
+            whenToUse:
+              "Makine yerine serbest barla üst göğüs ve kuvvet gelişimine odaklanmak istediğinde.",
+            videoKey: "barbell_incline_press",
+            sourceUrl: "https://musclewiki.com/exercise/barbell-incline-bench-press",
+            tips: [
+              "Barı köprücük kemiğinin 2-3 parmak altına kontrollü indir.",
+              "Ayaklarını zemine sağlam bas ve bilekleri dik tut.",
+            ],
+          },
+        ],
+      },
+      {
+        id: "kettlebell-swing",
+        restSeconds: 120,
+        order: 3,
         name: "Kettlebell Swing",
-        turkishName: "Kettlebell Savurma (Kalça & Metabolik Patlama)",
-        muscleGroup: "Kalça, Arka Bacak, Core & Kondisyon",
+        turkishName: "Kettlebell Savurma (Kalça, Arka Bacak & Kondisyon)",
+        muscleGroup: "Kalça, Arka Bacak & Kondisyon",
         equipment: "Kettlebell (Fonksiyonel Alan)",
         videoKey: "kettlebell_swing",
         sourceUrl: "https://musclewiki.com/exercise/kettlebell-swing",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "30 Tekrar", load: "10-12 kg (Ritmi Bul)" },
-          { set: 2, reps: "20 Tekrar", load: "14-16 kg" },
-          { set: 3, reps: "15 Tekrar", load: "16-20 kg" },
-          { set: 4, reps: "12 Tekrar", load: "20-24 kg" },
+          { set: 1, reps: "20-25 Tekrar", load: "Orta Kettlebell (Ritmi Kur)" },
+          { set: 2, reps: "15-20 Tekrar", load: "Orta-Ağır Kettlebell" },
+          { set: 3, reps: "12-15 Tekrar", load: "Ağır / Patlayıcı Kalça Kilidi" },
         ],
-        coreRestId: "ab_wheel",
-        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Ab Wheel Rollout / Plank",
+        coreRestId: null,
+        coreRestLabel:
+          "Tam Pasif Dinlenme — Patlayıcı kalça menteşesinde bel koruması ve kavrama için core eklenmez.",
         tips: [
           "Kollarınla kaldırma! Kettlebell'i göğüs hizasına fırlatan şey kalçanı sertçe öne kilitlemendir.",
           "Sırtını düz tut ve tepe noktada karnını sertçe sık.",
@@ -1789,252 +1896,135 @@ export const WORKOUT_DAYS = [
         alternatives: [
           {
             id: "kb-swing-alt-1",
-            name: "Dumbbell Goblet Squat (Tempolu)",
-            turkishName: "Tempolu Dambıl Goblet Squat",
-            equipment: "Tek Dambıl",
+            name: "Barbell Hip Thrust",
+            turkishName: "Sehpada Kalça İtiş (Hip Thrust)",
+            equipment: "Düz Sehpa + Bar (veya Hip Thrust Makinesi)",
             whenToUse:
-              "Salonda ağır Kettlebell yoksa veya o gün beline dinamik salınım yükü vermek istemiyorsan.",
-            videoKey: "goblet_squat",
-            sourceUrl: "https://musclewiki.com/exercise/dumbbell-goblet-squat",
+              "Salonda ağır Kettlebell yoksa veya beline dinamik salınım yükü vermeden kalçayı vurmak için.",
+            videoKey: "barbell_hip_thrust",
+            sourceUrl: "https://musclewiki.com/exercise/barbell-hip-thrust",
             tips: [
-              "Orta ağırlıkta bir dambılı dik tutup duraksamadan 30-20-15 tekrar tempoda squat yap.",
-              "Kalp ritmini Kettlebell Swing kadar hızlı yükseltir.",
+              "Kürek kemiklerinin alt ucunu sehpaya yasla, tepe noktada kalçayı 1 saniye sertçe sık.",
+              "Beli aşırı kavislendirmeden kaburgaları aşağıda tut.",
             ],
           },
           {
             id: "kb-swing-alt-2",
             name: "Dumbbell Romanian Deadlift",
-            turkishName: "Hızlı Romen Deadlift (Arka Zincir)",
+            turkishName: "Dambıl İle Romen Deadlift (Arka Zincir)",
             equipment: "Çift Dambıl",
             whenToUse: "Aynı kalça ve arka bacak kas grubunu daha kontrollü tempoyla vurmak için.",
             videoKey: "db_romanian_deadlift",
             sourceUrl: "https://musclewiki.com/exercise/dumbbell-romanian-deadlift",
             tips: [
               "Kalçayı geriye it, yukarı çıkarken kalçayı ve karnı sertçe kilitle.",
-              "Dinlenmeleri 30 saniyede tutarak metabolik etkiyi koru.",
+              "Dambılları bacaklarına yakın indirip arka bacak gerginliğini koru.",
             ],
           },
         ],
       },
       {
         id: "renegade-row-pushup",
-        restSeconds: 150,
-        order: 2,
+        restSeconds: 120,
+        order: 4,
         name: "Alternating Dumbbell Renegade Row",
-        turkishName: "Plankta Dambıl Renegade Row (Sırt & Core)",
-        muscleGroup: "Sırt, Göğüs & Anti-Rotasyon Core",
+        turkishName: "Plankta Dambıl Renegade Row (Haftalık 2× Sırt)",
+        muscleGroup: "Sırt, Biceps & Anti-Rotasyon Core",
         equipment: "2 Adet Altıgen (Hex) Dambıl",
         videoKey: "renegade_row_pushup",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-renegade-row",
         pyramidSets: [
-          {
-            set: 1,
-
-            reps: "20 Tekrar (Toplam)",
-            load: "Hafif Dambıl (7.5 - 10 kg) · İsteğe Bağlı Arada Şınav",
-          },
-          { set: 2, reps: "16 Tekrar (Toplam)", load: "Orta Dambıl (12.5 kg)" },
-          { set: 3, reps: "12 Tekrar (Toplam)", load: "Ağır Dambıl (15 kg)" },
-        ],
-        coreRestId: "mountain_climbers",
-        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Mountain Climbers (Her Bacak)",
-        tips: [
-          "Ayaklarını omuz genişliğinden biraz fazla aç ki dambılı çekerken kalçan sağa sola dönmesin.",
-          "Dilersen her sağ-sol çekişten sonra 1 şınav ekleyerek göğsü de dahil edebilirsin.",
-        ],
-        alternatives: [
-          {
-            id: "renegade-alt-1",
-            name: "Bodyweight Strict Push-Up",
-            turkishName: "Vücut Ağırlığı İle Şınav (Sıkı Core)",
-            equipment: "Ekipmansız",
-            whenToUse:
-              "Yuvarlak dambıllar bileğini burkuyorsa veya altıgen (Hex) dambıl bulamadıysan.",
-            videoKey: "bodyweight_pushup",
-            sourceUrl: "https://musclewiki.com/exercise/push-up",
-            tips: [
-              "Karın ve kalçayı plank gibi sık, göğsü yere yaklaştırıp dirsekleri 45° geriye it.",
-              "Yüksek tekrarlarla göğüs + core dayanıklılığını uçurur.",
-            ],
-          },
-          {
-            id: "renegade-alt-2",
-            name: "Dumbbell Plank Pull-Through",
-            turkishName: "Plankta Dambıl Yana Çekme",
-            equipment: "Tek Dambıl",
-            whenToUse:
-              "Sadece 1 dambıl varken aynı anti-rotasyon karın kilidini bilek yükü olmadan yakalamak için.",
-            videoKey: "plank_pullthrough",
-            sourceUrl: "https://musclewiki.com/exercise/dumbbell-plank-pullthrough",
-            tips: [
-              "Ellerin doğrudan zeminde olsun (bilek daha güvenli), sırayla tek elle dambılı altından karşıya çek.",
-              "Gövdenin dönmesine izin verme.",
-            ],
-          },
-        ],
-      },
-      {
-        id: "straight-arm-pulldown",
-        restSeconds: 75,
-        order: 3,
-        name: "Straight-Arm Cable Pulldown",
-        turkishName: "Düz Kol Kablo Çekiş (Kanat & Core)",
-        muscleGroup: "Alt Kanat & Serratus (Kaburga Çizgisi)",
-        equipment: "Cable + Düz Bar veya İp",
-        videoKey: "straight_arm_pulldown",
-        sourceUrl: "https://musclewiki.com/exercise/cable-bent-over-bar-pullover",
-        pyramidSets: [
-          { set: 1, reps: "30 Tekrar", load: "Hafif" },
-          { set: 2, reps: "15 Tekrar", load: "Orta" },
-          { set: 3, reps: "10 Tekrar", load: "Orta-Ağır" },
+          { set: 1, reps: "16-20 Tekrar (Toplam)", load: "Hafif-Orta Dambıl · Çift Taraflı Kontrol" },
+          { set: 2, reps: "12-16 Tekrar (Toplam)", load: "Orta Dambıl" },
+          { set: 3, reps: "10-12 Tekrar (Toplam)", load: "Ağır Dambıl" },
         ],
         coreRestId: "pallof_press",
         coreRestLabel:
           "Set Arası Aktif Dinlenme: 21× Cable Pallof Press (10-11/Taraf · Kavrama Yormaz)",
         tips: [
-          "Dirsekleri kilitlemeden hafif kırık bırak, kabloyu kalçana doğru çek.",
-          "İndirirken karnını sık; kaburga üzerindeki 'serratus' çizgilerini belirginleştirir.",
+          "Ayaklarını omuz genişliğinden biraz fazla aç ki dambılı çekerken kalçan sağa sola dönmesin.",
+          "Dirseği kalça cebine doğru çekerek üst ve orta sırtı aktive et.",
         ],
         alternatives: [
           {
-            id: "straight-arm-alt-1",
-            name: "Wide-Grip Lat Pulldown",
-            turkishName: "Geniş Tutuş Kanat Çekiş",
-            equipment: "Lat Pulldown Makinesi",
-            whenToUse:
-              "Kablo istasyonu doluysa doğrudan Lat makinesinde yüksek tekrar sırt pompası için.",
-            videoKey: "wide_grip_lat_pulldown",
-            sourceUrl: "https://musclewiki.com/exercise/machine-pulldown",
-            tips: [
-              "Hafif-orta kiloyla göğsüne çekip kanatlarda 1 saniye kasılma hisset.",
-              "Setler arası beklemeden hemen core hareketine geç.",
-            ],
-          },
-          {
-            id: "straight-arm-alt-2",
+            id: "renegade-alt-1",
             name: "Single-Arm Dumbbell Row",
-            turkishName: "Tek Kol Dambıl Row",
-            equipment: "Dambıl + Sehpa",
+            turkishName: "Sehpaya Dayalı Tek Kol Dambıl Row",
+            equipment: "Düz Sehpa + Tek Dambıl",
             whenToUse:
-              "Tüm kablo istasyonları meşgulse kesintisiz tempolu sırt ve kalp atışı için.",
+              "Yuvarlak dambıllar bileğini zorluyorsa veya daha ağır sırt çekişi yapmak istediğinde.",
             videoKey: "single_arm_db_row",
             sourceUrl: "https://musclewiki.com/exercise/dumbbell-single-arm-row",
             tips: [
-              "Sağ kol 15 tekrar bitince hiç dinlenmeden sol kola geç.",
-              "Karın korseni sıkı tutarak omurga rotasyonunu sıfırda tut.",
+              "Bir eli sehpaya daya, sırtı düz tutarak dambılı kalça hizasına çek.",
+              "Gövdeyi çevirmeden sadece kürek kemiğini geriye topla.",
+            ],
+          },
+          {
+            id: "renegade-alt-2",
+            name: "Straight-Arm Cable Pulldown",
+            turkishName: "Düz Kol Kablo Çekiş (Kanat & Core)",
+            equipment: "Cable + Düz Bar veya İp",
+            whenToUse:
+              "Bilek yükü olmadan sırt kanatlarını ve serratus bölgesini izole etmek istediğinde.",
+            videoKey: "straight_arm_pulldown",
+            sourceUrl: "https://musclewiki.com/exercise/cable-bent-over-bar-pullover",
+            tips: [
+              "Dirsekleri hafif kırık sabitleyip kabloyu kalçana doğru indir.",
+              "İndirirken karnı sıkı tutup beli sabit bırak.",
             ],
           },
         ],
       },
       {
-        id: "farmers-walk",
-        restSeconds: 150,
-        order: 4,
-        name: "Farmer's Walk (Çiftçi Yürüyüşü)",
-        turkishName: "Ağır Kettlebell / Dambıl İle Çiftçi Yürüyüşü",
-        muscleGroup: "Derin Core, Kavrama, Omuz & Yağ Yakımı",
-        equipment: "2 Adet Ağır Kettlebell veya Dambıl",
-        videoKey: "farmers_walk",
-        sourceUrl: "https://musclewiki.com/exercise/kettlebell-farmers-carry",
-        pyramidSets: [
-          { set: 1, reps: "45 Saniye Yürüyüş", load: "Orta-Ağır (2× 20 kg)" },
-          { set: 2, reps: "45 Saniye Yürüyüş", load: "Ağır (2× 25 kg)" },
-          { set: 3, reps: "45 Saniye Yürüyüş", load: "Maksimum Temiz (2× 27.5-30 kg)" },
-        ],
-        coreRestId: "plank",
-        coreRestLabel: "Set Arası Aktif Dinlenme: 45 Sn Ön Kol Plank (Kavrama Gerektirmez)",
-        tips: [
-          "Omuzlarını geriye ve aşağı çek, karnını içeri vakumla ve küçük, hızlı adımlarla yürü.",
-          "Yorgunlukta gövdeni sağa sola yatırmamak için derin karın kasların aralıksız çalışır.",
-        ],
-        alternatives: [
-          {
-            id: "farmers-alt-1",
-            name: "Dumbbell Plank Pull-Through",
-            turkishName: "Plankta Dambıl Çekme (Alan Gerekmez)",
-            equipment: "Tek Dambıl",
-            whenToUse:
-              "Salon çok kalabalıksa ve ağır ağırlıklarla yürüyecek boş koridor yoksa yerinde aynı core kası için.",
-            videoKey: "plank_pullthrough",
-            sourceUrl: "https://musclewiki.com/exercise/dumbbell-plank-pullthrough",
-            tips: [
-              "Şınav pozisyonunda karnı ve kalçayı kilitleyip ağırlığı sağa-sola kontrollü taşı.",
-              "Bölgesel bel ve oblik dayanıklılığını zirveye çıkarır.",
-            ],
-          },
-          {
-            id: "farmers-alt-2",
-            name: "Forearm Vakumlu Plank",
-            turkishName: "Dirsek Üstü 60 Sn Vakumlu Plank",
-            equipment: "Ekipmansız",
-            whenToUse:
-              "Ön kol tutuşun önceki günlerden çok yorgunsa tutuş gereksinimi olmadan bel korseni sıkılaştırmak için.",
-            videoKey: "plank",
-            sourceUrl: "https://musclewiki.com/exercise/hand-plank",
-            tips: [
-              "Göbeğini omurgaya vakumlayarak 45-60 saniye kusursuz düz çizgiyi koru.",
-              "Yürüyüş olmadan benzer derin karın yorgunluğu sağlar.",
-            ],
-          },
-        ],
-      },
-      {
-        id: "stomach-vacuum-card",
+        id: "cable-lateral-raise-day4",
         restSeconds: 75,
         order: 5,
-        name: "Stomach Vacuum & Hollow Core Hold",
-        turkishName: "Mide Vakumu & Hollow Hold (Postür & TVA Kontrolü)",
-        muscleGroup: "Transversus Abdominis (Derin Karın & Postür)",
-        equipment: "Ekipmansız (Sabah + Antrenman Kapanışı)",
-        videoKey: "stomach_vacuum",
-        sourceUrl: "https://musclewiki.com/exercises/abdominals",
+        name: "Single-Arm Cable Lateral Raise",
+        turkishName: "Kabloda Tek Kol Yana Açış (Haftalık 2× V-Taper)",
+        muscleGroup: "Yan Omuz (Deltoid)",
+        equipment: "Cable İstasyonu (En Alt Makara)",
+        videoKey: "cable_lateral_raise",
+        sourceUrl: "https://musclewiki.com/exercise/cable-low-single-arm-lateral-raise",
         pyramidSets: [
-          {
-            set: 1,
-
-            reps: "20-30 Sn Tutuş",
-            load: "Sabah Aç Karnına / Finisher - Set 1",
-          },
-          { set: 2, reps: "20-30 Sn Tutuş", load: "Sabah Aç Karnına / Finisher - Set 2" },
-          { set: 3, reps: "20-30 Sn Tutuş", load: "Sabah Aç Karnına / Finisher - Set 3" },
-          { set: 4, reps: "20-30 Sn Tutuş", load: "Sabah Aç Karnına / Finisher - Set 4" },
-          { set: 5, reps: "20-30 Sn Tutuş", load: "Sabah Aç Karnına / Finisher - Set 5" },
+          { set: 1, reps: "15-20 Tekrar", load: "Hafif · Sabit Kablo Gerilimi" },
+          { set: 2, reps: "12-15 Tekrar", load: "Orta" },
+          { set: 3, reps: "10-12 Tekrar", load: "Kontrollü Ağır (Omuz güvenliği için min 10)" },
         ],
-        coreRestId: "dead_bug",
+        coreRestId: "ab_wheel",
         coreRestLabel:
-          "Eşlik Eden Derin Core: 21× Dead Bug (Bel Destekli) + Sonra Bitiriş Kardiyosu",
+          "Set Arası Aktif Dinlenme: 21× Ab Wheel Rollout / Plank + Sonra Bitiriş Kardiyosu",
         tips: [
-          "Bölgesel yağ yakmaz; postür farkındalığı ve derin karın kası (Transversus Abdominis - TVA) nöromüsküler kontrolünü güçlendirir (Ramirez-Campillo ve ark., DOI: 10.5114/hm.2022.110373).",
-          "Sabah aç karnına nefesi boşaltarak TVA aktivasyonu, salonda Hollow Hold ile gövde stabilitesi çalış.",
+          "Makarayı bilek hizasına indir, boş elinle makine direğini tutup gövdeni sabit tut.",
+          "Yan omuz sağlığı için 10 tekrarın altına inme; kabloyu yana duvarlara doğru süpür.",
         ],
         alternatives: [
           {
-            id: "vacuum-card-alt-1",
-            name: "Dead Bug (Bel Korumalı İç Karın)",
-            turkishName: "Dead Bug (Nefes Kontrollü İç Korse)",
-            reps: "21 Tekrar",
-            equipment: "Ekipmansız (Mat)",
-            whenToUse: "Hollow hold sırasında belin yerden havalanıyor ve bel boşluğun ağrıyorsa.",
-            videoKey: "dead_bug",
-            sourceUrl: "https://musclewiki.com/exercise/dead-bug",
+            id: "lateral-day4-alt-1",
+            name: "Dumbbell Lateral Raise",
+            turkishName: "Dambıl Yana Açış",
+            equipment: "Çift Dambıl",
+            whenToUse:
+              "Kablo istasyonu doluysa serbest ağırlık alanında hemen yan omzu hedeflemek için.",
+            videoKey: "dumbbell_lateral_raise",
+            sourceUrl: "https://musclewiki.com/exercise/dumbbell-lateral-raise",
             tips: [
-              "Her çapraz uzanmada tüm nefesini boşaltıp belini yere mühürle.",
-              "İç karın kasını zorlamadan ama son derece etkili çalıştırır.",
+              "Dirsekleri hafif bükülü tutup ağırlıkları yana uzatarak kaldır.",
+              "Yukarı çekmek için trapezleri kaldırma, omuzları aşağıda bırak.",
             ],
           },
           {
-            id: "vacuum-card-alt-2",
-            name: "Forearm Vakumlu Plank",
-            turkishName: "Dirsek Üstü Vakumlu Plank",
-            reps: "45 Saniye Tutuş",
-            equipment: "Ekipmansız (Mat)",
+            id: "lateral-day4-alt-2",
+            name: "Farmer's Walk (Çiftçi Yürüyüşü)",
+            turkishName: "Ağır Kettlebell / Dambıl İle Çiftçi Yürüyüşü",
+            equipment: "2 Adet Ağır Kettlebell veya Dambıl",
             whenToUse:
-              "Sırtüstü yatmadan veya sabah rutinine ek yüzüstü iç karın çalışması istediğinde.",
-            videoKey: "plank",
-            sourceUrl: "https://musclewiki.com/exercise/hand-plank",
+              "Haftanın kapanışında omuz stabilitesi, kavrama ve metabolik taşıma kondisyonu eklemek için.",
+            videoKey: "farmers_walk",
+            sourceUrl: "https://musclewiki.com/exercise/kettlebell-farmers-carry",
             tips: [
-              "Plank duruşundayken göbeğini yerçekimine ters şekilde omurgaya doğru içeri çek.",
-              "Karın kasların yanarken bel çukurunu sıfırda tut.",
+              "Omuzlarını geriye çek, karnını sıkı tut ve dik duruşla 40-45 saniye yürü.",
+              "Gövdeyi yanlara devirmeden adımları kontrollü at.",
             ],
           },
         ],

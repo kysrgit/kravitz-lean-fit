@@ -5,8 +5,8 @@
  * üçüncü taraf veya lisanssız medya dosyalarını kesinlikle önbelleğe almaz.
  */
 
-const SHELL_CACHE = "klf-shell-9e18fde0";
-const DATA_CACHE = "klf-data-9e18fde0";
+const SHELL_CACHE = "klf-shell-b60fe259";
+const DATA_CACHE = "klf-data-b60fe259";
 const MEDIA_CACHE = "klf-media-v1";
 
 const APP_SHELL_URLS = [

@@ -646,6 +646,40 @@
     background: color-mix(in oklch, var(--set-core) 20%, transparent);
   }
 
+  .core-rest-passive {
+    margin-top: auto;
+    width: 100%;
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sharp);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--line-strong, var(--text-2));
+    background: var(--stage-2);
+    color: var(--text-2);
+  }
+
+  .core-rest-passive .core-thumb-badge {
+    border-color: var(--line);
+    color: var(--text-2);
+  }
+
+  .core-rest-passive .core-rest-kicker {
+    color: var(--text-2);
+  }
+
+  .core-rest-passive .core-rest-text {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    font-weight: 500;
+    font-size: var(--fs-12);
+    line-height: 1.4;
+    color: var(--text-2);
+  }
+
   .core-thumb-badge {
     width: 44px;
     height: 44px;

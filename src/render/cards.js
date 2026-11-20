@@ -173,7 +173,7 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
               </button>
             </div>
           </div>
-          <p class="rest-strategy-note">21 core yap, kalan sürede dinlenerek çalışma setine toparlanmış gir (Schoenfeld ve ark., 2016).</p>
+          <p class="rest-strategy-note">${coreItem ? "21 core yap, kalan sürede dinlenerek çalışma setine toparlanmış gir (Schoenfeld ve ark., 2016)." : "Tam pasif dinlenme: ağır sete nefes ve gövde kilidin tam toparlanmış gir (Schoenfeld ve ark., 2016)."}</p>
           <div class="pyramid-steps">${pyramidHtml}</div>
         </div>
 
@@ -204,7 +204,15 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
             <span class="core-rest-action">Form &amp; Alternatifler ${lucideIcon("arrow-right", { size: 14 })}</span>
           </button>
         `
-            : ""
+            : `
+          <div class="core-rest-passive">
+            <span class="core-thumb-badge tabular" aria-hidden="true">${lucideIcon("clock", { size: 18 })}</span>
+            <div class="core-rest-copy">
+              <span class="core-rest-kicker">Set Arası Pasif Toparlanma</span>
+              <span class="core-rest-text">${escapeHtml(exercise.coreRestLabel || "Tam pasif dinlenme — Ağır sette gövde kilidi için core eklenmez.")}</span>
+            </div>
+          </div>
+        `
         }
       </div>
     </article>
@@ -339,11 +347,11 @@ export function createDaySummaryTableHtml(
             <div class="table-rest-pill">${lucideIcon("clock", { size: 14 })} Dinlenme: ${escapeHtml(restBadgeText)}</div>
             <div class="table-pyramid-list">${pyramidHtml}</div>
           </td>
-          <td class="col-core" data-label="Set Arası (21'ler Core + Dinlenme)">
-            <div class="table-core-note">21 core yap, kalan sürede ${escapeHtml(restBadgeText)} tamamla.</div>
+          <td class="col-core" data-label="Set Arası (Core / Dinlenme)">
             ${
               coreItem
                 ? `
+              <div class="table-core-note">21 core yap, kalan sürede ${escapeHtml(restBadgeText)} tamamla.</div>
               <button
                 type="button"
                 class="table-core-btn"
@@ -355,7 +363,7 @@ export function createDaySummaryTableHtml(
               </button>
               <div class="table-core-note">${escapeHtml(exercise.coreRestLabel)}</div>
             `
-                : `<span>${escapeHtml(exercise.coreRestLabel)}</span>`
+                : `<div class="table-core-note">${escapeHtml(exercise.coreRestLabel || "Tam pasif dinlenme")}</div>`
             }
           </td>
           <td class="col-alts" data-label="Alternatifler (Doluysa / Yapılamıyorsa)">
