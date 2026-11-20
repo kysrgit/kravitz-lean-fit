@@ -32,7 +32,7 @@ import { lucideIcon } from "./icons.js";
 
 export function renderSourcesSectionHtml() {
   return `
-    <section class="sources-panel" aria-labelledby="sources-heading">
+    <section id="kaynaklar" class="sources-panel" aria-labelledby="sources-heading">
       <div class="sources-header">
         <h3 id="sources-heading">${lucideIcon("book-open", { size: 18 })} Kaynaklar</h3>
         <p class="muted-text">
@@ -68,7 +68,7 @@ export function renderSystemPillars() {
           <span class="pillar-index display-type tabular" aria-hidden="true">${numLabel}</span>
         </div>
         <h3>${escapeHtml(pillar.title)}</h3>
-        <p>${escapeHtml(pillar.description)}</p>
+        <p>${escapeHtml(pillar.description)} <a href="#kaynaklar" class="pillar-source-link" data-open-sources>Kaynak ↗</a></p>
       </article>
     `;
   }).join("");
@@ -905,11 +905,11 @@ export function renderNutritionProtocol() {
     ],
     [
       "Sağlıklı Yağlar",
-      `${summary.fatG} g`,
+      `${fatTargetG} g`,
       fatRatio,
       `%${Math.round(fatRatio * 100)}`,
       "tone-blaze",
-      `${escapeHtml(summary.fatG * 9)} kcal (zeytinyağı, yumurta, badem)`,
+      `${escapeHtml(fatTargetG * 9)} kcal (zeytinyağı, yumurta, badem)`,
     ],
     ["Sıvı Tüketimi", summary.water, 0.88, "3.5L", "tone-core", "Hidrasyon &amp; mineral desteği"],
   ]

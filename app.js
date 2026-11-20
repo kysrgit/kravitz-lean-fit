@@ -34,6 +34,17 @@ function initEventListeners() {
     });
   }
 
+  // Hero ve kartlardaki #kaynaklar bağlantılarını kaynaklar bölümüne yönlendirir
+  document.addEventListener("click", (event) => {
+    const link = event.target.closest('a[href="#kaynaklar"], [data-open-sources]');
+    if (!link) return;
+    event.preventDefault();
+    if (!document.getElementById("kaynaklar")) {
+      selectTab("summary", { scrollToContent: false });
+    }
+    document.getElementById("kaynaklar")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
   // Profilim çekmecesi aç/kapa
   elements.tanitaToggleBtn.addEventListener("click", () => {
     const isExpanded = elements.tanitaToggleBtn.getAttribute("aria-expanded") === "true";

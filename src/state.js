@@ -187,8 +187,13 @@ export function getExerciseVariants(item, kind) {
 
 // Bilimsel kaynaklar ve basın uyarlama notları bölümünü üretir
 
+// Yerel saat dilimine göre YYYY-MM-DD tarih dizesini döndürür (gece UTC kaymasını önler)
 export function getTodayIsoDate() {
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 // localStorage'dan set günlüklerini okur

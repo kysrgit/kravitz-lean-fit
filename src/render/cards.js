@@ -6,7 +6,8 @@
 
 import { CORE_LIBRARY, getExerciseMedia } from "../../data.js";
 import { escapeHtml, getExerciseSetHistory, getExerciseVariants } from "../state.js";
-import { createMediaStageHtml } from "../media.js";
+import { createMediaStageHtml, observeVisibleVideos } from "../media.js";
+import { openMediaModal } from "../modal.js";
 import { lucideIcon } from "./icons.js";
 
 export function createAlternativesBoxHtml(variants, activeIndex = 0) {
@@ -423,54 +424,52 @@ export function applyVariantToCard(cardEl, variants, variantIndex) {
   const variant = variants[variantIndex] || variants[0];
   if (!variant) return;
 
-  const media = getExerciseMedia(variant);
   cardEl.dataset.activeVariantIndex = String(variant.index);
 
-  // Referans sahnesi bilgilerini ve harici bağlantıyı güncelle
-  const sourceLinkEl = cardEl.querySelector(".source-link-btn");
-  const previewMetaEl = cardEl.querySelector(".reference-preview-meta");
-  const previewCueEl = cardEl.querySelector(".reference-preview-cue");
-  if (sourceLinkEl) {
-    sourceLinkEl.href = media.sourceUrl || "https://musclewiki.com/";
-  }
-  if (previewMetaEl) {
-    previewMetaEl.textContent = [variant.primaryTag, variant.secondaryTag]
-      .filter(Boolean)
-      .join(" · ");
-  }
-  if (previewCueEl) {
-    previewCueEl.textContent =
-      (variant.tips && variant.tips[0]) || "Kontrollü tempo ve tam hareket açıklığıyla uygula.";
-  }
-
-  // Lisanslı medya sahnesi varsa video ve kareleri güncelle
-  const videoEl = cardEl.querySelector(".media-video");
-  const frontImg = cardEl.querySelector(".frame-front");
-  const sideImg = cardEl.querySelector(".frame-side");
-  const activeModeBtn = cardEl.querySelector(".pose-btn.active");
-  const activeMode = activeModeBtn ? activeModeBtn.dataset.mode : "front";
-
-  if (videoEl && media.frontMp4) {
-    videoEl.dataset.frontSrc = media.frontMp4 || "";
-    videoEl.dataset.sideSrc = media.sideMp4 || "";
-    videoEl.setAttribute("aria-label", `${variant.name} hareket videosu`);
-    videoEl.poster = media.frontImg || "";
-
-    if (activeMode === "front" || activeMode === "side") {
-      const targetSrc = activeMode === "front" ? media.frontMp4 : media.sideMp4;
-      videoEl.setAttribute("src", targetSrc);
-      videoEl.load();
-      videoEl.play().catch(() => {});
+  // Medya sahnesini seçilen varyantın fotoğraf/referans sahnesiyle tamamen yenile
+  const isCore = cardEl.dataset.variantKind === "core";
+  const itemId = cardEl.dataset.itemId || "";
+  const oldStage = cardEl.querySelector(".media-stage");
+  if (oldStage) {
+    if (oldStage._photoTimer) {
+      window.clearInterval(oldStage._photoTimer);
+      oldStage._photoTimer = null;
+    }
+    const badgeText =
+      oldStage.querySelector(".order-badge")?.textContent?.trim() ||
+      (isCore ? "21× AKTİF DİNLENME" : "HAREKET");
+    const triggerAttr = isCore
+      ? `data-open-core="${escapeHtml(itemId)}"`
+      : `data-open-exercise="${escapeHtml(itemId)}"`;
+    const stageHtml = createMediaStageHtml({
+      badgeText,
+      name: variant.name,
+      primaryTag: variant.primaryTag,
+      secondaryTag: variant.secondaryTag,
+      tips: variant.tips,
+      sourceUrl: variant.sourceUrl,
+      videoKey: variant.videoKey,
+      triggerAttr,
+    });
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = stageHtml.trim();
+    const newStage = wrapper.firstElementChild;
+    if (newStage) {
+      oldStage.replaceWith(newStage);
+      const modalTrigger = newStage.querySelector("[data-open-exercise], [data-open-core]");
+      if (modalTrigger) {
+        modalTrigger.addEventListener("click", () => {
+          openMediaModal({ variants, initialVariantIndex: variant.index });
+        });
+      }
+      observeVisibleVideos();
     }
   }
 
-  if (frontImg && media.frontImg) {
-    frontImg.src = media.frontImg;
-    frontImg.alt = `${variant.name} ön açı karesi`;
-  }
-  if (sideImg && media.sideImg) {
-    sideImg.src = media.sideImg;
-    sideImg.alt = `${variant.name} yan açı karesi`;
+  // Dinlenme sayacı etiketini seçilen varyant adına göre güncelle
+  const timerBtn = cardEl.querySelector(".start-rest-timer-btn");
+  if (timerBtn) {
+    timerBtn.dataset.timerLabel = `${variant.name} Dinlenme`;
   }
 
   // Başlık, etiket ve ipuçlarını güncelle
