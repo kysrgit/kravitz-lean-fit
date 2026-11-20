@@ -17,10 +17,11 @@
     container-name: player-card;
     position: relative;
     isolation: isolate;
-    background: var(--stage-1);
+    background: var(--surface-elevated);
     border: 1px solid var(--line);
     border-top: 3px solid var(--day-accent);
     border-radius: var(--radius-sharp);
+    box-shadow: var(--shadow-card);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -29,6 +30,10 @@
 
   .exercise-card:hover {
     border-color: var(--accent-border);
+  }
+
+  .exercise-card.is-card-complete {
+    border-top-color: var(--volt);
   }
 
   /* Masaüstü pointer cihazlarda Faz 3 eğim parlaması için GPU specular katmanı */
@@ -378,12 +383,12 @@
     color: var(--set-core);
   }
 
-  /* Piramit Merdiveni + Yoğunluk Çubukları + Set Günlüğü */
+  /* Piramit Merdiveni + Yoğunluk Çubukları + Braun/Hevy Set Günlüğü */
   .pyramid-box {
     background: var(--stage-2);
     border: 1px solid var(--line);
     border-radius: var(--radius-sharp);
-    padding: 14px;
+    padding: 12px;
   }
 
   .pyramid-box-title-row {
@@ -397,30 +402,10 @@
 
   .pyramid-box-title {
     font-size: var(--fs-12);
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text-1);
-  }
-
-  .rest-timer-trigger-wrap {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .rest-duration-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 10px;
-    border-radius: var(--radius-cut);
-    font-size: var(--fs-12);
-    font-weight: 600;
-    color: var(--text-1);
-    background: var(--accent-wash);
-    border: 1px solid var(--accent-border);
   }
 
   .start-rest-timer-btn,
@@ -428,8 +413,8 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    min-height: 36px;
-    padding: 6px 11px;
+    min-height: 34px;
+    padding: 5px 10px;
     border-radius: var(--radius-cut);
     border: 1px solid var(--core-border);
     background: var(--core-wash);
@@ -437,12 +422,17 @@
     font-size: var(--fs-12);
     font-weight: 600;
     cursor: pointer;
-    transition: background-color var(--dur-micro) var(--ease-out);
+    white-space: nowrap;
+    transition:
+      background-color var(--dur-micro) var(--ease-out),
+      border-color var(--dur-micro) var(--ease-out),
+      transform var(--dur-micro) var(--ease-out);
   }
 
   .start-rest-timer-btn:hover,
   .timer-mini-btn:hover {
     background: var(--stage-3);
+    border-color: var(--set-core);
   }
 
   .timer-mini-btn.is-stop {
@@ -452,7 +442,7 @@
   }
 
   .rest-strategy-note {
-    margin: 0 0 10px;
+    margin: 0 0 8px;
     font-size: var(--fs-12);
     color: var(--text-2);
   }
@@ -460,17 +450,21 @@
   .pyramid-steps {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
   }
 
   .pyramid-step {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: 8px 10px;
+    gap: 5px;
+    padding: 7px 10px 9px;
     background: var(--stage-1);
     border: 1px solid var(--line-soft);
-    border-left: 3px solid var(--day-accent);
+    border-left: 3px solid var(--line);
+    transition:
+      border-color var(--dur-micro) var(--ease-out),
+      background-color var(--dur-micro) var(--ease-out);
   }
 
   .pyramid-step.is-warmup {
@@ -479,26 +473,46 @@
     border-left: 3px solid var(--set-warmup);
   }
 
-  .pyramid-step-main {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 10px;
+  .pyramid-step.is-next-active {
+    background: linear-gradient(90deg, var(--accent-wash), var(--stage-1) 48%);
+    border-color: var(--accent-border);
+    border-left: 3px solid var(--day-accent);
+  }
+
+  .pyramid-step.is-done {
+    border-color: var(--volt-border);
+    border-left: 3px solid var(--volt);
+    background: color-mix(in oklch, var(--volt) 6%, var(--stage-1));
+  }
+
+  .pyramid-step.is-done .pyramid-step-head,
+  .pyramid-step.is-done .set-prev-badge {
+    opacity: 0.78;
+  }
+
+  .pyramid-step-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
   }
 
   .set-head-group {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 6px;
-    min-width: 112px;
+    min-width: 0;
+    flex: 1 1 auto;
   }
 
   .set-phase-badge {
     display: inline-block;
-    padding: 2px 6px;
+    flex-shrink: 0;
+    padding: 1px 6px;
     border-radius: var(--radius-cut);
-    font-size: var(--fs-12);
-    font-weight: 600;
+    font-size: 0.6875rem;
+    font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
@@ -516,28 +530,37 @@
   }
 
   .set-num {
+    flex-shrink: 0;
     font-size: var(--fs-12);
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-1);
   }
 
-  .set-bar-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 0;
+  .pyramid-step.is-next-active .set-num {
+    color: var(--day-accent);
+  }
+
+  .set-load-sep {
+    flex-shrink: 0;
+    color: var(--text-ghost);
+    font-size: var(--fs-12);
   }
 
   .set-load {
     font-size: var(--fs-12);
     color: var(--text-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .set-bar-track {
-    width: 100%;
-    height: 6px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
     background: var(--void);
-    border: 1px solid var(--line-soft);
     overflow: hidden;
   }
 
@@ -555,6 +578,7 @@
   }
 
   .set-reps {
+    flex-shrink: 0;
     font-family: var(--font-display);
     font-size: var(--fs-20);
     font-weight: 700;
@@ -568,52 +592,97 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
-    padding-top: 6px;
-    border-top: 1px dashed var(--line-soft);
+    gap: 5px 8px;
+    padding-top: 5px;
+    border-top: 1px solid var(--line-hairline);
   }
 
   .set-prev-badge {
-    font-size: var(--fs-12);
+    font-size: 0.75rem;
     color: var(--text-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .set-log-inputs {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
 
-  .set-log-field {
+  .stepper-group {
+    display: inline-flex;
+    align-items: stretch;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-cut);
+    background: var(--void);
+    overflow: hidden;
+  }
+
+  .stepper-group:focus-within {
+    border-color: var(--volt);
+  }
+
+  .stepper-btn {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    font-size: var(--fs-12);
+    justify-content: center;
+    width: 28px;
+    height: 34px;
+    background: var(--stage-2);
     color: var(--text-2);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition:
+      background-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out),
+      transform var(--dur-micro) var(--ease-out);
   }
 
-  .set-log-field input {
-    width: 64px;
-    min-height: 36px;
-    padding: 4px 7px;
-    border-radius: var(--radius-cut);
-    border: 1px solid var(--line);
-    background: var(--void);
+  .stepper-btn:hover {
+    background: var(--stage-3);
+    color: var(--volt);
+  }
+
+  .stepper-group input {
+    width: 44px;
+    height: 34px;
+    padding: 0 3px;
+    border: none;
+    border-left: 1px solid var(--line-hairline);
+    border-right: 1px solid var(--line-hairline);
+    background: transparent;
     color: var(--text-1);
     font-size: var(--fs-14);
+    font-weight: 600;
+    text-align: center;
+    appearance: textfield;
+    -moz-appearance: textfield;
   }
 
-  .set-log-field input:focus {
+  .stepper-group input::-webkit-outer-spin-button,
+  .stepper-group input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .stepper-group input::placeholder {
+    color: var(--text-ghost);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .stepper-group input:focus {
     outline: none;
-    border-color: var(--volt);
   }
 
   .set-done-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 36px;
     flex-shrink: 0;
     border-radius: var(--radius-cut);
     border: 1px solid var(--line);
@@ -623,7 +692,8 @@
     transition:
       border-color var(--dur-micro) var(--ease-out),
       background-color var(--dur-micro) var(--ease-out),
-      color var(--dur-micro) var(--ease-out);
+      color var(--dur-micro) var(--ease-out),
+      transform var(--dur-micro) var(--ease-out);
   }
 
   .set-done-btn:hover {
@@ -635,11 +705,6 @@
     border-color: var(--volt);
     background: var(--volt);
     color: var(--text-on-accent);
-  }
-
-  .pyramid-step.is-done {
-    border-color: var(--volt-border);
-    background: color-mix(in oklch, var(--volt) 8%, var(--stage-1));
   }
 
   /* Teknik Form İpuçları */
@@ -765,15 +830,15 @@
     white-space: nowrap;
   }
 
-  /* Sabit Dinlenme Sayacı Çubuğu */
+  /* Sabit Dairesel + Doğrusal Dinlenme Sayacı Çubuğu */
   .rest-timer-bar {
     position: fixed;
     left: 50%;
     transform: translateX(-50%);
     bottom: calc(var(--nav-mobile-h) + 12px);
     z-index: var(--z-timer);
-    width: min(calc(100vw - 24px), 440px);
-    padding: 10px 14px;
+    width: min(calc(100vw - 24px), 460px);
+    padding: 9px 12px 11px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -782,13 +847,65 @@
     border: 1px solid var(--core-border);
     border-left: 4px solid var(--set-core);
     border-radius: var(--radius-sharp);
-    box-shadow: 0 12px 28px var(--shadow-deep);
-    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-float);
+    backdrop-filter: blur(14px);
+    overflow: hidden;
+  }
+
+  .rest-timer-bar.is-warning {
+    border-color: var(--blaze-border);
+    border-left-color: var(--blaze);
   }
 
   .rest-timer-bar.is-finished {
     border-color: var(--volt-border);
     border-left-color: var(--volt);
+  }
+
+  .rest-timer-lead {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .rest-timer-ring-wrap {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+  }
+
+  .rest-timer-ring-svg {
+    display: block;
+    width: 40px;
+    height: 40px;
+  }
+
+  .rest-timer-ring-track {
+    fill: none;
+    stroke: var(--stage-3);
+    stroke-width: 4;
+  }
+
+  .rest-timer-ring-fill {
+    fill: none;
+    stroke: var(--set-core);
+    stroke-width: 4;
+    stroke-linecap: butt;
+    transition:
+      stroke-dashoffset 280ms linear,
+      stroke var(--dur-micro) var(--ease-out);
+  }
+
+  .rest-timer-bar.is-warning .rest-timer-ring-fill {
+    stroke: var(--blaze);
+  }
+
+  .rest-timer-bar.is-finished .rest-timer-ring-fill {
+    stroke: var(--volt);
   }
 
   .rest-timer-info {
@@ -813,29 +930,51 @@
     color: var(--set-core);
   }
 
+  .rest-timer-bar.is-warning .rest-timer-clock {
+    color: var(--blaze);
+  }
+
   .rest-timer-bar.is-finished .rest-timer-clock {
     color: var(--volt);
   }
 
   .rest-timer-actions {
     display: flex;
-    gap: 6px;
+    gap: 5px;
     flex-shrink: 0;
+  }
+
+  .rest-timer-linear-track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--void);
+    overflow: hidden;
+  }
+
+  .rest-timer-linear-fill {
+    width: 100%;
+    height: 100%;
+    background: var(--set-core);
+    transform-origin: left center;
+    transform: scaleX(1);
+    transition: transform 280ms linear;
+  }
+
+  .rest-timer-bar.is-warning .rest-timer-linear-fill {
+    background: var(--blaze);
+  }
+
+  .rest-timer-bar.is-finished .rest-timer-linear-fill {
+    background: var(--volt);
   }
 
   /* Kart içi Container Query uyumu */
   @container player-card (max-width: 460px) {
     .exercise-header {
       padding-right: 52px;
-    }
-
-    .pyramid-step-main {
-      grid-template-columns: 1fr;
-      gap: 6px;
-    }
-
-    .set-reps {
-      justify-self: start;
     }
 
     .core-rest-btn {
@@ -850,11 +989,6 @@
   @media (max-width: 768px) {
     .exercises-grid {
       grid-template-columns: 1fr;
-    }
-
-    .card-body {
-      padding: 15px;
-      gap: 12px;
     }
 
     .alt-pills-row {
@@ -898,7 +1032,7 @@
     }
   }
 
-  /* R-5: Kompakt set satırı, 3px alt bar, sarılan alternatif çipleri ve akordeon detay */
+  /* R-5 & UI v2: Kompakt set satırı, 2px alt bar, akordeon detay ve vizörlü fotoğraf sahnesi */
   .variant-btn-group {
     display: flex;
     flex-wrap: wrap;
@@ -910,29 +1044,18 @@
     text-align: left;
   }
 
-  .pyramid-step {
-    position: relative;
-    padding: 8px 10px 10px;
-    gap: 4px;
-  }
-
   .set-bar-track {
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
-    height: 3px;
+    height: 2px;
     margin: 0;
-  }
-
-  .set-log-controls {
-    padding-top: 4px;
-    gap: 6px;
   }
 
   .card-details {
     border: 1px solid var(--line);
-    background: var(--surface-2);
+    background: var(--void);
   }
 
   .card-details-summary {
@@ -941,7 +1064,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    padding: 10px 12px;
+    min-height: 40px;
+    padding: 8px 12px;
     cursor: pointer;
     font-size: var(--fs-12);
     font-weight: 700;
@@ -977,8 +1101,12 @@
 
   @media (max-width: 768px) {
     .card-body {
-      padding: 14px;
-      gap: 10px;
+      padding: 12px;
+      gap: 8px;
+    }
+
+    .exercise-header {
+      min-height: 44px;
     }
 
     .media-stage-head {
@@ -986,8 +1114,23 @@
     }
 
     .pyramid-box {
-      padding: 10px;
-      gap: 6px;
+      padding: 9px;
+    }
+
+    .pyramid-step {
+      padding: 6px 8px 8px;
+      gap: 4px;
+    }
+
+    .set-log-controls {
+      gap: 4px;
+      padding-top: 4px;
+    }
+
+    .set-log-inputs {
+      width: 100%;
+      justify-content: space-between;
+      gap: 5px;
     }
 
     .rest-strategy-note {
@@ -995,7 +1138,7 @@
     }
   }
 
-  /* M-3: free-exercise-db başlangıç/bitiş crossfade sahnesi */
+  /* M-3: free-exercise-db başlangıç/bitiş crossfade + vizör sahnesi */
   .photo-stage-frame {
     position: relative;
     width: 100%;
@@ -1003,6 +1146,37 @@
     overflow: hidden;
     background: var(--void);
     border-bottom: 1px solid var(--accent-border);
+    cursor: pointer;
+  }
+
+  .photo-stage-frame::before,
+  .photo-stage-frame::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+    border-color: var(--accent-border);
+    border-style: solid;
+  }
+
+  .photo-stage-frame::before {
+    top: 8px;
+    right: 8px;
+    border-width: 1.5px 1.5px 0 0;
+  }
+
+  .photo-stage-frame::after {
+    right: 8px;
+    bottom: 8px;
+    border-width: 0 1.5px 1.5px 0;
+  }
+
+  @media (max-width: 640px) {
+    .photo-stage-frame {
+      aspect-ratio: 16 / 9;
+    }
   }
 
   .stage-photo {
@@ -1011,7 +1185,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: grayscale(0.35) contrast(1.1) brightness(0.9);
+    filter: grayscale(0.1) contrast(1.06) brightness(0.95);
     transition: opacity 400ms var(--ease-out);
   }
 
@@ -1026,7 +1200,7 @@
   .photo-stage-vignette {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, var(--void) 0%, transparent 48%);
+    background: linear-gradient(to top, var(--void) 0%, transparent 44%);
     pointer-events: none;
   }
 
@@ -1041,14 +1215,30 @@
     position: absolute;
     left: 10px;
     bottom: 10px;
-    z-index: 2;
-    padding: 3px 7px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: var(--radius-cut);
     font-size: var(--fs-12);
     font-weight: 700;
     letter-spacing: 0.08em;
-    background: color-mix(in oklch, var(--void) 82%, transparent);
+    background: color-mix(in oklch, var(--void) 86%, transparent);
     border: 1px solid var(--accent-border);
     color: var(--text-1);
+    cursor: pointer;
+  }
+
+  .photo-phase-badge .phase-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--volt);
+  }
+
+  [data-photo-phase="end"] .photo-phase-badge .phase-dot {
+    background: var(--set-core);
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -247,15 +247,18 @@ export function renderTanitaSection() {
 export function createWarmupBannerHtml() {
   const { warmupProtocol } = LIFESTYLE_AND_WARMUP;
   return `
-    <div class="warmup-banner">
-      <div class="warmup-banner-head">
-        <strong>${lucideIcon("flame", { size: 16 })} ${escapeHtml(warmupProtocol.title)}:</strong>
-        <span>${escapeHtml(warmupProtocol.summary)}</span>
-      </div>
+    <details class="warmup-banner">
+      <summary class="warmup-banner-summary">
+        <span class="warmup-banner-head">
+          <strong>${lucideIcon("flame", { size: 15 })} ${escapeHtml(warmupProtocol.title)}:</strong>
+          <span>${escapeHtml(warmupProtocol.summary)}</span>
+        </span>
+        ${lucideIcon("chevron-down", { size: 15, className: "warmup-chevron" })}
+      </summary>
       <ul class="warmup-steps-list">
         ${warmupProtocol.steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}
       </ul>
-    </div>
+    </details>
   `;
 }
 
@@ -355,19 +358,27 @@ export function createCardioFinisherSectionHtml() {
 export function renderWorkoutDay(day) {
   const prefs = loadPrefs();
   const progress = getDayProgressStats(day, prefs.selectedVariants);
+  const isComplete = progress.totalCount > 0 && progress.doneCount === progress.totalCount;
 
   const progressStripHtml = `
-    <div id="day-progress-strip" class="day-progress-strip" data-progress-day="${escapeHtml(day.id)}">
+    <div id="day-progress-strip" class="day-progress-strip ${isComplete ? "is-complete" : ""}" data-progress-day="${escapeHtml(day.id)}">
       <div class="day-progress-main">
         <div class="day-progress-head">
           <span id="day-progress-text" class="day-progress-text tabular">Bugünkü İlerleme: ${progress.doneCount} / ${progress.totalCount} Set (%${progress.pct})</span>
+          <span id="day-progress-pct-pill" class="day-progress-pct-pill display-type tabular">%${progress.pct}</span>
         </div>
         <div class="day-progress-track" aria-hidden="true">
           <div id="day-progress-fill" class="day-progress-fill" style="transform: scaleX(${(progress.pct / 100).toFixed(3)})"></div>
         </div>
       </div>
       <label class="auto-timer-toggle">
-        <input type="checkbox" id="auto-rest-timer-toggle" ${prefs.autoRestTimer !== false ? "checked" : ""} />
+        <input
+          type="checkbox"
+          id="auto-rest-timer-toggle"
+          class="sr-only-input"
+          ${prefs.autoRestTimer !== false ? "checked" : ""}
+        />
+        <span class="toggle-switch-track" aria-hidden="true"><span class="toggle-switch-thumb"></span></span>
         <span>Set bitince sayacı başlat</span>
       </label>
     </div>

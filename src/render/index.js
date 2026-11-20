@@ -27,7 +27,7 @@ import {
 } from "../state.js";
 import { clearPhotoTimers, observeVisibleStages, startRestTimer } from "../media.js";
 import { openMediaModal } from "../modal.js";
-import { applyVariantToCard } from "./cards.js";
+import { applyVariantToCard, syncCardNextActiveStep } from "./cards.js";
 import { lucideIcon } from "./icons.js";
 import {
   renderBodyLogsSection,
@@ -349,12 +349,35 @@ export function bindCardInteractions() {
       repsInput.addEventListener("input", () => persistRow());
       repsInput.addEventListener("change", () => persistRow());
     }
+    // Braun/Hevy hızlı -/+ ağırlık ve tekrar adımlayıcıları
+    rowEl.querySelectorAll("[data-step-field]").forEach((stepBtn) => {
+      stepBtn.addEventListener("click", () => {
+        const field = stepBtn.dataset.stepField;
+        const delta = Number(stepBtn.dataset.stepDelta || 0);
+        const targetInput = field === "kg" ? kgInput : repsInput;
+        if (!targetInput || !Number.isFinite(delta)) return;
+
+        const rawVal = targetInput.value.trim();
+        const prevRaw = targetInput.dataset.prevVal ?? "";
+        const hasPrev = prevRaw !== "" && Number.isFinite(Number(prevRaw));
+        const base = rawVal !== "" ? Number(rawVal) : hasPrev ? Number(prevRaw) : 0;
+        const clamped = Math.max(0, base + delta);
+        const formatted =
+          field === "kg"
+            ? String(Math.min(500, Math.round(clamped * 2) / 2))
+            : String(Math.min(100, Math.round(clamped)));
+        targetInput.value = formatted;
+        persistRow();
+      });
+    });
+
     if (doneBtn) {
       doneBtn.addEventListener("click", () => {
         const nextDone = doneBtn.getAttribute("aria-pressed") !== "true";
         doneBtn.setAttribute("aria-pressed", String(nextDone));
         rowEl.closest(".pyramid-step")?.classList.toggle("is-done", nextDone);
         persistRow(nextDone);
+        syncCardNextActiveStep(rowEl.closest(".exercise-card"));
         updateActiveDayProgressUi();
         if (nextDone && loadPrefs().autoRestTimer !== false) {
           const secs = Number(rowEl.dataset.restSeconds) || 90;

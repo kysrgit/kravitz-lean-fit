@@ -29,16 +29,32 @@ export function observeVisibleStages() {
   const photoStages = Array.from(document.querySelectorAll(".is-photo-stage"));
   if (photoStages.length === 0) return;
 
-  if (shouldDisableAutoplay() || typeof IntersectionObserver === "undefined") {
-    return;
-  }
-
   const toggleStagePhase = (stage, forceStart = false) => {
     const next = forceStart || stage.dataset.photoPhase === "end" ? "start" : "end";
     stage.dataset.photoPhase = next;
-    const badge = stage.querySelector("[data-phase-badge]");
-    if (badge) badge.textContent = next === "start" ? "BAŞLANGIÇ" : "BİTİŞ";
+    const textEl = stage.querySelector("[data-phase-text]");
+    if (textEl) textEl.textContent = next === "start" ? "BAŞLANGIÇ" : "BİTİŞ";
   };
+
+  // Kullanıcı dokunduğunda veya tıkladığında başlangıç / bitiş pozisyonunu el ile değiştir
+  photoStages.forEach((stage) => {
+    const frame = stage.querySelector(".photo-stage-frame");
+    if (frame && !frame.dataset.phaseClickBound) {
+      frame.dataset.phaseClickBound = "1";
+      frame.addEventListener("click", () => {
+        toggleStagePhase(stage);
+        if (stage._photoTimer) {
+          window.clearInterval(stage._photoTimer);
+          stage._photoTimer = window.setInterval(() => toggleStagePhase(stage), 1600);
+          state.photoTimers.push(stage._photoTimer);
+        }
+      });
+    }
+  });
+
+  if (shouldDisableAutoplay() || typeof IntersectionObserver === "undefined") {
+    return;
+  }
 
   mediaVisibilityObserver = new IntersectionObserver(
     (entries) => {
@@ -142,6 +158,8 @@ export function formatTimerClock(seconds) {
   return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 }
 
+const TIMER_RING_CIRCUMFERENCE = 100.53;
+
 export function stopRestTimer({ clearStorage = true } = {}) {
   if (restTimerInterval) {
     window.clearInterval(restTimerInterval);
@@ -158,18 +176,21 @@ export function stopRestTimer({ clearStorage = true } = {}) {
   const bar = document.getElementById("rest-timer-bar");
   if (bar) {
     bar.hidden = true;
-    bar.classList.remove("is-finished");
+    bar.classList.remove("is-finished", "is-warning");
   }
 }
 
 export function startRestTimer(
   durationSeconds,
   label = "Set Arası Dinlenme",
-  existingEndAt = null
+  existingEndAt = null,
+  totalDurationOverride = null
 ) {
   const bar = document.getElementById("rest-timer-bar");
   const clockEl = document.getElementById("rest-timer-clock");
   const labelEl = document.getElementById("rest-timer-label");
+  const ringEl = document.getElementById("rest-timer-ring-fill");
+  const linearEl = document.getElementById("rest-timer-linear-fill");
   if (!bar || !clockEl || !labelEl) return;
 
   if (restTimerInterval) {
@@ -178,14 +199,18 @@ export function startRestTimer(
   }
 
   const endAt = existingEndAt || Date.now() + durationSeconds * 1000;
+  const totalDuration = Math.max(
+    15,
+    Number(totalDurationOverride || durationSeconds) || Math.ceil((endAt - Date.now()) / 1000) || 90
+  );
   try {
-    window.localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify({ endAt, label }));
+    window.localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify({ endAt, label, totalDuration }));
   } catch {
     // Yoksay
   }
 
   bar.hidden = false;
-  bar.classList.remove("is-finished");
+  bar.classList.remove("is-finished", "is-warning");
   labelEl.textContent = label;
   acquireScreenWakeLock();
 
@@ -193,8 +218,15 @@ export function startRestTimer(
     const remainingSec = (endAt - Date.now()) / 1000;
     if (remainingSec <= 0) {
       clockEl.textContent = "00:00";
-      labelEl.textContent = `${label} · Süre doldu, ağır sete hazır!`;
+      labelEl.textContent = `${label} · Süre doldu, sete hazır!`;
+      bar.classList.remove("is-warning");
       bar.classList.add("is-finished");
+      if (ringEl) {
+        ringEl.setAttribute("stroke-dashoffset", "0");
+      }
+      if (linearEl) {
+        linearEl.style.transform = "scaleX(1)";
+      }
       window.clearInterval(restTimerInterval);
       restTimerInterval = null;
       releaseScreenWakeLock();
@@ -206,6 +238,14 @@ export function startRestTimer(
       }
       return;
     }
+    const ratio = Math.max(0, Math.min(1, remainingSec / totalDuration));
+    if (ringEl) {
+      ringEl.setAttribute("stroke-dashoffset", (TIMER_RING_CIRCUMFERENCE * (1 - ratio)).toFixed(1));
+    }
+    if (linearEl) {
+      linearEl.style.transform = `scaleX(${ratio.toFixed(4)})`;
+    }
+    bar.classList.toggle("is-warning", remainingSec <= 10);
     clockEl.textContent = formatTimerClock(remainingSec);
   };
 
@@ -215,10 +255,32 @@ export function startRestTimer(
 
 export function initRestTimerControls() {
   const stopBtn = document.getElementById("rest-timer-stop-btn");
+  const minusBtn = document.getElementById("rest-timer-minus-btn");
   const plusBtn = document.getElementById("rest-timer-plus-btn");
 
   if (stopBtn) {
     stopBtn.addEventListener("click", () => stopRestTimer({ clearStorage: true }));
+  }
+
+  if (minusBtn) {
+    minusBtn.addEventListener("click", () => {
+      try {
+        const raw = window.localStorage.getItem(TIMER_STORAGE_KEY);
+        if (!raw) return;
+        const saved = JSON.parse(raw);
+        const remainingMs = Number(saved.endAt || Date.now()) - Date.now() - 15000;
+        const nextEndAt = Date.now() + Math.max(5000, remainingMs);
+        const totalDuration = Number(saved.totalDuration) || 90;
+        startRestTimer(
+          Math.ceil((nextEndAt - Date.now()) / 1000),
+          saved.label || "Set Arası Dinlenme",
+          nextEndAt,
+          totalDuration
+        );
+      } catch {
+        // Yoksay
+      }
+    });
   }
 
   if (plusBtn) {
@@ -226,14 +288,16 @@ export function initRestTimerControls() {
       try {
         const raw = window.localStorage.getItem(TIMER_STORAGE_KEY);
         if (!raw) {
-          startRestTimer(15, "Ek Dinlenme");
+          startRestTimer(15, "Ek Dinlenme", null, 15);
           return;
         }
         const saved = JSON.parse(raw);
         const nextEndAt = Math.max(Date.now(), Number(saved.endAt || Date.now())) + 15000;
-        startRestTimer(15, saved.label || "Set Arası Dinlenme", nextEndAt);
+        const nextRemSec = Math.ceil((nextEndAt - Date.now()) / 1000);
+        const totalDuration = Math.max(Number(saved.totalDuration) || 90, nextRemSec);
+        startRestTimer(nextRemSec, saved.label || "Set Arası Dinlenme", nextEndAt, totalDuration);
       } catch {
-        startRestTimer(15, "Ek Dinlenme");
+        startRestTimer(15, "Ek Dinlenme", null, 15);
       }
     });
   }
@@ -244,10 +308,12 @@ export function initRestTimerControls() {
     if (raw) {
       const saved = JSON.parse(raw);
       if (saved && Number(saved.endAt) > Date.now()) {
+        const remSec = Math.ceil((Number(saved.endAt) - Date.now()) / 1000);
         startRestTimer(
-          Math.ceil((Number(saved.endAt) - Date.now()) / 1000),
+          remSec,
           saved.label || "Set Arası Dinlenme",
-          Number(saved.endAt)
+          Number(saved.endAt),
+          Number(saved.totalDuration) || remSec
         );
       } else {
         window.localStorage.removeItem(TIMER_STORAGE_KEY);
@@ -296,7 +362,16 @@ export function createMediaStageHtml({
           />
           <div class="photo-stage-vignette" aria-hidden="true"></div>
           <span class="order-badge">${escapeHtml(badgeText)}</span>
-          <span class="photo-phase-badge" data-phase-badge>BAŞLANGIÇ</span>
+          <button
+            type="button"
+            class="photo-phase-badge"
+            data-phase-badge
+            title="Başlangıç ve bitiş pozisyonu arasında geç"
+            aria-label="${escapeHtml(name)} pozisyon görünümünü değiştir"
+          >
+            <span class="phase-dot" aria-hidden="true"></span>
+            <span data-phase-text>BAŞLANGIÇ</span>
+          </button>
         </div>
         <div class="media-controls-bar">
           <button

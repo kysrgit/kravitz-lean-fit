@@ -884,15 +884,50 @@
 
     <!-- Salon İçi Dinlenme Geri Sayım Sayacı Çubuğu (klf:v1:timer) -->
     <aside id="rest-timer-bar" class="rest-timer-bar" aria-live="polite" hidden>
-      <div class="rest-timer-info">
-        <span id="rest-timer-label" class="rest-timer-label">Dinlenme Sayacı</span>
-        <strong id="rest-timer-clock" class="rest-timer-clock">02:30</strong>
+      <div class="rest-timer-lead">
+        <div class="rest-timer-ring-wrap" aria-hidden="true">
+          <svg class="rest-timer-ring-svg" viewBox="0 0 42 42" width="40" height="40">
+            <circle class="rest-timer-ring-track" cx="21" cy="21" r="16" />
+            <circle
+              id="rest-timer-ring-fill"
+              class="rest-timer-ring-fill"
+              cx="21"
+              cy="21"
+              r="16"
+              stroke-dasharray="100.53"
+              stroke-dashoffset="0"
+              transform="rotate(-90 21 21)"
+            />
+          </svg>
+        </div>
+        <div class="rest-timer-info">
+          <span id="rest-timer-label" class="rest-timer-label">Dinlenme Sayacı</span>
+          <strong id="rest-timer-clock" class="rest-timer-clock">02:30</strong>
+        </div>
       </div>
       <div class="rest-timer-actions">
-        <button type="button" id="rest-timer-plus-btn" class="timer-mini-btn">+15 sn</button>
+        <button
+          type="button"
+          id="rest-timer-minus-btn"
+          class="timer-mini-btn"
+          aria-label="Dinlenme süresinden 15 saniye azalt"
+        >
+          -15s
+        </button>
+        <button
+          type="button"
+          id="rest-timer-plus-btn"
+          class="timer-mini-btn"
+          aria-label="Dinlenme süresine 15 saniye ekle"
+        >
+          +15s
+        </button>
         <button type="button" id="rest-timer-stop-btn" class="timer-mini-btn is-stop">
           Durdur
         </button>
+      </div>
+      <div class="rest-timer-linear-track" aria-hidden="true">
+        <div id="rest-timer-linear-fill" class="rest-timer-linear-fill"></div>
       </div>
     </aside>
 

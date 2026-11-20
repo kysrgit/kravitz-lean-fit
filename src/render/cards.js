@@ -23,7 +23,22 @@ function formatSetPrevBadge(prevSet, todaySet) {
   if (todaySet && (todaySet.kg !== "" || todaySet.reps !== "")) {
     return `Bugün: ${todaySet.kg !== "" ? `${todaySet.kg} kg` : "-"} × ${todaySet.reps !== "" ? `${todaySet.reps} tek.` : "-"}`;
   }
-  return "Önceki: Henüz kayıt yok";
+  return "Önceki: —";
+}
+
+// Kart içinde tamamlanmamış ilk seti sıradaki aktif set olarak işaretler
+export function syncCardNextActiveStep(cardEl) {
+  if (!cardEl) return;
+  const steps = Array.from(cardEl.querySelectorAll(".pyramid-step"));
+  let assignedNext = false;
+  steps.forEach((stepEl) => {
+    const isDone = stepEl.classList.contains("is-done");
+    const isNext = !isDone && !assignedNext;
+    if (isNext) assignedNext = true;
+    stepEl.classList.toggle("is-next-active", isNext);
+  });
+  const allDone = steps.length > 0 && steps.every((s) => s.classList.contains("is-done"));
+  cardEl.classList.toggle("is-card-complete", allDone);
 }
 
 export function createAlternativesBoxHtml(variants, activeIndex = 0) {
@@ -67,12 +82,12 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
   const activeVariant = variants[initialVariantIndex] || variants[0];
 
   const restSeconds = exercise.restSeconds || 90;
-  const restWindowLabel =
-    restSeconds >= 120
-      ? `${restSeconds} sn (2-3 dk · Bileşik)`
-      : `${restSeconds} sn (60-90 sn · İzolasyon)`;
   const activeLogKey = getExerciseLogKey(exercise.id, activeVariant.index, variants);
   const { todaySession, previousSession } = getExerciseSetHistory(activeLogKey);
+  const firstPendingIdx = exercise.pyramidSets.findIndex(
+    (step) => !todaySession?.sets?.[String(step.set)]?.done
+  );
+  const allSetsDone = exercise.pyramidSets.length > 0 && firstPendingIdx === -1;
 
   const pyramidHtml = exercise.pyramidSets
     .map((step, index) => {
@@ -85,20 +100,17 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
       const todaySet = todaySession?.sets?.[String(step.set)] || null;
       const prevSet = previousSession?.sets?.[String(step.set)] || null;
       const isDone = Boolean(todaySet?.done);
+      const isNextActive = !isDone && index === firstPendingIdx;
       const prevBadgeText = formatSetPrevBadge(prevSet, todaySet);
 
       return `
-        <div class="pyramid-step ${step.isWarmup ? "is-warmup" : ""} ${isDone ? "is-done" : ""}">
-          <div class="pyramid-step-main">
+        <div class="pyramid-step ${step.isWarmup ? "is-warmup" : ""} ${isDone ? "is-done" : ""} ${isNextActive ? "is-next-active" : ""}">
+          <div class="pyramid-step-head">
             <div class="set-head-group">
               <span class="set-phase-badge ${step.isWarmup ? "is-warmup" : "is-work"}">${phaseBadgeText}</span>
               <span class="set-num">${escapeHtml(setLabel)}</span>
-            </div>
-            <div class="set-bar-wrap">
+              <span class="set-load-sep" aria-hidden="true">·</span>
               <span class="set-load">${escapeHtml(step.load)}</span>
-              <div class="set-bar-track" aria-hidden="true">
-                <div class="set-bar ${step.isWarmup ? "is-warmup" : ""}" style="--bar-scale: ${scaleRatio}"></div>
-              </div>
             </div>
             <span class="set-reps tabular">${escapeHtml(step.reps)}</span>
           </div>
@@ -112,32 +124,82 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
           >
             <span class="set-prev-badge" data-set-prev>${escapeHtml(prevBadgeText)}</span>
             <div class="set-log-inputs">
-              <label class="set-log-field">
-                <span>kg</span>
+              <div
+                class="stepper-group"
+                role="group"
+                aria-label="${escapeHtml(activeVariant.name)} ${escapeHtml(step.set)}. set ağırlık"
+              >
+                <button
+                  type="button"
+                  class="stepper-btn"
+                  data-step-field="kg"
+                  data-step-delta="-2.5"
+                  aria-label="2.5 kg azalt"
+                  title="-2.5 kg"
+                >
+                  ${lucideIcon("minus", { size: 13 })}
+                </button>
                 <input
                   type="number"
                   min="0"
                   max="500"
                   step="0.5"
                   inputmode="decimal"
+                  placeholder="kg"
                   aria-label="${escapeHtml(activeVariant.name)} ${escapeHtml(step.set)}. set kg"
                   data-log-field="kg"
+                  data-prev-val="${escapeHtml(prevSet?.kg ?? "")}"
                   value="${escapeHtml(todaySet?.kg ?? "")}"
                 />
-              </label>
-              <label class="set-log-field">
-                <span>Tekrar</span>
+                <button
+                  type="button"
+                  class="stepper-btn"
+                  data-step-field="kg"
+                  data-step-delta="2.5"
+                  aria-label="2.5 kg artır"
+                  title="+2.5 kg"
+                >
+                  ${lucideIcon("plus", { size: 13 })}
+                </button>
+              </div>
+              <div
+                class="stepper-group"
+                role="group"
+                aria-label="${escapeHtml(activeVariant.name)} ${escapeHtml(step.set)}. set tekrar"
+              >
+                <button
+                  type="button"
+                  class="stepper-btn"
+                  data-step-field="reps"
+                  data-step-delta="-1"
+                  aria-label="1 tekrar azalt"
+                  title="-1 tekrar"
+                >
+                  ${lucideIcon("minus", { size: 13 })}
+                </button>
                 <input
                   type="number"
                   min="0"
                   max="100"
                   step="1"
                   inputmode="numeric"
+                  placeholder="tek"
                   aria-label="${escapeHtml(activeVariant.name)} ${escapeHtml(step.set)}. set tekrar"
                   data-log-field="reps"
+                  data-prev-val="${escapeHtml(prevSet?.reps ?? "")}"
                   value="${escapeHtml(todaySet?.reps ?? "")}"
                 />
-              </label>
+                <button
+                  type="button"
+                  class="stepper-btn"
+                  data-step-field="reps"
+                  data-step-delta="1"
+                  aria-label="1 tekrar artır"
+                  title="+1 tekrar"
+                >
+                  ${lucideIcon("plus", { size: 13 })}
+                </button>
+              </div>
               <button
                 type="button"
                 class="set-done-btn"
@@ -149,6 +211,9 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
                 ${lucideIcon("check", { size: 16 })}
               </button>
             </div>
+          </div>
+          <div class="set-bar-track" aria-hidden="true">
+            <div class="set-bar ${step.isWarmup ? "is-warmup" : ""}" style="--bar-scale: ${scaleRatio}"></div>
           </div>
         </div>
       `;
@@ -172,7 +237,7 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
 
   return `
     <article
-      class="exercise-card"
+      class="exercise-card ${allSetsDone ? "is-card-complete" : ""}"
       data-exercise-id="${escapeHtml(exercise.id)}"
       data-variant-kind="exercise"
       data-item-id="${escapeHtml(exercise.id)}"
@@ -191,17 +256,16 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
         <div class="pyramid-box">
           <div class="pyramid-box-title-row">
             <span class="pyramid-box-title">Piramit Merdiveni (${maxSets} Set)</span>
-            <div class="rest-timer-trigger-wrap">
-              <span class="rest-duration-badge">${lucideIcon("clock", { size: 14 })} Dinlenme: ${escapeHtml(restWindowLabel)}</span>
-              <button
-                type="button"
-                class="start-rest-timer-btn"
-                data-start-timer="${escapeHtml(restSeconds)}"
-                data-timer-label="${escapeHtml(activeVariant.name)} Dinlenme"
-              >
-                ${lucideIcon("play", { size: 14 })} Sayacı Başlat
-              </button>
-            </div>
+            <button
+              type="button"
+              class="start-rest-timer-btn"
+              data-start-timer="${escapeHtml(restSeconds)}"
+              data-timer-label="${escapeHtml(activeVariant.name)} Dinlenme"
+            >
+              ${lucideIcon("clock", { size: 14 })}
+              <span>${escapeHtml(restSeconds)} sn · Dinlenme Başlat</span>
+              ${lucideIcon("play", { size: 13 })}
+            </button>
           </div>
           <p class="rest-strategy-note">${coreItem ? "21 core yap, kalan sürede dinlenerek çalışma setine toparlanmış gir (Schoenfeld ve ark., 2016)." : "Tam pasif dinlenme: ağır sete nefes ve gövde kilidin tam toparlanmış gir (Schoenfeld ve ark., 2016)."}</p>
           <div class="pyramid-steps">${pyramidHtml}</div>
@@ -526,8 +590,16 @@ export function applyVariantToCard(cardEl, variants, variantIndex) {
       const repsInput = rowEl.querySelector('[data-log-field="reps"]');
       const doneBtn = rowEl.querySelector("[data-set-done-btn]");
       const prevBadge = rowEl.querySelector("[data-set-prev]");
-      if (kgInput) kgInput.value = todaySet?.kg ?? "";
-      if (repsInput) repsInput.value = todaySet?.reps ?? "";
+      if (kgInput) {
+        kgInput.value = todaySet?.kg ?? "";
+        kgInput.dataset.prevVal = prevSet?.kg ?? "";
+        kgInput.setAttribute("aria-label", `${variant.name} ${setNum}. set kg`);
+      }
+      if (repsInput) {
+        repsInput.value = todaySet?.reps ?? "";
+        repsInput.dataset.prevVal = prevSet?.reps ?? "";
+        repsInput.setAttribute("aria-label", `${variant.name} ${setNum}. set tekrar`);
+      }
       if (doneBtn) {
         doneBtn.setAttribute("aria-pressed", String(Boolean(todaySet?.done)));
         doneBtn.setAttribute(
@@ -540,6 +612,7 @@ export function applyVariantToCard(cardEl, variants, variantIndex) {
         prevBadge.textContent = formatSetPrevBadge(prevSet, todaySet);
       }
     });
+    syncCardNextActiveStep(cardEl);
   }
 
   // Başlık, etiket ve ipuçlarını güncelle
