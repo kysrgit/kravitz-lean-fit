@@ -275,7 +275,9 @@ export function bindCardInteractions() {
       const kgVal = kgInput ? kgInput.value.trim() : "";
       const repsVal = repsInput ? repsInput.value.trim() : "";
       const doneState =
-        explicitDone === undefined ? doneBtn?.getAttribute("aria-pressed") === "true" : explicitDone;
+        explicitDone === undefined
+          ? doneBtn?.getAttribute("aria-pressed") === "true"
+          : explicitDone;
       saveSetLogEntry(logKey, setNum, kgVal, repsVal, doneState);
       if (badgeEl && (kgVal !== "" || repsVal !== "")) {
         badgeEl.textContent = `Kaydedildi: ${kgVal || "-"} kg × ${repsVal || "-"} tek.`;
@@ -301,8 +303,10 @@ export function bindCardInteractions() {
         if (nextDone && loadPrefs().autoRestTimer !== false) {
           const secs = Number(rowEl.dataset.restSeconds) || 90;
           const cardTitle =
-            rowEl.closest(".exercise-card")?.querySelector(".exercise-title")?.textContent?.trim() ||
-            "Set";
+            rowEl
+              .closest(".exercise-card")
+              ?.querySelector(".exercise-title")
+              ?.textContent?.trim() || "Set";
           startRestTimer(secs, `${cardTitle} · ${setNum}. Set Dinlenme`);
         }
       });

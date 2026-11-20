@@ -98,7 +98,8 @@ function solveDayGrams(dailyMeals, dayTargets, isRest) {
   const baseFatM = sumBaseRefMacros("fat");
 
   // 1. Ön ölçek tahmini (çapraz makroları dikkate al)
-  let cScaleEst = baseCarbM.c > 0 ? Math.max(0.35, (dayTargets.carbsG - fixedM.c) / baseCarbM.c) : 1;
+  let cScaleEst =
+    baseCarbM.c > 0 ? Math.max(0.35, (dayTargets.carbsG - fixedM.c) / baseCarbM.c) : 1;
   let fScaleEst = baseFatM.f > 0 ? Math.max(0.2, (dayTargets.fatG - fixedM.f) / baseFatM.f) : 1;
 
   // 2. Protein kaynaklarını hedef proteine göre ölçekle
@@ -138,7 +139,8 @@ function solveDayGrams(dailyMeals, dayTargets, isRest) {
     (fixedM.f + actualProtM.f + actualFatM.f) * 9;
   const remainingKcalForCarb = Math.max(200, dayTargets.kcal - usedKcalBeforeCarb);
   const baseCarbKcal = baseCarbM.p * 4 + baseCarbM.c * 4 + baseCarbM.f * 9;
-  const cScale = baseCarbKcal > 0 ? Math.max(0.35, Math.min(2.5, remainingKcalForCarb / baseCarbKcal)) : 1;
+  const cScale =
+    baseCarbKcal > 0 ? Math.max(0.35, Math.min(2.5, remainingKcalForCarb / baseCarbKcal)) : 1;
   applyScale("carb", cScale);
   const actualCarbM = sumRole("carb");
 
@@ -155,7 +157,10 @@ function solveDayGrams(dailyMeals, dayTargets, isRest) {
 
   // 6. Günlük toplam kaloriyi hedefle (±25 kcal) hizalamak için en büyük karbonhidrat kalemine 5 g ince ayar uygula
   const sumAllKcal = () =>
-    flatItems.reduce((sum, entry) => sum + calcMacrosFromGrams(entry.grams, entry.ing.per100).kcal, 0);
+    flatItems.reduce(
+      (sum, entry) => sum + calcMacrosFromGrams(entry.grams, entry.ing.per100).kcal,
+      0
+    );
 
   const adjustableCarb = flatItems
     .filter((e) => e.ing.role === "carb" && e.grams > 0 && (e.ing.roundStep || 5) <= 10)
@@ -225,7 +230,7 @@ export function scaleMealPlanForProfile(dailyMeals, profileTargets) {
     const items = (meal.ingredients || [])
       .map((ing) => {
         const tg = trainSolved.gramsByItem.get(`${mealIdx}:${ing.id}`) ?? ing.baseG;
-        const rg = restSolved.gramsByItem.get(`${mealIdx}:${ing.id}`) ?? (ing.restG ?? ing.baseG);
+        const rg = restSolved.gramsByItem.get(`${mealIdx}:${ing.id}`) ?? ing.restG ?? ing.baseG;
         return formatIngredientLine(ing, tg, rg);
       })
       .filter(Boolean);

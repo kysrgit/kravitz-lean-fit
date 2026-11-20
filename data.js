@@ -308,8 +308,7 @@ export const CORE_LIBRARY = {
         sourceUrl: "https://musclewiki.com/exercise/laying-leg-raises",
         formCue:
           "Sırtüstü yat, eller kalça yanında veya sehpaya sabit. Bel boşluğunu yere bastırarak bacakları kontrollü kaldırıp yere değmeden durdur.",
-        gymTip:
-          "İniş fazını 2 saniyeye yaymak alt karındaki gerilimi barfiks kadar yoğun tutar.",
+        gymTip: "İniş fazını 2 saniyeye yaymak alt karındaki gerilimi barfiks kadar yoğun tutar.",
       },
       {
         id: "reverse_crunch_alt",
@@ -457,8 +456,7 @@ export const CORE_LIBRARY = {
     sourceUrl: "https://musclewiki.com/exercise/bodyweight-situp",
     formCue:
       "Ayakları sabitle veya dizleri bük, beli sertçe yere vurmadan karın kaslarınla gövdeyi yukarı kaldırıp kontrollü geri in.",
-    gymTip:
-      "Salonda eğimli mekik sehpası doluysa veya yoksa düz mat üstünde aynı tempoyla uygula.",
+    gymTip: "Salonda eğimli mekik sehpası doluysa veya yoksa düz mat üstünde aynı tempoyla uygula.",
     alternatives: [
       {
         id: "bodyweight_crunch_dc",
@@ -1450,8 +1448,7 @@ export const WORKOUT_DAYS = [
           { set: 3, reps: "10-12 Tekrar", load: "Ağır (Tepe ve Dipte 1 sn Bekle)" },
         ],
         coreRestId: "reverse_crunch",
-        coreRestLabel:
-          "Set Arası Aktif Dinlenme: 21× Reverse Crunch + Sonra Bitiriş Kardiyosu",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Reverse Crunch + Sonra Bitiriş Kardiyosu",
         tips: [
           "Kalf hareketini zıplayarak değil, topuğu tam aşağı esnetip tam parmak ucuna çıkarak yap.",
           "Hemen ardından koşu bandında tutunmadan 10 dakika eğimli yürüyüşle seansı kapat.",
@@ -1510,7 +1507,12 @@ export const WORKOUT_DAYS = [
         videoKey: "wide_grip_lat_pulldown",
         sourceUrl: "https://musclewiki.com/exercise/machine-pulldown",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "20-30 Tekrar", load: "Çok Hafif — Isınma & Kanat Aktivasyonu" },
+          {
+            set: 1,
+            isWarmup: true,
+            reps: "20-30 Tekrar",
+            load: "Çok Hafif — Isınma & Kanat Aktivasyonu",
+          },
           { set: 2, reps: "12-15 Tekrar", load: "Orta Ağırlık" },
           { set: 3, reps: "8-10 Tekrar", load: "Zorlayıcı Ağırlık" },
           { set: 4, reps: "5-7 Tekrar", load: "Ağır & Kontrollü" },
@@ -1787,7 +1789,12 @@ export const WORKOUT_DAYS = [
         videoKey: "goblet_squat",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-goblet-squat",
         pyramidSets: [
-          { set: 1, isWarmup: true, reps: "20-30 Tekrar", load: "Çok Hafif — Isınma & Kalça Mobilitesi" },
+          {
+            set: 1,
+            isWarmup: true,
+            reps: "20-30 Tekrar",
+            load: "Çok Hafif — Isınma & Kalça Mobilitesi",
+          },
           { set: 2, reps: "12-15 Tekrar", load: "Orta Ağırlık" },
           { set: 3, reps: "8-10 Tekrar", load: "Zorlayıcı Ağırlık" },
           { set: 4, reps: "5-7 Tekrar", load: "Ağır / Dik Gövde" },
@@ -1947,7 +1954,11 @@ export const WORKOUT_DAYS = [
         videoKey: "renegade_row_pushup",
         sourceUrl: "https://musclewiki.com/exercise/dumbbell-renegade-row",
         pyramidSets: [
-          { set: 1, reps: "16-20 Tekrar (Toplam)", load: "Hafif-Orta Dambıl · Çift Taraflı Kontrol" },
+          {
+            set: 1,
+            reps: "16-20 Tekrar (Toplam)",
+            load: "Hafif-Orta Dambıl · Çift Taraflı Kontrol",
+          },
           { set: 2, reps: "12-16 Tekrar (Toplam)", load: "Orta Dambıl" },
           { set: 3, reps: "10-12 Tekrar (Toplam)", load: "Ağır Dambıl" },
         ],
@@ -2078,7 +2089,8 @@ const HIP_THRUST_EXERCISE = {
       name: "Dumbbell Romanian Deadlift",
       turkishName: "Dambıl İle Romen Deadlift",
       equipment: "Çift Dambıl",
-      whenToUse: "Hip Thrust sehpası veya bar doluysa arka bacak ve kalçayı aynı seans tamamlamak için.",
+      whenToUse:
+        "Hip Thrust sehpası veya bar doluysa arka bacak ve kalçayı aynı seans tamamlamak için.",
       videoKey: "db_romanian_deadlift",
       sourceUrl: "https://musclewiki.com/exercise/dumbbell-romanian-deadlift",
       tips: [
@@ -2156,9 +2168,7 @@ const SINGLE_ARM_ROW_EXERCISE = {
 function cloneExercise(sourceEx, { order, stripWarmup = false, coreRestId, coreRestLabel } = {}) {
   const baseSets = sourceEx.pyramidSets || [];
   const nextSets = stripWarmup
-    ? baseSets
-        .filter((s) => !s.isWarmup)
-        .map((s, idx) => ({ ...s, set: idx + 1, isWarmup: false }))
+    ? baseSets.filter((s) => !s.isWarmup).map((s, idx) => ({ ...s, set: idx + 1, isWarmup: false }))
     : baseSets.map((s) => ({ ...s }));
   return {
     ...sourceEx,
@@ -2229,7 +2239,8 @@ export const THREE_DAY_ABA_DAYS = [
       cloneExercise(BASE_EXERCISE_MAP["seated-leg-curl"], {
         order: 4,
         coreRestId: null,
-        coreRestLabel: "Tam Pasif Dinlenme — Sonraki hareketler için bacak ve core enerjisini koru.",
+        coreRestLabel:
+          "Tam Pasif Dinlenme — Sonraki hareketler için bacak ve core enerjisini koru.",
       }),
       cloneExercise(BASE_EXERCISE_MAP["face-pull"], { order: 5 }),
       cloneExercise(BASE_EXERCISE_MAP["dumbbell-bicep-curl"], { order: 6 }),
@@ -2261,8 +2272,7 @@ export const THREE_DAY_ULF_DAYS = [
     shortTitle: "Alt Vücut (Çar)",
     fullTitle: "2. GÜN (3G-A): Alt Vücut (Quadriceps + Hamstring + Kalça + Kalf)",
     duration: "50 - 60 Dakika",
-    targetGoal:
-      "Çarşamba gününü tamamen alt vücut kuvvetine ve arka zincir gelişimine ayırır.",
+    targetGoal: "Çarşamba gününü tamamen alt vücut kuvvetine ve arka zincir gelişimine ayırır.",
     scheduleNote: "3 Günlük Mod (Üst / Alt / Full): Çarşamba · ≥2×/Hafta Frekans",
     exercises: [
       cloneExercise(BASE_EXERCISE_MAP["leg-press"], { order: 1 }),
@@ -2278,8 +2288,7 @@ export const THREE_DAY_ULF_DAYS = [
     shortTitle: "Full-Body (Cum)",
     fullTitle: "3. GÜN (3G-FB): Full-Body Kapanış (Alt + Göğüs + Sırt + Omuz + Kol)",
     duration: "55 - 65 Dakika",
-    targetGoal:
-      "Üst ve alt vücut dahil tüm büyük kas gruplarında haftada ≥2× frekansı tamamlar.",
+    targetGoal: "Üst ve alt vücut dahil tüm büyük kas gruplarında haftada ≥2× frekansı tamamlar.",
     scheduleNote: "3 Günlük Mod (Üst / Alt / Full): Cuma · ≥2×/Hafta Frekans",
     exercises: [
       cloneExercise(BASE_EXERCISE_MAP["goblet-squat-day4"], { order: 1 }),

@@ -481,8 +481,9 @@ function wrapSummaryTableCard(headers, rowsHtml, headingHtml = "") {
 // Tüm programın yazılı ve tablolu özetini tek sayfada render eder
 export function renderFullSummaryTab() {
   const activeDays = getProgramDays(state.programMode);
-  const weeklyScheduleRowsHtml = activeDays.map(
-    (day) => `
+  const weeklyScheduleRowsHtml = activeDays
+    .map(
+      (day) => `
       <tr>
         <td data-label="Gün"><strong>${escapeHtml(day.tabLabel)}</strong><div class="table-alt-meta">${escapeHtml(day.shortTitle)}</div></td>
         <td data-label="Odak Bölgeler">${escapeHtml(day.fullTitle.replace(/^\d+\.\s*GÜN(?:\s*\([^)]+\))?:\s*/i, ""))}</td>
@@ -495,11 +496,12 @@ export function renderFullSummaryTab() {
         </td>
       </tr>
     `
-  ).join("");
+    )
+    .join("");
 
-  const allDaysTablesHtml = activeDays.map((day) =>
-    createDaySummaryTableHtml(day, { showDayHeader: true, showJumpBtn: true })
-  ).join("");
+  const allDaysTablesHtml = activeDays
+    .map((day) => createDaySummaryTableHtml(day, { showDayHeader: true, showJumpBtn: true }))
+    .join("");
 
   const coreRowsHtml = Object.values(CORE_LIBRARY)
     .map((core) => {
@@ -893,13 +895,8 @@ export function renderNutritionProtocol() {
   const { summary, fastingWindows, fastedTrainingNote, morningFastRules, dailyMeals, waistRules } =
     NUTRITION_PROTOCOL;
   const profileTargets = getActiveProfileTargets();
-  const {
-    trainingTargetKcal,
-    proteinTargetG,
-    carbsTargetG,
-    fatTargetG,
-    scaledMeals,
-  } = scaleMealPlanForProfile(dailyMeals, profileTargets);
+  const { trainingTargetKcal, proteinTargetG, carbsTargetG, fatTargetG, scaledMeals } =
+    scaleMealPlanForProfile(dailyMeals, profileTargets);
   const trainingDayTotals = sumMealTotals(scaledMeals);
   const restDayTotals = sumMealTotals(scaledMeals, true);
 

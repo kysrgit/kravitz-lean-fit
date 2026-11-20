@@ -198,7 +198,8 @@ function initEventListeners() {
           state.viewMode = ["both", "table-only", "cards-only"].includes(nextPrefs.viewMode)
             ? nextPrefs.viewMode
             : "both";
-          state.activeTab = nextPrefs.activeTab || getProgramDays(state.programMode)[0]?.id || "day-1";
+          state.activeTab =
+            nextPrefs.activeTab || getProgramDays(state.programMode)[0]?.id || "day-1";
           renderTanitaSection();
           renderBodyLogsSection();
           renderTabs();
