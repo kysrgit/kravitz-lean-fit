@@ -43,14 +43,14 @@
 
   .modal-dialog {
     width: 100%;
-    max-width: 1040px;
+    max-width: 1080px;
     max-height: 92dvh;
     overflow-y: auto;
-    background: var(--stage-1);
+    background: var(--surface-elevated);
     border: 1px solid var(--line);
     border-top: 3px solid var(--day-accent);
     border-radius: var(--radius-sharp);
-    box-shadow: 0 28px 65px var(--shadow-deep);
+    box-shadow: var(--shadow-float);
     opacity: 1;
     transform: translateY(0) scale(1);
     transition:
@@ -61,7 +61,7 @@
   @starting-style {
     dialog.modal-backdrop[open] .modal-dialog {
       opacity: 0;
-      transform: translateY(16px) scale(0.985);
+      transform: translateY(14px) scale(0.95);
     }
   }
 
@@ -132,7 +132,24 @@
     padding: 20px 22px 24px;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 16px;
+  }
+
+  .modal-stage-col,
+  .modal-info-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  @media (min-width: 900px) {
+    .modal-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1.32fr) minmax(300px, 0.95fr);
+      gap: 20px;
+      align-items: start;
+    }
   }
 
   .modal-variants-bar {
@@ -160,7 +177,8 @@
     border: 1px solid var(--line);
   }
 
-  .modal-video-container:has(.modal-source-card) {
+  .modal-video-container:has(.modal-source-card),
+  .modal-video-container:has(.modal-photo-stage) {
     aspect-ratio: auto;
     max-height: none;
   }
@@ -254,10 +272,20 @@
       border-bottom: none;
     }
 
+    .modal-dialog::before {
+      content: "";
+      display: block;
+      width: 40px;
+      height: 4px;
+      margin: 10px auto 2px;
+      border-radius: 999px;
+      background: var(--line-highlight);
+    }
+
     @starting-style {
       dialog.modal-backdrop[open] .modal-dialog {
         opacity: 0;
-        transform: translateY(28px);
+        transform: translateY(24px) scale(0.97);
       }
     }
 
@@ -286,6 +314,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    padding: 12px;
   }
 
   .modal-photo-tabs {
@@ -295,7 +324,7 @@
 
   .modal-photo-grid {
     display: grid;
-    grid-template-columns: 1fr 120px;
+    grid-template-columns: 1fr 104px;
     gap: 10px;
     align-items: start;
   }
@@ -305,7 +334,7 @@
     aspect-ratio: 3 / 2;
     object-fit: cover;
     border: 1px solid var(--accent-border);
-    filter: grayscale(0.25) contrast(1.08);
+    filter: grayscale(0.08) contrast(1.06);
   }
 
   .modal-photo-thumb-btn {

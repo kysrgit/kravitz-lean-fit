@@ -648,6 +648,10 @@
     border-bottom: none;
   }
 
+  .workout-summary-table tbody tr:nth-child(even) {
+    background: color-mix(in oklch, var(--stage-2) 45%, transparent);
+  }
+
   .workout-summary-table tbody tr:hover {
     background: var(--stage-2);
   }
@@ -914,7 +918,7 @@
   /* Özet Sayfası İçi Hızlı Bölüm Atlama Çubuğu */
   .summary-quick-nav {
     position: sticky;
-    top: 138px;
+    top: 66px;
     z-index: var(--z-header);
     display: flex;
     align-items: center;
@@ -962,8 +966,9 @@
 
   .summary-section-block,
   .summary-table-card[id],
-  #content-area {
-    scroll-margin-top: 204px;
+  #content-area,
+  #tanita-drawer {
+    scroll-margin-top: 84px;
   }
 
   /* ==========================================================================
@@ -1222,7 +1227,7 @@
     }
 
     .summary-quick-nav {
-      top: 8px;
+      top: 58px;
       padding: 7px 8px;
     }
 
@@ -1233,8 +1238,9 @@
 
     .summary-section-block,
     .summary-table-card[id],
-    #content-area {
-      scroll-margin-top: 120px;
+    #content-area,
+    #tanita-drawer {
+      scroll-margin-top: 68px;
     }
 
     /* Sıfır Yatay Kaydırmalı Mobil Kart-Tablo Görünümü */
@@ -1368,6 +1374,7 @@
     .template-subcard,
     .day-banner,
     .macro-card,
+    .macro-split-panel,
     .sources-panel,
     .source-item {
       background: var(--print-bg) !important;

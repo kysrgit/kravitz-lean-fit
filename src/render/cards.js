@@ -23,7 +23,7 @@ function formatSetPrevBadge(prevSet, todaySet) {
   if (todaySet && (todaySet.kg !== "" || todaySet.reps !== "")) {
     return `Bugün: ${todaySet.kg !== "" ? `${todaySet.kg} kg` : "-"} × ${todaySet.reps !== "" ? `${todaySet.reps} tek.` : "-"}`;
   }
-  return "Önceki: —";
+  return "";
 }
 
 // Kart içinde tamamlanmamış ilk seti sıradaki aktif set olarak işaretler
@@ -255,16 +255,17 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
 
         <div class="pyramid-box">
           <div class="pyramid-box-title-row">
-            <span class="pyramid-box-title">Piramit Merdiveni (${maxSets} Set)</span>
+            <span class="pyramid-box-title">Piramit (${maxSets} Set)</span>
             <button
               type="button"
               class="start-rest-timer-btn"
               data-start-timer="${escapeHtml(restSeconds)}"
               data-timer-label="${escapeHtml(activeVariant.name)} Dinlenme"
+              aria-label="${escapeHtml(restSeconds)} saniye dinlenme sayacını başlat"
             >
-              ${lucideIcon("clock", { size: 14 })}
-              <span>${escapeHtml(restSeconds)} sn · Dinlenme Başlat</span>
-              ${lucideIcon("play", { size: 13 })}
+              ${lucideIcon("clock", { size: 13 })}
+              <span>${escapeHtml(restSeconds)} sn · Başlat</span>
+              ${lucideIcon("play", { size: 12 })}
             </button>
           </div>
           <p class="rest-strategy-note">${coreItem ? "21 core yap, kalan sürede dinlenerek çalışma setine toparlanmış gir (Schoenfeld ve ark., 2016)." : "Tam pasif dinlenme: ağır sete nefes ve gövde kilidin tam toparlanmış gir (Schoenfeld ve ark., 2016)."}</p>
