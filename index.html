@@ -224,6 +224,26 @@
           <polyline points="17 8 12 3 7 8" />
           <line x1="12" x2="12" y1="3" y2="15" />
         </symbol>
+        <symbol id="icon-minus" viewBox="0 0 24 24">
+          <path d="M5 12h14" />
+        </symbol>
+        <symbol id="icon-plus" viewBox="0 0 24 24">
+          <path d="M5 12h14" />
+          <path d="M12 5v14" />
+        </symbol>
+        <symbol id="icon-arrow-down" viewBox="0 0 24 24">
+          <path d="M12 5v14" />
+          <path d="m19 12-7 7-7-7" />
+        </symbol>
+        <symbol id="icon-user" viewBox="0 0 24 24">
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </symbol>
+        <symbol id="icon-activity" viewBox="0 0 24 24">
+          <path
+            d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"
+          />
+        </symbol>
       </defs>
     </svg>
 
@@ -254,7 +274,8 @@
             >
               <use href="#icon-clipboard-list"></use>
             </svg>
-            <span>Yazılı &amp; Tablo Özet</span>
+            <span class="label-full">Yazılı &amp; Tablo Özet</span>
+            <span class="label-short">Özet</span>
           </button>
 
           <button
@@ -264,9 +285,23 @@
             aria-expanded="false"
             aria-controls="tanita-drawer"
           >
-            <span>Profilim</span>
             <svg
               class="icon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <use href="#icon-user"></use>
+            </svg>
+            <span>Profilim</span>
+            <svg
+              class="icon chevron-icon"
               width="16"
               height="16"
               viewBox="0 0 24 24"
@@ -282,6 +317,7 @@
           </button>
         </div>
       </div>
+      <div id="scroll-progress-bar" class="scroll-progress-bar" aria-hidden="true"></div>
     </header>
 
     <main class="container main-content">
@@ -307,8 +343,10 @@
           >
             <use href="#icon-shield-alert"></use>
           </svg>
-          <strong>Sağlık Uyarısı:</strong> Bu içerik tıbbi tavsiye değildir; kronik rahatsızlık,
-          ilaç kullanımı veya ağrı varsa hekime danışın.
+          <span>
+            <strong>Sağlık Uyarısı:</strong> Bu içerik tıbbi tavsiye değildir; kronik rahatsızlık,
+            ilaç kullanımı veya ağrı varsa hekime danışın.
+          </span>
         </div>
         <button type="button" id="medical-disclaimer-accept" class="disclaimer-btn">
           Okudum, Anladım
@@ -318,27 +356,133 @@
       <!-- Hero ve Sistem Kuralları Bölümü -->
       <section class="hero-section" aria-labelledby="hero-arena-heading">
         <div class="arena-spotlight" aria-hidden="true"></div>
-        <div class="hero-copy">
-          <div class="hero-kicker-row">
-            <span class="pill-tag">Kravitz'ten Esinlenilmiş Uyarlama · 45-60 Dk</span>
-            <span class="hero-discipline-tag"
-              >SPIDER-MAN &amp; BRUCE LEE SİLÜETİ · PİRAMİT + 21’LER CORE</span
+        <div class="hero-top-grid">
+          <div class="hero-copy">
+            <div class="hero-kicker-row">
+              <span class="pill-tag">Kravitz'ten Esinlenilmiş Uyarlama · 45-60 Dk</span>
+              <span class="hero-discipline-tag"
+                >SPIDER-MAN &amp; BRUCE LEE SİLÜETİ · PİRAMİT + 21’LER CORE</span
+              >
+            </div>
+            <h2
+              id="hero-arena-heading"
+              class="hero-arena-title display-type"
+              aria-label="Kravitz Lean and Fit: Piramit ve 21'ler Core Sistemi"
             >
+              <span class="hero-word-solid" data-hero-line="solid" aria-hidden="true">KRAVITZ</span>
+              <span class="hero-word-outline" data-hero-line="outline" aria-hidden="true"
+                >LEAN &amp; FIT</span
+              >
+            </h2>
+            <p class="hero-subtitle">
+              Kravitz'ten esinlenen 4 günlük piramit sistemi. Kendi ölçülerine göre hesaplanır,
+              tarayıcında kalır.
+            </p>
+            <div class="hero-cta-row">
+              <button type="button" id="hero-start-workout-btn" class="hero-cta-primary">
+                <span>Antrenmana Başla</span>
+                <svg
+                  class="icon"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <use href="#icon-arrow-down"></use>
+                </svg>
+              </button>
+              <button type="button" id="hero-open-profile-btn" class="hero-cta-secondary">
+                <svg
+                  class="icon"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <use href="#icon-user"></use>
+                </svg>
+                <span>Profili Özelleştir</span>
+              </button>
+            </div>
           </div>
-          <h2
-            id="hero-arena-heading"
-            class="hero-arena-title display-type"
-            aria-label="Kravitz Lean and Fit: Piramit ve 21'ler Core Sistemi"
-          >
-            <span class="hero-word-solid" data-hero-line="solid" aria-hidden="true">KRAVITZ</span>
-            <span class="hero-word-outline" data-hero-line="outline" aria-hidden="true"
-              >LEAN &amp; FIT</span
-            >
-          </h2>
-          <p class="hero-subtitle">
-            Kravitz'ten esinlenen 4 günlük piramit sistemi. Kendi ölçülerine göre hesaplanır,
-            tarayıcında kalır.
-          </p>
+
+          <aside class="hero-telemetry-card" aria-label="Canlı Program Özeti">
+            <div class="telemetry-head">
+              <span class="telemetry-kicker">
+                <svg
+                  class="icon"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.75"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <use href="#icon-activity"></use>
+                </svg>
+                <span>CANLI DURUM</span>
+              </span>
+              <span id="hero-mode-badge" class="telemetry-mode-pill">4 Günlük Split</span>
+            </div>
+
+            <div class="telemetry-progress-row">
+              <div class="telemetry-ring-wrap" aria-hidden="true">
+                <svg class="telemetry-ring-svg" viewBox="0 0 60 60" width="58" height="58">
+                  <circle class="telemetry-ring-track" cx="30" cy="30" r="24" />
+                  <circle
+                    id="hero-progress-ring"
+                    class="telemetry-ring-fill"
+                    cx="30"
+                    cy="30"
+                    r="24"
+                    stroke-dasharray="150.8"
+                    stroke-dashoffset="150.8"
+                    transform="rotate(-90 30 30)"
+                  />
+                </svg>
+                <strong id="hero-progress-pct" class="telemetry-ring-pct display-type tabular"
+                  >%0</strong
+                >
+              </div>
+              <div class="telemetry-day-meta">
+                <span class="telemetry-day-kicker">AKTİF PROGRAM GÜNÜ</span>
+                <strong id="hero-active-day-label" class="telemetry-day-title"
+                  >1. Gün · Üst İtiş &amp; V-Taper</strong
+                >
+                <span id="hero-progress-meta" class="telemetry-day-sub tabular"
+                  >0 / 17 Set tamamlandı</span
+                >
+              </div>
+            </div>
+
+            <div class="telemetry-kpi-grid">
+              <div class="telemetry-kpi-cell">
+                <span class="telemetry-kpi-label">GÜNLÜK HEDEF</span>
+                <strong id="hero-kcal-val" class="telemetry-kpi-value display-type tabular"
+                  >2140 kcal</strong
+                >
+              </div>
+              <div class="telemetry-kpi-cell">
+                <span class="telemetry-kpi-label">PROTEİN (2 G/KG)</span>
+                <strong id="hero-protein-val" class="telemetry-kpi-value display-type tabular"
+                  >160 g</strong
+                >
+              </div>
+            </div>
+          </aside>
         </div>
 
         <!-- Temel kurallar yayın şeridi -->
@@ -602,61 +746,48 @@
 
       <!-- Sekme Navigasyonu, Program Modu & Hızlı Arama -->
       <section class="controls-bar" aria-label="Program Modu, Günler ve Arama">
-        <div
-          id="program-mode-switcher"
-          class="program-mode-switcher"
-          role="group"
-          aria-label="Haftalık program modu"
-        >
-          <span class="mode-switch-label">Haftalık Plan:</span>
-          <div class="mode-switch-pills">
-            <button type="button" class="mode-switch-btn active" data-program-mode="4day">
-              4 Günlük
-            </button>
-            <button type="button" class="mode-switch-btn" data-program-mode="3day-aba">
-              3 Gün · Full-Body
-            </button>
-            <button type="button" class="mode-switch-btn" data-program-mode="3day-ulf">
-              3 Gün · Üst/Alt/Full
-            </button>
+        <div class="controls-utility-row">
+          <div
+            id="program-mode-switcher"
+            class="program-mode-switcher"
+            role="group"
+            aria-label="Haftalık program modu"
+          >
+            <span class="mode-switch-label">Haftalık Plan:</span>
+            <div class="mode-switch-pills">
+              <button
+                type="button"
+                class="mode-switch-btn active"
+                data-program-mode="4day"
+                title="4 Günlük Ana Plan"
+                aria-label="4 Günlük Ana Plan"
+              >
+                4 Günlük
+              </button>
+              <button
+                type="button"
+                class="mode-switch-btn"
+                data-program-mode="3day-aba"
+                title="3 Gün · Full-Body (A/B)"
+                aria-label="3 Günlük Full-Body (A/B) Planı"
+              >
+                3 Gün · A/B
+              </button>
+              <button
+                type="button"
+                class="mode-switch-btn"
+                data-program-mode="3day-ulf"
+                title="3 Gün · Üst / Alt / Full"
+                aria-label="3 Günlük Üst, Alt ve Full-Body Planı"
+              >
+                3 Gün · Ü/A/F
+              </button>
+            </div>
           </div>
-        </div>
 
-        <nav class="tabs-nav" id="tabs-nav" role="tablist" aria-label="Program Sekmeleri">
-          <!-- Sekmeler app.js tarafından doldurulur -->
-        </nav>
-
-        <div class="search-wrapper">
-          <svg
-            class="icon search-icon"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <use href="#icon-search"></use>
-          </svg>
-          <input
-            type="search"
-            id="exercise-search"
-            class="search-input"
-            placeholder="Hareket veya kas ara (örn. Biceps, Karın, Omuz)..."
-            aria-label="Hareket veya kas grubu ara"
-          />
-          <button
-            type="button"
-            id="clear-search-btn"
-            class="search-clear"
-            aria-label="Aramayı temizle"
-            hidden
-          >
+          <div class="search-wrapper">
             <svg
-              class="icon"
+              class="icon search-icon"
               width="16"
               height="16"
               viewBox="0 0 24 24"
@@ -667,10 +798,43 @@
               stroke-linejoin="round"
               aria-hidden="true"
             >
-              <use href="#icon-x"></use>
+              <use href="#icon-search"></use>
             </svg>
-          </button>
+            <input
+              type="search"
+              id="exercise-search"
+              class="search-input"
+              placeholder="Hareket veya kas ara (örn. Biceps, Karın, Omuz)..."
+              aria-label="Hareket veya kas grubu ara"
+            />
+            <button
+              type="button"
+              id="clear-search-btn"
+              class="search-clear"
+              aria-label="Aramayı temizle"
+              hidden
+            >
+              <svg
+                class="icon"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <use href="#icon-x"></use>
+              </svg>
+            </button>
+          </div>
         </div>
+
+        <nav class="tabs-nav" id="tabs-nav" role="tablist" aria-label="Program Sekmeleri">
+          <!-- Sekmeler app.js tarafından doldurulur -->
+        </nav>
       </section>
 
       <!-- Dinamik İçerik Alanı (Antrenman Günleri / Core Rehberi / Beslenme Protokolü) -->

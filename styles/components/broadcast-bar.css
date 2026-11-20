@@ -95,43 +95,50 @@
     border-color: var(--volt);
   }
 
-  .btn-outline svg {
+  .btn-outline .chevron-icon {
     transition: transform var(--dur-micro) var(--ease-out);
   }
 
-  .btn-outline[aria-expanded="true"] svg {
+  .btn-outline[aria-expanded="true"] .chevron-icon {
     transform: rotate(180deg);
   }
 
-  /* Lower-third yapışkan yayın bandı: sekmeler + arama */
+  .label-short {
+    display: none;
+  }
+
+  /* Yatay program + arama kontrol bandı (yapışkan değil — ekran kesilmesini önler) */
   .controls-bar {
-    position: sticky;
-    top: 71px;
-    z-index: calc(var(--z-header) - 10);
+    position: static;
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px 12px;
-    padding: 8px 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px 12px;
     margin-bottom: 24px;
-    background: var(--bar-bg);
-    backdrop-filter: blur(12px);
+    background: var(--surface-elevated);
     border: 1px solid var(--line);
     border-left: 3px solid var(--day-accent);
     border-radius: var(--radius-sharp);
+    box-shadow: var(--shadow-card);
   }
 
-  /* Haftalık program modu seçici */
-  .program-mode-switcher {
-    flex: 1 1 100%;
+  .controls-utility-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 8px 12px;
+    gap: 10px 14px;
     padding-bottom: 8px;
-    border-bottom: 1px solid var(--line-soft);
+    border-bottom: 1px solid var(--line-hairline);
+  }
+
+  /* Haftalık program modu seçici (bölünmüş kontrol kutusu) */
+  .program-mode-switcher {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 1 auto;
   }
 
   .mode-switch-label {
@@ -140,33 +147,40 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text-2);
+    white-space: nowrap;
   }
 
   .mode-switch-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    background: var(--void);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-cut);
   }
 
   .mode-switch-btn {
     min-height: 36px;
     padding: 5px 12px;
     border-radius: var(--radius-cut);
-    border: 1px solid var(--line);
-    background: var(--void);
+    border: 1px solid transparent;
+    background: transparent;
     color: var(--text-2);
     font-size: var(--fs-12);
     font-weight: 600;
+    white-space: nowrap;
     cursor: pointer;
     transition:
       border-color var(--dur-micro) var(--ease-out),
       background-color var(--dur-micro) var(--ease-out),
-      color var(--dur-micro) var(--ease-out);
+      color var(--dur-micro) var(--ease-out),
+      transform var(--dur-micro) var(--ease-out);
   }
 
   .mode-switch-btn:hover {
-    border-color: var(--accent-border);
     color: var(--text-1);
+    background: var(--stage-2);
   }
 
   .mode-switch-btn.active {
@@ -257,16 +271,16 @@
   /* Arama kutusu: odakta --volt vurgu ve akıcı genişleme */
   .search-wrapper {
     position: relative;
-    flex: 1 1 360px;
-    max-width: 440px;
+    flex: 0 1 320px;
+    max-width: 360px;
     transition:
       flex-basis var(--dur-transition) var(--ease-out),
       max-width var(--dur-transition) var(--ease-out);
   }
 
   .search-wrapper:focus-within {
-    flex-basis: 420px;
-    max-width: 520px;
+    flex-basis: 360px;
+    max-width: 380px;
   }
 
   .search-icon {
@@ -400,9 +414,14 @@
     }
 
     .header-inner {
-      padding: 10px 0;
+      padding: 8px 0;
       gap: 8px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+    }
+
+    .brand {
+      min-width: 0;
+      padding-left: 8px;
     }
 
     .brand-badge {
@@ -411,10 +430,25 @@
 
     .brand-title {
       font-size: var(--fs-20);
+      white-space: nowrap;
+    }
+
+    .header-actions {
+      flex-wrap: nowrap;
+      flex-shrink: 0;
+      gap: 6px;
+    }
+
+    .label-full {
+      display: none;
+    }
+
+    .label-short {
+      display: inline;
     }
 
     .btn-outline {
-      padding: 8px 10px;
+      padding: 6px 10px;
       font-size: var(--fs-12);
       min-height: 40px;
     }
@@ -422,7 +456,35 @@
     .controls-bar {
       position: static;
       padding: 10px;
-      gap: 10px;
+      gap: 8px;
+    }
+
+    .controls-utility-row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .program-mode-switcher {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+    }
+
+    .mode-switch-label {
+      display: none;
+    }
+
+    .mode-switch-pills {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      width: 100%;
+    }
+
+    .mode-switch-btn {
+      padding: 6px 4px;
+      text-align: center;
+      min-height: 38px;
     }
 
     .search-wrapper,
@@ -449,6 +511,12 @@
       background: var(--bar-bg);
       backdrop-filter: blur(16px);
       border-top: 1px solid var(--line);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .brand-badge {
+      display: none;
     }
   }
 }

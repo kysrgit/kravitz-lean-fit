@@ -44,10 +44,214 @@
       );
   }
 
+  .hero-top-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.38fr) minmax(300px, 0.82fr);
+    gap: 24px;
+    align-items: end;
+  }
+
   .hero-copy {
     display: flex;
     flex-direction: column;
     gap: 12px;
+  }
+
+  .hero-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .hero-cta-primary,
+  .hero-cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 18px;
+    border-radius: var(--radius-cut);
+    font-size: var(--fs-14);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      filter var(--dur-micro) var(--ease-out),
+      border-color var(--dur-micro) var(--ease-out),
+      background-color var(--dur-micro) var(--ease-out),
+      transform var(--dur-micro) var(--ease-out);
+  }
+
+  .hero-cta-primary {
+    border: 1px solid var(--volt);
+    background: var(--volt);
+    color: var(--text-on-accent);
+  }
+
+  .hero-cta-primary:hover {
+    filter: brightness(1.06);
+  }
+
+  .hero-cta-secondary {
+    border: 1px solid var(--line-highlight);
+    background: var(--stage-2);
+    color: var(--text-1);
+  }
+
+  .hero-cta-secondary:hover {
+    border-color: var(--day-accent);
+    color: var(--day-accent);
+  }
+
+  /* Sağ sütun: Canlı program telemetri ve hedef kartı (WHOOP / İsviçre tablo disiplini) */
+  .hero-telemetry-card {
+    background: var(--surface-elevated);
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--day-accent);
+    border-radius: var(--radius-sharp);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: var(--shadow-card);
+  }
+
+  .telemetry-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .telemetry-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--fs-12);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--set-core);
+  }
+
+  .telemetry-mode-pill {
+    padding: 3px 9px;
+    border-radius: var(--radius-cut);
+    background: var(--accent-wash);
+    border: 1px solid var(--accent-border);
+    color: var(--day-accent);
+    font-size: var(--fs-12);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .telemetry-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-top: 1px solid var(--line-hairline);
+    border-bottom: 1px solid var(--line-hairline);
+  }
+
+  .telemetry-ring-wrap {
+    position: relative;
+    flex: 0 0 58px;
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+  }
+
+  .telemetry-ring-svg {
+    display: block;
+    width: 58px;
+    height: 58px;
+  }
+
+  .telemetry-ring-track {
+    fill: none;
+    stroke: var(--stage-3);
+    stroke-width: 5;
+  }
+
+  .telemetry-ring-fill {
+    fill: none;
+    stroke: var(--day-accent);
+    stroke-width: 5;
+    stroke-linecap: butt;
+    transition: stroke-dashoffset var(--dur-transition) var(--ease-out);
+  }
+
+  .telemetry-ring-pct {
+    position: absolute;
+    font-size: var(--fs-16);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text-1);
+  }
+
+  .telemetry-day-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .telemetry-day-kicker {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+
+  .telemetry-day-title {
+    font-size: var(--fs-14);
+    font-weight: 700;
+    color: var(--text-1);
+    line-height: 1.25;
+  }
+
+  .telemetry-day-sub {
+    font-size: var(--fs-12);
+    font-weight: 600;
+    color: var(--day-accent);
+  }
+
+  .telemetry-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .telemetry-kpi-cell {
+    background: var(--void);
+    border: 1px solid var(--line-hairline);
+    border-radius: var(--radius-cut);
+    padding: 9px 11px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .telemetry-kpi-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+
+  .telemetry-kpi-value {
+    font-size: var(--fs-25);
+    line-height: 1;
+    color: var(--volt);
   }
 
   .hero-kicker-row {
@@ -240,6 +444,11 @@
   }
 
   @media (max-width: 1024px) {
+    .hero-top-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
     .pillars-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -247,32 +456,80 @@
 
   @media (max-width: 768px) {
     .main-content {
-      padding-top: 14px;
+      padding-top: 12px;
       padding-bottom: 32px;
     }
 
     .hero-section {
-      gap: 14px;
-      padding: 12px 0 18px;
-      margin-bottom: 18px;
+      gap: 12px;
+      padding: 10px 0 16px;
+      margin-bottom: 16px;
+    }
+
+    .hero-word-solid {
+      font-size: clamp(3.6rem, 17vw, 5.2rem);
+    }
+
+    .hero-word-outline {
+      font-size: clamp(2.1rem, 10vw, 3.2rem);
+    }
+
+    .hero-discipline-tag {
+      font-size: 0.6875rem;
+      letter-spacing: 0.06em;
     }
 
     .hero-subtitle {
       font-size: var(--fs-14);
     }
 
+    .hero-cta-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .hero-cta-primary,
+    .hero-cta-secondary {
+      padding: 8px 10px;
+      font-size: var(--fs-12);
+    }
+
+    .hero-telemetry-card {
+      padding: 12px 14px;
+      gap: 10px;
+    }
+
+    .telemetry-progress-row {
+      padding: 8px 0;
+    }
+
     .hero-rules-strip {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .hero-rule-item {
-      border-right: none;
-      border-bottom: 1px solid var(--line);
-      padding: 10px 12px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 3px;
+      padding: 8px 10px;
+      border-bottom: none;
+      border-right: 1px solid var(--line);
     }
 
     .hero-rule-item:last-child {
-      border-bottom: none;
+      border-right: none;
+    }
+
+    .hero-rule-num {
+      font-size: var(--fs-20);
+    }
+
+    .hero-rule-label {
+      font-size: 0.6875rem;
+      letter-spacing: 0.04em;
+      line-height: 1.2;
     }
 
     /* Mobilde yatay scroll-snap kural kartları */

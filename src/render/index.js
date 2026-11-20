@@ -4,7 +4,7 @@
  * render sonrası kart/tablo/sayaç etkileşim bağlayıcılarını dışa aktarır.
  */
 
-import { getProgramDays } from "../../data.js";
+import { PROGRAM_MODES, getProgramDays } from "../../data.js";
 import {
   animateTabChange,
   animateVariantChange,
@@ -14,6 +14,7 @@ import {
   elements,
   escapeHtml,
   findExerciseById,
+  getActiveProfileTargets,
   getActiveTabs,
   getCoreOrCardioItem,
   getDayProgressStats,
@@ -173,12 +174,61 @@ export function renderTabs() {
       });
     });
   }
+
+  updateHeroTelemetry();
+}
+
+// Hero içindeki canlı program durumu ve profil hedef kartını senkronize günceller
+export function updateHeroTelemetry() {
+  const modeBadgeEl = document.getElementById("hero-mode-badge");
+  const ringEl = document.getElementById("hero-progress-ring");
+  const pctEl = document.getElementById("hero-progress-pct");
+  const dayLabelEl = document.getElementById("hero-active-day-label");
+  const metaEl = document.getElementById("hero-progress-meta");
+  const kcalEl = document.getElementById("hero-kcal-val");
+  const proteinEl = document.getElementById("hero-protein-val");
+
+  const modeInfo = PROGRAM_MODES.find((m) => m.id === state.programMode);
+  if (modeBadgeEl && modeInfo) {
+    modeBadgeEl.textContent = modeInfo.label;
+  }
+
+  const activeDays = getProgramDays(state.programMode);
+  const activeDay = activeDays.find((d) => d.id === state.activeTab) || activeDays[0];
+  if (activeDay) {
+    const prefs = loadPrefs();
+    const { doneCount, totalCount, pct } = getDayProgressStats(activeDay, prefs.selectedVariants);
+    const circumference = 150.8;
+    if (dayLabelEl) {
+      dayLabelEl.textContent = `${activeDay.tabLabel} · ${activeDay.shortTitle}`;
+    }
+    if (pctEl) {
+      pctEl.textContent = `%${pct}`;
+    }
+    if (metaEl) {
+      metaEl.textContent = `${doneCount} / ${totalCount} Set tamamlandı`;
+    }
+    if (ringEl) {
+      ringEl.setAttribute("stroke-dashoffset", (circumference * (1 - pct / 100)).toFixed(1));
+    }
+  }
+
+  const targets = getActiveProfileTargets();
+  if (kcalEl) {
+    kcalEl.textContent = `${targets.targetCalories} kcal`;
+  }
+  if (proteinEl) {
+    proteinEl.textContent = `${targets.proteinTargetG} g`;
+  }
 }
 
 // Aktif gün sayfasındaki bugünkü set tamamlanma çubuğunu günceller
 function updateActiveDayProgressUi() {
   const strip = document.getElementById("day-progress-strip");
-  if (!strip) return;
+  if (!strip) {
+    updateHeroTelemetry();
+    return;
+  }
   const dayId = strip.dataset.progressDay;
   const day = getProgramDays(state.programMode).find((d) => d.id === dayId);
   if (!day) return;
@@ -186,12 +236,18 @@ function updateActiveDayProgressUi() {
   const { doneCount, totalCount, pct } = getDayProgressStats(day, prefs.selectedVariants);
   const textEl = document.getElementById("day-progress-text");
   const fillEl = document.getElementById("day-progress-fill");
+  const pillEl = document.getElementById("day-progress-pct-pill");
   if (textEl) {
     textEl.textContent = `Bugünkü İlerleme: ${doneCount} / ${totalCount} Set (%${pct})`;
+  }
+  if (pillEl) {
+    pillEl.textContent = `%${pct}`;
   }
   if (fillEl) {
     fillEl.style.transform = `scaleX(${(pct / 100).toFixed(3)})`;
   }
+  strip.classList.toggle("is-complete", totalCount > 0 && doneCount === totalCount);
+  updateHeroTelemetry();
 }
 
 export function bindCardInteractions() {

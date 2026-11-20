@@ -32,9 +32,54 @@ import {
   renderTabs,
   renderTanitaSection,
   selectTab,
+  updateHeroTelemetry,
 } from "./src/render/index.js";
 
 function initEventListeners() {
+  // Hero birincil aksiyon butonları (Antrenmana Başla + Profili Özelleştir)
+  const heroStartBtn = document.getElementById("hero-start-workout-btn");
+  if (heroStartBtn) {
+    heroStartBtn.addEventListener("click", () => {
+      elements.contentArea?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  const heroProfileBtn = document.getElementById("hero-open-profile-btn");
+  if (heroProfileBtn) {
+    heroProfileBtn.addEventListener("click", () => {
+      if (elements.tanitaDrawer?.hidden) {
+        elements.tanitaToggleBtn?.setAttribute("aria-expanded", "true");
+        elements.tanitaDrawer.hidden = false;
+        animateScoreboardOpen();
+      }
+      elements.tanitaDrawer?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  // Üst bar okuma/kaydırma ilerleme çubuğu (GPU scaleX ile)
+  const scrollBar = document.getElementById("scroll-progress-bar");
+  if (scrollBar) {
+    let scrollTicking = false;
+    const syncScrollProgress = () => {
+      scrollTicking = false;
+      const doc = document.documentElement;
+      const maxScroll = Math.max(1, doc.scrollHeight - window.innerHeight);
+      const ratio = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+      scrollBar.style.transform = `scaleX(${ratio.toFixed(4)})`;
+    };
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!scrollTicking) {
+          scrollTicking = true;
+          window.requestAnimationFrame(syncScrollProgress);
+        }
+      },
+      { passive: true }
+    );
+    syncScrollProgress();
+  }
+
   // Üst bar "Yazılı & Tablo Özet" kısayol butonu
   if (elements.openSummaryBtn) {
     elements.openSummaryBtn.addEventListener("click", () => {
@@ -102,6 +147,7 @@ function initEventListeners() {
       };
       const saved = saveStoredProfile(nextProfile);
       renderTanitaSection();
+      updateHeroTelemetry();
       renderMainContent();
       if (elements.profileSaveStatus) {
         elements.profileSaveStatus.textContent = saved
@@ -115,6 +161,7 @@ function initEventListeners() {
     elements.resetProfileBtn.addEventListener("click", () => {
       clearStoredProfile();
       renderTanitaSection();
+      updateHeroTelemetry();
       renderMainContent();
       if (elements.profileSaveStatus) {
         elements.profileSaveStatus.textContent = "Örnek profil değerlerine dönüldü.";
