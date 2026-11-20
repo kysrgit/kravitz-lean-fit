@@ -426,6 +426,38 @@
     background: var(--blaze-wash);
   }
 
+  /* JSON veri yedekleme ve geri yükleme paneli */
+  .backup-panel {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 16px;
+  }
+
+  .backup-copy h4 {
+    margin: 0 0 4px;
+    font-family: var(--font-display);
+    font-size: var(--fs-20);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .backup-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+  }
+
+  .backup-import-label {
+    margin: 0;
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     .tanita-card.highlight {
       animation: arena-blaze-border 2.8s var(--ease-in-out) infinite alternate;

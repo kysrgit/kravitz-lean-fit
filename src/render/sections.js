@@ -13,8 +13,8 @@ import {
   SCIENTIFIC_SOURCES,
   SYSTEM_PILLARS,
   THREE_DAY_TEMPLATES,
-  WORKOUT_DAYS,
   getExerciseMedia,
+  getProgramDays,
 } from "../../data.js";
 import {
   elements,
@@ -344,7 +344,7 @@ export function createCardioFinisherSectionHtml() {
         </div>
       </div>
       <div class="core-grid">
-        ${createCoreCardHtml(CARDIO_FINISHER)}
+        ${createCoreCardHtml(CARDIO_FINISHER, Number(loadPrefs().selectedVariants?.[CARDIO_FINISHER.id] || 0))}
       </div>
     </section>
   `;
@@ -420,9 +420,8 @@ export function renderWorkoutDay(day) {
           .join("")}</div>`
       : "";
 
-  const dayNumLabel = String(day.id || "")
-    .replace(/\D+/g, "")
-    .padStart(2, "0");
+  const dayNumMatch = String(day.id || "").match(/(\d+)$/);
+  const dayNumLabel = String(dayNumMatch ? dayNumMatch[1] : "1").padStart(2, "0");
 
   elements.contentArea.innerHTML = `
     <div class="day-banner">
@@ -481,11 +480,12 @@ function wrapSummaryTableCard(headers, rowsHtml, headingHtml = "") {
 
 // Tüm programın yazılı ve tablolu özetini tek sayfada render eder
 export function renderFullSummaryTab() {
-  const weeklyScheduleRowsHtml = WORKOUT_DAYS.map(
+  const activeDays = getProgramDays(state.programMode);
+  const weeklyScheduleRowsHtml = activeDays.map(
     (day) => `
       <tr>
         <td data-label="Gün"><strong>${escapeHtml(day.tabLabel)}</strong><div class="table-alt-meta">${escapeHtml(day.shortTitle)}</div></td>
-        <td data-label="Odak Bölgeler">${escapeHtml(day.fullTitle.replace(/^\d+\.\s*GÜN:\s*/i, ""))}</td>
+        <td data-label="Odak Bölgeler">${escapeHtml(day.fullTitle.replace(/^\d+\.\s*GÜN(?:\s*\([^)]+\))?:\s*/i, ""))}</td>
         <td data-label="Süre"><span class="tag-chip equipment">${escapeHtml(day.duration)}</span></td>
         <td data-label="Takvim Notu">${escapeHtml(day.scheduleNote)}</td>
         <td data-label="Hızlı Geçiş">
@@ -497,7 +497,7 @@ export function renderFullSummaryTab() {
     `
   ).join("");
 
-  const allDaysTablesHtml = WORKOUT_DAYS.map((day) =>
+  const allDaysTablesHtml = activeDays.map((day) =>
     createDaySummaryTableHtml(day, { showDayHeader: true, showJumpBtn: true })
   ).join("");
 
@@ -661,10 +661,12 @@ export function renderFullSummaryTab() {
       <!-- Mobilde ve Masaüstünde Tek Dokunuşla Bölüm Atlama Çubuğu -->
       <div class="summary-quick-nav" role="navigation" aria-label="Özet Bölümleri Hızlı Geçiş">
         <button type="button" class="summary-quick-chip" data-scroll-target="summary-sec-weekly">${lucideIcon("calendar", { size: 14 })} Haftalık Şema</button>
-        <button type="button" class="summary-quick-chip" data-scroll-target="summary-day-day-1">1. Gün</button>
-        <button type="button" class="summary-quick-chip" data-scroll-target="summary-day-day-2">2. Gün</button>
-        <button type="button" class="summary-quick-chip" data-scroll-target="summary-day-day-3">3. Gün</button>
-        <button type="button" class="summary-quick-chip" data-scroll-target="summary-day-day-4">4. Gün</button>
+        ${activeDays
+          .map(
+            (day) =>
+              `<button type="button" class="summary-quick-chip" data-scroll-target="summary-day-${escapeHtml(day.id)}">${escapeHtml(day.tabLabel)}</button>`
+          )
+          .join("")}
         <button type="button" class="summary-quick-chip" data-scroll-target="summary-sec-core">${lucideIcon("flame", { size: 14 })} 21'ler Core</button>
         <button type="button" class="summary-quick-chip" data-scroll-target="summary-sec-nutrition">${lucideIcon("utensils", { size: 14 })} Beslenme</button>
       </div>
@@ -721,7 +723,7 @@ export function renderFullSummaryTab() {
 
       <section class="summary-section-block">
         <div class="summary-section-title-row">
-          <h3>2. 4 Günlük Antrenman Programı Tam Tablosu (1. Gün – 4. Gün)</h3>
+          <h3>2. Haftalık Antrenman Programı Tam Tablosu (${activeDays.length} Günlük Mod)</h3>
         </div>
         <div class="summary-tables-stack">
           ${allDaysTablesHtml}
@@ -819,7 +821,10 @@ export function renderFullSummaryTab() {
 // Core (21'ler) ve Mide Vakumu rehber sekmesini render eder
 export function renderCoreGuide(filteredItems = null) {
   const coreEntries = filteredItems || Object.values(CORE_LIBRARY);
-  const cardsHtml = coreEntries.map((core) => createCoreCardHtml(core)).join("");
+  const prefs = loadPrefs();
+  const cardsHtml = coreEntries
+    .map((core) => createCoreCardHtml(core, Number(prefs.selectedVariants?.[core.id] || 0)))
+    .join("");
 
   elements.contentArea.innerHTML = `
     <div class="day-banner">
@@ -1050,14 +1055,17 @@ export function renderNutritionProtocol() {
 
 export function renderSearchResults(query) {
   const normalized = query.trim().toLowerCase();
+  const prefs = loadPrefs();
   const matchedExercises = [];
 
-  WORKOUT_DAYS.forEach((day) => {
+  getProgramDays(state.programMode).forEach((day) => {
     day.exercises.forEach((ex) => {
       const restText = (ex.coreRestLabel || "").toLowerCase();
       let variantIdx = findMatchingVariantIndex(ex, "exercise", normalized);
       if (variantIdx === -1 && restText.includes(normalized)) {
-        variantIdx = 0;
+        variantIdx = Number(prefs.selectedVariants?.[ex.id] || 0);
+      } else if (variantIdx === 0 && prefs.selectedVariants?.[ex.id]) {
+        variantIdx = Number(prefs.selectedVariants[ex.id]);
       }
       if (variantIdx !== -1) {
         matchedExercises.push({

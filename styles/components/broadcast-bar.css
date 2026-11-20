@@ -122,6 +122,59 @@
     border-radius: var(--radius-sharp);
   }
 
+  /* Haftalık program modu seçici */
+  .program-mode-switcher {
+    flex: 1 1 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .mode-switch-label {
+    font-size: var(--fs-12);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+
+  .mode-switch-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .mode-switch-btn {
+    min-height: 36px;
+    padding: 5px 12px;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--line);
+    background: var(--void);
+    color: var(--text-2);
+    font-size: var(--fs-12);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      border-color var(--dur-micro) var(--ease-out),
+      background-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out);
+  }
+
+  .mode-switch-btn:hover {
+    border-color: var(--accent-border);
+    color: var(--text-1);
+  }
+
+  .mode-switch-btn.active {
+    background: var(--volt);
+    border-color: var(--volt);
+    color: var(--text-on-accent);
+  }
+
   .tabs-nav {
     display: flex;
     align-items: stretch;
@@ -384,7 +437,7 @@
 
     .mobile-bottom-nav {
       display: grid;
-      grid-template-columns: repeat(7, minmax(0, 1fr));
+      grid-template-columns: repeat(var(--mobile-nav-cols, 7), minmax(0, 1fr));
       position: fixed;
       left: 0;
       right: 0;

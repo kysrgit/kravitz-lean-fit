@@ -8,9 +8,10 @@ import {
   CARDIO_FINISHER,
   CORE_LIBRARY,
   DEFAULT_PROFILE,
-  WORKOUT_DAYS,
+  PROGRAM_MODES,
   calculateProfileTargets,
   getExerciseMedia,
+  getProgramDays,
 } from "../data.js";
 
 export const PROFILE_STORAGE_KEY = "klf:v1:profile";
@@ -72,6 +73,7 @@ export function savePrefs(patch) {
 // Uygulama durumu
 export const state = {
   activeTab: "day-1",
+  programMode: "4day", // "4day" | "3day-aba" | "3day-ulf"
   viewMode: "both", // "both" | "table-only" | "cards-only"
   searchQuery: "",
   photoTimers: [],
@@ -79,16 +81,7 @@ export const state = {
 
 export const DAY_MOBILE_CODES = ["01", "02", "03", "04"];
 
-// Sekme tanımları (masaüstü üst bar + mobil thumb-zone alt navigasyon barı)
-export const TABS = [
-  ...WORKOUT_DAYS.map((day, idx) => ({
-    id: day.id,
-    top: day.tabLabel,
-    sub: day.shortTitle,
-    mobileCode: DAY_MOBILE_CODES[idx] || "00",
-    mobileIconName: null,
-    mobileLabel: day.tabLabel,
-  })),
+const FIXED_TABS = [
   {
     id: "core-guide",
     top: "Aktif Dinlenme",
@@ -115,6 +108,51 @@ export const TABS = [
     mobileLabel: "Özet",
   },
 ];
+
+// Aktif program moduna göre sekme listesini üretir
+export function getActiveTabs(programMode = state.programMode) {
+  const days = getProgramDays(programMode);
+  return [
+    ...days.map((day, idx) => ({
+      id: day.id,
+      top: day.tabLabel,
+      sub: day.shortTitle,
+      mobileCode: DAY_MOBILE_CODES[idx] || "00",
+      mobileIconName: null,
+      mobileLabel: day.tabLabel,
+    })),
+    ...FIXED_TABS,
+  ];
+}
+
+// Geriye uyumlu sabit sekme listesi
+export const TABS = getActiveTabs("4day");
+
+// 3 günlük ID'leri tema renk anahtarlarına (day-1..day-4) eşler
+export function getDayThemeForTab(tabId) {
+  if (tabId === "core-guide" || tabId === "nutrition" || tabId === "summary") {
+    return tabId;
+  }
+  const suffixMatch = String(tabId || "").match(/-(1|2|3|4)$/);
+  if (suffixMatch) {
+    return `day-${suffixMatch[1]}`;
+  }
+  return "day-1";
+}
+
+// Verilen sekme ID'sinin hangi program moduna ait olduğunu çözer
+export function findModeForTabId(tabId) {
+  if (!tabId) return { valid: false, mode: null };
+  if (FIXED_TABS.some((t) => t.id === tabId)) {
+    return { valid: true, mode: null };
+  }
+  for (const modeInfo of PROGRAM_MODES) {
+    if (getProgramDays(modeInfo.id).some((d) => d.id === tabId)) {
+      return { valid: true, mode: modeInfo.id };
+    }
+  }
+  return { valid: false, mode: null };
+}
 
 // DOM referansları
 export const elements = {
@@ -466,11 +504,83 @@ export function findMatchingVariantIndex(item, kind, normalizedQuery) {
 // Arama kutusuna göre tüm programdaki (ana + alternatif) eşleşen hareketleri gösterir
 
 export function findExerciseById(exerciseId) {
-  for (const day of WORKOUT_DAYS) {
-    const found = day.exercises.find((ex) => ex.id === exerciseId);
-    if (found) return found;
+  const modePriority = [
+    state.programMode,
+    ...PROGRAM_MODES.map((m) => m.id).filter((id) => id !== state.programMode),
+  ];
+  for (const modeId of modePriority) {
+    for (const day of getProgramDays(modeId)) {
+      const found = day.exercises.find((ex) => ex.id === exerciseId);
+      if (found) return found;
+    }
   }
   return null;
+}
+
+// Tüm kullanıcı verilerini (profil, set günlükleri, vücut kayıtları, tercihler) JSON yedeği olarak döndürür
+export function exportAllUserData() {
+  let storedProfile = null;
+  try {
+    const raw = window.localStorage.getItem(PROFILE_STORAGE_KEY);
+    if (raw) storedProfile = JSON.parse(raw);
+  } catch {
+    storedProfile = null;
+  }
+  return {
+    app: "kravitz-lean-fit",
+    schemaVersion: 1,
+    exportedAt: new Date().toISOString(),
+    profile: storedProfile,
+    workoutLogs: loadWorkoutLogs(),
+    bodyLogs: loadBodyLogs(),
+    prefs: loadPrefs(),
+  };
+}
+
+// JSON yedeğini şema ve tip kontrolünden geçirerek localStorage'a geri yükler
+export function importUserData(payload) {
+  if (!payload || typeof payload !== "object" || payload.schemaVersion !== 1) {
+    return { ok: false, message: "Geçersiz veya uyumsuz yedek dosyası biçimi." };
+  }
+  if (payload.app && payload.app !== "kravitz-lean-fit") {
+    return { ok: false, message: "Bu dosya Kravitz Lean & Fit yedeği değil." };
+  }
+
+  try {
+    if (payload.profile && typeof payload.profile === "object" && !Array.isArray(payload.profile)) {
+      saveStoredProfile(payload.profile);
+    } else if (payload.profile === null) {
+      clearStoredProfile();
+    }
+
+    if (
+      payload.workoutLogs &&
+      typeof payload.workoutLogs === "object" &&
+      !Array.isArray(payload.workoutLogs)
+    ) {
+      window.localStorage.setItem(WORKOUT_LOGS_STORAGE_KEY, JSON.stringify(payload.workoutLogs));
+    }
+
+    if (Array.isArray(payload.bodyLogs)) {
+      const cleanLogs = payload.bodyLogs
+        .filter(
+          (item) =>
+            item &&
+            typeof item.date === "string" &&
+            Number.isFinite(Number(item.waistCm)) &&
+            Number.isFinite(Number(item.weightKg))
+        )
+        .sort((a, b) => a.date.localeCompare(b.date));
+      saveBodyLogs(cleanLogs);
+    }
+
+    if (payload.prefs && typeof payload.prefs === "object" && !Array.isArray(payload.prefs)) {
+      savePrefs(payload.prefs);
+    }
+    return { ok: true, message: "Yedek başarıyla yüklendi ve tüm görünümler güncellendi." };
+  } catch {
+    return { ok: false, message: "Tarayıcı depolamasına yazılırken bir hata oluştu." };
+  }
 }
 
 // Harici form referansı ("Formu izle"), alternatif seçici ve uygulama ipuçları modalını açar

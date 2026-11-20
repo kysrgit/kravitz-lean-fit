@@ -2046,6 +2046,264 @@ export const WORKOUT_DAYS = [
   },
 ];
 
+// Mevcut program egzersizlerinden hızlı erişim haritası ve 3 günlük etkileşimli mod türeticisi
+const BASE_EXERCISE_MAP = Object.fromEntries(
+  WORKOUT_DAYS.flatMap((day) => day.exercises.map((ex) => [ex.id, ex]))
+);
+
+const HIP_THRUST_EXERCISE = {
+  id: "hip-thrust-3day",
+  restSeconds: 120,
+  order: 4,
+  name: "Barbell Hip Thrust",
+  turkishName: "Sehpada Kalça İtiş (Hip Thrust)",
+  muscleGroup: "Kalça (Gluteus) & Arka Bacak",
+  equipment: "Düz Sehpa + Bar (veya Hip Thrust Makinesi)",
+  videoKey: "barbell_hip_thrust",
+  sourceUrl: "https://musclewiki.com/exercise/barbell-hip-thrust",
+  pyramidSets: [
+    { set: 1, reps: "12-15 Tekrar", load: "Orta Ağırlık" },
+    { set: 2, reps: "10-12 Tekrar", load: "Orta-Ağır" },
+    { set: 3, reps: "8-10 Tekrar", load: "Ağır & Tepede 1 sn Sık" },
+  ],
+  coreRestId: null,
+  coreRestLabel: "Tam Pasif Dinlenme — Kalça kuvveti ve bel kontrolü için core eklenmez.",
+  tips: [
+    "Kürek kemiklerinin alt ucu sehpaya dayalı olsun; tepe noktada kalçayı 1 saniye sertçe sık.",
+    "Çeneni hafif göğse yakın tutarak belini aşırı kavislendirme.",
+  ],
+  alternatives: [
+    {
+      id: "hip-thrust-alt-1",
+      name: "Dumbbell Romanian Deadlift",
+      turkishName: "Dambıl İle Romen Deadlift",
+      equipment: "Çift Dambıl",
+      whenToUse: "Hip Thrust sehpası veya bar doluysa arka bacak ve kalçayı aynı seans tamamlamak için.",
+      videoKey: "db_romanian_deadlift",
+      sourceUrl: "https://musclewiki.com/exercise/dumbbell-romanian-deadlift",
+      tips: [
+        "Kalçayı geriye it, dambılları bacaklarına yakın indirip arka bacak gerilimiyle doğrul.",
+        "Sırtını düz tut ve omuzları geride kilitle.",
+      ],
+    },
+    {
+      id: "hip-thrust-alt-2",
+      name: "Lying Leg Curl Machine",
+      turkishName: "Yatarak Arka Bacak Bükme Makinesi",
+      equipment: "Lying Leg Curl Makinesi",
+      whenToUse: "Serbest bar alanı yoğun olduğunda arka zinciri izole etmek için.",
+      videoKey: "lying_leg_curl",
+      sourceUrl: "https://musclewiki.com/exercises/hamstrings",
+      tips: [
+        "Kalçanı pedden kaldırmadan topuklarını kalçana doğru çek.",
+        "İniş fazını 2 saniyeye yayarak kontrolü koru.",
+      ],
+    },
+  ],
+};
+
+const SINGLE_ARM_ROW_EXERCISE = {
+  id: "single-arm-row-3day",
+  restSeconds: 120,
+  order: 3,
+  name: "Single-Arm Dumbbell Row",
+  turkishName: "Sehpaya Dayalı Tek Kol Dambıl Row",
+  muscleGroup: "Orta Sırt & Kanat (Latissimus)",
+  equipment: "Düz Sehpa + Tek Dambıl",
+  videoKey: "single_arm_db_row",
+  sourceUrl: "https://musclewiki.com/exercise/dumbbell-single-arm-row",
+  pyramidSets: [
+    { set: 1, reps: "12-15 Tekrar", load: "Orta Ağırlık" },
+    { set: 2, reps: "10-12 Tekrar", load: "Orta-Ağır" },
+    { set: 3, reps: "8-10 Tekrar", load: "Ağır" },
+  ],
+  coreRestId: "plank",
+  coreRestLabel: "Set Arası Aktif Dinlenme: 45 Sn Vakumlu Plank (Kavrama Yormaz)",
+  tips: [
+    "Dambılı göğse değil kalça cebine doğru yay çizerek çek.",
+    "Sırtı masa gibi düz tut; gövdeyi çevirmeden kürek kemiğini geriye topla.",
+  ],
+  alternatives: [
+    {
+      id: "single-row-alt-1",
+      name: "Seated Cable Row",
+      turkishName: "Oturarak Kablo Sırt Çekiş",
+      equipment: "Seated Row İstasyonu",
+      whenToUse: "Dambıl sehpası doluysa kablo çekişiyle orta sırtı çalıştırmak için.",
+      videoKey: "seated_cable_row",
+      sourceUrl: "https://musclewiki.com/exercise/seated-cable-row",
+      tips: [
+        "Gövdeyi sallamadan kürek kemiklerini arkada birleştir.",
+        "Kollarını öne tam uzatarak sırt kaslarını esnet.",
+      ],
+    },
+    {
+      id: "single-row-alt-2",
+      name: "Barbell Bent-Over Row",
+      turkishName: "Öne Eğilerek Bar İle Sırt Çekiş",
+      equipment: "Olimpik Bar / Z-Bar",
+      whenToUse: "İki tarafı aynı anda yükleyip zaman kazanmak istediğinde.",
+      videoKey: "barbell_bent_over_row",
+      sourceUrl: "https://musclewiki.com/exercise/barbell-bent-over-row",
+      tips: [
+        "Gövdeyi ~45° öne eğ ve barı göbek deliğine doğru çek.",
+        "Karnı sıkı tutup beli kilitle.",
+      ],
+    },
+  ],
+};
+
+function cloneExercise(sourceEx, { order, stripWarmup = false, coreRestId, coreRestLabel } = {}) {
+  const baseSets = sourceEx.pyramidSets || [];
+  const nextSets = stripWarmup
+    ? baseSets
+        .filter((s) => !s.isWarmup)
+        .map((s, idx) => ({ ...s, set: idx + 1, isWarmup: false }))
+    : baseSets.map((s) => ({ ...s }));
+  return {
+    ...sourceEx,
+    order: order ?? sourceEx.order,
+    pyramidSets: nextSets,
+    ...(coreRestId !== undefined ? { coreRestId } : {}),
+    ...(coreRestLabel !== undefined ? { coreRestLabel } : {}),
+  };
+}
+
+export const THREE_DAY_ABA_DAYS = [
+  {
+    id: "3day-a-1",
+    tabLabel: "1. Gün",
+    shortTitle: "Full-Body A (Pzt)",
+    fullTitle: "1. GÜN (3G-A): Full-Body A — İtiş, Çekiş & Ön/Arka Bacak",
+    duration: "55 - 65 Dakika",
+    targetGoal:
+      "Haftada 3 gün gidenler için göğüs, sırt, omuz, ön bacak ve kalçayı dengeli uyaran Full-Body A seansı.",
+    scheduleNote: "3 Günlük Mod (Şablon A): Pazartesi · ≥2×/Hafta Kas Frekansı",
+    exercises: [
+      cloneExercise(BASE_EXERCISE_MAP["incline-db-press"], { order: 1 }),
+      cloneExercise(BASE_EXERCISE_MAP["seated-cable-row"], { order: 2 }),
+      cloneExercise(BASE_EXERCISE_MAP["leg-press"], { order: 3, stripWarmup: true }),
+      cloneExercise(HIP_THRUST_EXERCISE, { order: 4 }),
+      cloneExercise(BASE_EXERCISE_MAP["dumbbell-lateral-raise"], { order: 5 }),
+    ],
+  },
+  {
+    id: "3day-a-2",
+    tabLabel: "2. Gün",
+    shortTitle: "Full-Body B (Çar)",
+    fullTitle: "2. GÜN (3G-B): Full-Body B — Omuz, Sırt, RDL & Kol",
+    duration: "55 - 65 Dakika",
+    targetGoal:
+      "Omuz, dikey çekiş, kalça menteşesi (RDL), squat ve triceps ile kavramasız core dengesini birleştirir.",
+    scheduleNote: "3 Günlük Mod (Şablon A): Çarşamba · ≥2×/Hafta Kas Frekansı",
+    exercises: [
+      cloneExercise(BASE_EXERCISE_MAP["seated-db-shoulder-press"], {
+        order: 1,
+        coreRestId: null,
+        coreRestLabel:
+          "Tam Pasif Dinlenme — Bileşik omuz itişinde omurga kilidi için core eklenmez.",
+      }),
+      cloneExercise(BASE_EXERCISE_MAP["wide-grip-lat-pulldown"], { order: 2 }),
+      cloneExercise(BASE_EXERCISE_MAP["romanian-deadlift"], { order: 3, stripWarmup: true }),
+      cloneExercise(BASE_EXERCISE_MAP["goblet-squat-day4"], { order: 4, stripWarmup: true }),
+      cloneExercise(BASE_EXERCISE_MAP["rope-triceps-pushdown"], {
+        order: 5,
+        coreRestId: "dead_bug",
+        coreRestLabel: "Set Arası Aktif Dinlenme: 21× Dead Bug (Kavrama Yormaz)",
+      }),
+    ],
+  },
+  {
+    id: "3day-a-3",
+    tabLabel: "3. Gün",
+    shortTitle: "Full-Body A2 (Cum)",
+    fullTitle: "3. GÜN (3G-A2): Full-Body A2 — Göğüs, Lunge, Sırt & Biceps",
+    duration: "55 - 65 Dakika",
+    targetGoal:
+      "Göğüs, tek bacak, tek kol row, arka bacak, arka omuz ve biceps ile haftalık tüm kas grubu frekansını tamamlar.",
+    scheduleNote: "3 Günlük Mod (Şablon A): Cuma · ≥2×/Hafta Kas Frekansı",
+    exercises: [
+      cloneExercise(BASE_EXERCISE_MAP["chest-press-day4"], { order: 1 }),
+      cloneExercise(SINGLE_ARM_ROW_EXERCISE, { order: 2, coreRestId: "plank" }),
+      cloneExercise(BASE_EXERCISE_MAP["walking-lunges"], { order: 3 }),
+      cloneExercise(BASE_EXERCISE_MAP["seated-leg-curl"], {
+        order: 4,
+        coreRestId: null,
+        coreRestLabel: "Tam Pasif Dinlenme — Sonraki hareketler için bacak ve core enerjisini koru.",
+      }),
+      cloneExercise(BASE_EXERCISE_MAP["face-pull"], { order: 5 }),
+      cloneExercise(BASE_EXERCISE_MAP["dumbbell-bicep-curl"], { order: 6 }),
+    ],
+  },
+];
+
+export const THREE_DAY_ULF_DAYS = [
+  {
+    id: "3day-b-1",
+    tabLabel: "1. Gün",
+    shortTitle: "Üst Vücut (Pzt)",
+    fullTitle: "1. GÜN (3G-Ü): Üst Vücut (Göğüs + Sırt + Omuz + Arka Omuz)",
+    duration: "55 - 65 Dakika",
+    targetGoal:
+      "Haftanın ilk gününde tüm üst vücut itiş ve çekiş kaslarını dengeli hacimle uyarır.",
+    scheduleNote: "3 Günlük Mod (Üst / Alt / Full): Pazartesi · ≥2×/Hafta Frekans",
+    exercises: [
+      cloneExercise(BASE_EXERCISE_MAP["incline-db-press"], { order: 1 }),
+      cloneExercise(BASE_EXERCISE_MAP["wide-grip-lat-pulldown"], { order: 2 }),
+      cloneExercise(BASE_EXERCISE_MAP["seated-db-shoulder-press"], { order: 3, stripWarmup: true }),
+      cloneExercise(BASE_EXERCISE_MAP["seated-cable-row"], { order: 4, stripWarmup: true }),
+      cloneExercise(BASE_EXERCISE_MAP["face-pull"], { order: 5 }),
+    ],
+  },
+  {
+    id: "3day-b-2",
+    tabLabel: "2. Gün",
+    shortTitle: "Alt Vücut (Çar)",
+    fullTitle: "2. GÜN (3G-A): Alt Vücut (Quadriceps + Hamstring + Kalça + Kalf)",
+    duration: "50 - 60 Dakika",
+    targetGoal:
+      "Çarşamba gününü tamamen alt vücut kuvvetine ve arka zincir gelişimine ayırır.",
+    scheduleNote: "3 Günlük Mod (Üst / Alt / Full): Çarşamba · ≥2×/Hafta Frekans",
+    exercises: [
+      cloneExercise(BASE_EXERCISE_MAP["leg-press"], { order: 1 }),
+      cloneExercise(BASE_EXERCISE_MAP["romanian-deadlift"], { order: 2 }),
+      cloneExercise(BASE_EXERCISE_MAP["walking-lunges"], { order: 3 }),
+      cloneExercise(BASE_EXERCISE_MAP["seated-leg-curl"], { order: 4 }),
+      cloneExercise(BASE_EXERCISE_MAP["standing-calf-raise"], { order: 5 }),
+    ],
+  },
+  {
+    id: "3day-b-3",
+    tabLabel: "3. Gün",
+    shortTitle: "Full-Body (Cum)",
+    fullTitle: "3. GÜN (3G-FB): Full-Body Kapanış (Alt + Göğüs + Sırt + Omuz + Kol)",
+    duration: "55 - 65 Dakika",
+    targetGoal:
+      "Üst ve alt vücut dahil tüm büyük kas gruplarında haftada ≥2× frekansı tamamlar.",
+    scheduleNote: "3 Günlük Mod (Üst / Alt / Full): Cuma · ≥2×/Hafta Frekans",
+    exercises: [
+      cloneExercise(BASE_EXERCISE_MAP["goblet-squat-day4"], { order: 1 }),
+      cloneExercise(BASE_EXERCISE_MAP["chest-press-day4"], { order: 2 }),
+      cloneExercise(BASE_EXERCISE_MAP["kettlebell-swing"], { order: 3 }),
+      cloneExercise(BASE_EXERCISE_MAP["renegade-row-pushup"], { order: 4 }),
+      cloneExercise(BASE_EXERCISE_MAP["cable-lateral-raise-day4"], { order: 5 }),
+      cloneExercise(BASE_EXERCISE_MAP["dumbbell-bicep-curl"], { order: 6 }),
+    ],
+  },
+];
+
+export const PROGRAM_MODES = [
+  { id: "4day", label: "4 Günlük Split" },
+  { id: "3day-aba", label: "3 Gün · Full-Body A/B/A" },
+  { id: "3day-ulf", label: "3 Gün · Üst/Alt/Full" },
+];
+
+export function getProgramDays(mode = "4day") {
+  if (mode === "3day-aba") return THREE_DAY_ABA_DAYS;
+  if (mode === "3day-ulf") return THREE_DAY_ULF_DAYS;
+  return WORKOUT_DAYS;
+}
+
 // Yapılandırılmış günlük öğün şablonu (tüm gramaj ve makrolar seçili profile göre ölçeklenir)
 const DAILY_MEALS_BASE = [
   {

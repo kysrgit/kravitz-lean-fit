@@ -4,19 +4,20 @@
  * render sonrası kart/tablo/sayaç etkileşim bağlayıcılarını dışa aktarır.
  */
 
-import { WORKOUT_DAYS } from "../../data.js";
+import { getProgramDays } from "../../data.js";
 import {
   animateTabChange,
   animateVariantChange,
   refreshMotionForContent,
 } from "../../js/motion.js";
 import {
-  TABS,
   elements,
   escapeHtml,
   findExerciseById,
+  getActiveTabs,
   getCoreOrCardioItem,
   getDayProgressStats,
+  getDayThemeForTab,
   getExerciseVariants,
   loadPrefs,
   savePrefs,
@@ -38,10 +39,18 @@ import {
   renderWorkoutDay,
 } from "./sections.js";
 
-export function selectTab(tabId, { scrollToContent = false } = {}) {
+export function selectTab(tabId, { scrollToContent = false, syncHash = true } = {}) {
   if (!tabId) return;
   state.activeTab = tabId;
-  document.body.dataset.dayTheme = tabId;
+  document.body.dataset.dayTheme = getDayThemeForTab(tabId);
+  savePrefs({ activeTab: tabId, programMode: state.programMode });
+  if (syncHash && window.history && typeof window.history.replaceState === "function") {
+    try {
+      window.history.replaceState(null, "", `#${encodeURIComponent(tabId)}`);
+    } catch {
+      // Ortam geçmiş erişimini engellerse yoksay
+    }
+  }
   if (state.searchQuery) {
     state.searchQuery = "";
     elements.searchInput.value = "";
@@ -53,15 +62,23 @@ export function selectTab(tabId, { scrollToContent = false } = {}) {
   }
 }
 
-// Üst sekme çubuğu ve mobil alt navigasyon barını senkronize biçimde oluşturur
+// Üst sekme çubuğu, program modu seçicisi ve mobil alt navigasyon barını senkronize oluşturur
 export function renderTabs() {
   const hasSearch = state.searchQuery.trim().length > 0;
-  document.body.dataset.dayTheme = hasSearch ? "day-1" : state.activeTab;
+  const activeTabs = getActiveTabs(state.programMode);
+  document.body.dataset.dayTheme = hasSearch ? "day-1" : getDayThemeForTab(state.activeTab);
 
-  elements.tabsNav.innerHTML = TABS.map((tab) => {
-    const isActive = state.activeTab === tab.id && !hasSearch;
-    const topIcon = tab.topIconName ? lucideIcon(tab.topIconName, { size: 14 }) : "";
-    return `
+  document.querySelectorAll("#program-mode-switcher [data-program-mode]").forEach((btn) => {
+    const isSelected = btn.dataset.programMode === state.programMode;
+    btn.classList.toggle("active", isSelected);
+    btn.setAttribute("aria-pressed", String(isSelected));
+  });
+
+  elements.tabsNav.innerHTML = activeTabs
+    .map((tab) => {
+      const isActive = state.activeTab === tab.id && !hasSearch;
+      const topIcon = tab.topIconName ? lucideIcon(tab.topIconName, { size: 14 }) : "";
+      return `
       <button
         type="button"
         role="tab"
@@ -75,7 +92,8 @@ export function renderTabs() {
         ${isActive ? '<span class="tab-active-indicator" data-flip-id="tab-indicator" aria-hidden="true"></span>' : ""}
       </button>
     `;
-  }).join("");
+    })
+    .join("");
 
   if (elements.openSummaryBtn) {
     elements.openSummaryBtn.classList.toggle("active", state.activeTab === "summary" && !hasSearch);
@@ -121,10 +139,12 @@ export function renderTabs() {
     nav.scrollTo({ left: Math.max(0, left), behavior: prefersReducedMotion ? "auto" : "smooth" });
   }
 
-  // Mobil başparmak bölgesi alt navigasyon barını oluştur (sıralama: 1-4. Gün, Özet, 21'ler, Besin)
+  // Mobil başparmak bölgesi alt navigasyon barını oluştur (aktif günler + Özet, 21'ler, Besin)
   if (elements.mobileBottomNav) {
-    const mobileOrder = ["day-1", "day-2", "day-3", "day-4", "summary", "core-guide", "nutrition"];
-    const mobileTabs = mobileOrder.map((id) => TABS.find((t) => t.id === id)).filter(Boolean);
+    const dayIds = getProgramDays(state.programMode).map((d) => d.id);
+    const mobileOrder = [...dayIds, "summary", "core-guide", "nutrition"];
+    const mobileTabs = mobileOrder.map((id) => activeTabs.find((t) => t.id === id)).filter(Boolean);
+    elements.mobileBottomNav.style.setProperty("--mobile-nav-cols", String(mobileTabs.length));
 
     elements.mobileBottomNav.innerHTML = mobileTabs
       .map((tab) => {
@@ -155,15 +175,12 @@ export function renderTabs() {
   }
 }
 
-// Medya veya dış form referans sahnesi HTML'ini üretir
-// Lisanslı yerel medya yoksa MuscleWiki kaynak sayfasına giden "Formu izle" bağlantısı gösterilir.
-
 // Aktif gün sayfasındaki bugünkü set tamamlanma çubuğunu günceller
 function updateActiveDayProgressUi() {
   const strip = document.getElementById("day-progress-strip");
   if (!strip) return;
   const dayId = strip.dataset.progressDay;
-  const day = WORKOUT_DAYS.find((d) => d.id === dayId);
+  const day = getProgramDays(state.programMode).find((d) => d.id === dayId);
   if (!day) return;
   const prefs = loadPrefs();
   const { doneCount, totalCount, pct } = getDayProgressStats(day, prefs.selectedVariants);
@@ -239,6 +256,7 @@ export function bindCardInteractions() {
       const nextMode = btn.dataset.viewMode;
       if (!nextMode || nextMode === state.viewMode) return;
       state.viewMode = nextMode;
+      savePrefs({ viewMode: nextMode });
       renderMainContent();
     });
   });
@@ -345,7 +363,8 @@ export function renderMainContent() {
   } else if (state.activeTab === "summary") {
     renderFullSummaryTab();
   } else {
-    const selectedDay = WORKOUT_DAYS.find((d) => d.id === state.activeTab) || WORKOUT_DAYS[0];
+    const activeDays = getProgramDays(state.programMode);
+    const selectedDay = activeDays.find((d) => d.id === state.activeTab) || activeDays[0];
     renderWorkoutDay(selectedDay);
   }
 

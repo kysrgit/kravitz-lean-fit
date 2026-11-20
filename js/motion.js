@@ -138,11 +138,13 @@ export function initArenaMotion() {
       const h1 = document.getElementById("hero-arena-heading");
       if (h1) {
         h1.setAttribute("aria-label", "KRAVITZ LEAN & FIT");
-        const solid = h1.querySelectorAll(".hero-word-solid");
-        if (solid.length) {
-          heroSplit = SplitText.create(solid, { type: "chars", charsClass: "hero-char" });
-          heroSplit?.chars?.forEach((c) => c.setAttribute("aria-hidden", "true"));
-          riseY(heroSplit?.chars, 24, 0.48, 0.018);
+        if (desktop) {
+          const solid = h1.querySelectorAll(".hero-word-solid");
+          if (solid.length) {
+            heroSplit = SplitText.create(solid, { type: "chars", charsClass: "hero-char" });
+            heroSplit?.chars?.forEach((c) => c.setAttribute("aria-hidden", "true"));
+            riseY(heroSplit?.chars, 24, 0.48, 0.018);
+          }
         }
       }
 

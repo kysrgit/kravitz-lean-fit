@@ -4,14 +4,21 @@
  * global olay dinleyicilerini (profil, bel/kilo formu, arama, modal odak tuzağı, SW kaydı) bağlar.
  */
 
+import { getProgramDays } from "./data.js";
 import { calculateMifflinBmr } from "./src/nutrition.js";
 import {
   DISCLAIMER_ACK_KEY,
   clearStoredProfile,
   elements,
+  exportAllUserData,
+  findModeForTabId,
+  getActiveTabs,
   getTodayIsoDate,
+  importUserData,
   loadBodyLogs,
+  loadPrefs,
   saveBodyLogs,
+  savePrefs,
   saveStoredProfile,
   state,
 } from "./src/state.js";
@@ -115,20 +122,111 @@ function initEventListeners() {
     });
   }
 
-  // Arama alanı
+  // Haftalık program modu seçici (4 Günlük / 3 Gün Full-Body / 3 Gün Üst-Alt-Full)
+  document.querySelectorAll("#program-mode-switcher [data-program-mode]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const nextMode = btn.dataset.programMode;
+      if (!nextMode || nextMode === state.programMode) return;
+      state.programMode = nextMode;
+      const validIds = new Set(getActiveTabs(nextMode).map((t) => t.id));
+      const nextTab = validIds.has(state.activeTab)
+        ? state.activeTab
+        : getProgramDays(nextMode)[0]?.id || "day-1";
+      savePrefs({ programMode: nextMode, activeTab: nextTab });
+      selectTab(nextTab, { scrollToContent: false });
+    });
+  });
+
+  // Arama alanı (180ms debounce ile DOM yükünü azaltır)
+  let searchDebounceTimer = null;
   elements.searchInput.addEventListener("input", (event) => {
     state.searchQuery = event.target.value;
     elements.clearSearchBtn.hidden = state.searchQuery.length === 0;
-    renderTabs();
-    renderMainContent();
+    if (searchDebounceTimer) window.clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = window.setTimeout(() => {
+      renderTabs();
+      renderMainContent();
+    }, 180);
   });
 
   elements.clearSearchBtn.addEventListener("click", () => {
+    if (searchDebounceTimer) {
+      window.clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = null;
+    }
     state.searchQuery = "";
     elements.searchInput.value = "";
     elements.clearSearchBtn.hidden = true;
     renderTabs();
     renderMainContent();
+  });
+
+  // JSON yedek indirme & geri yükleme
+  const exportBackupBtn = document.getElementById("export-backup-btn");
+  const importBackupInput = document.getElementById("import-backup-input");
+  const backupStatus = document.getElementById("backup-status");
+
+  if (exportBackupBtn) {
+    exportBackupBtn.addEventListener("click", () => {
+      const payload = exportAllUserData();
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `kravitz-lean-fit-yedek-${getTodayIsoDate()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      if (backupStatus) {
+        backupStatus.textContent = "Yedek dosyası indirildi.";
+      }
+    });
+  }
+
+  if (importBackupInput) {
+    importBackupInput.addEventListener("change", async () => {
+      const file = importBackupInput.files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        const result = importUserData(parsed);
+        if (result.ok) {
+          const nextPrefs = loadPrefs();
+          state.programMode = nextPrefs.programMode || "4day";
+          state.viewMode = ["both", "table-only", "cards-only"].includes(nextPrefs.viewMode)
+            ? nextPrefs.viewMode
+            : "both";
+          state.activeTab = nextPrefs.activeTab || getProgramDays(state.programMode)[0]?.id || "day-1";
+          renderTanitaSection();
+          renderBodyLogsSection();
+          renderTabs();
+          renderMainContent();
+        }
+        if (backupStatus) {
+          backupStatus.textContent = result.message;
+        }
+      } catch {
+        if (backupStatus) {
+          backupStatus.textContent = "JSON dosyası okunamadı.";
+        }
+      } finally {
+        importBackupInput.value = "";
+      }
+    });
+  }
+
+  // Tarayıcı geri/ileri hash navigasyonu
+  window.addEventListener("hashchange", () => {
+    const rawHash = decodeURIComponent(window.location.hash.replace(/^#/, ""));
+    if (!rawHash || rawHash === "kaynaklar") return;
+    const resolved = findModeForTabId(rawHash);
+    if (!resolved.valid) return;
+    if (resolved.mode && resolved.mode !== state.programMode) {
+      state.programMode = resolved.mode;
+    }
+    selectTab(rawHash, { scrollToContent: false, syncHash: false });
   });
 
   // Modal kapatma (<dialog> yerel ESC cancel olayı + backdrop tıklaması + odak tuzağı)
@@ -279,8 +377,35 @@ function initBodyLogForm() {
   renderBodyLogsSection();
 }
 
+// Kalıcı tercihler ve URL hash üzerinden başlangıç sekmesini / modunu yükler
+function restoreInitialNavigationState() {
+  const prefs = loadPrefs();
+  state.programMode = ["4day", "3day-aba", "3day-ulf"].includes(prefs.programMode)
+    ? prefs.programMode
+    : "4day";
+  state.viewMode = ["both", "table-only", "cards-only"].includes(prefs.viewMode)
+    ? prefs.viewMode
+    : "both";
+
+  const rawHash = decodeURIComponent(window.location.hash.replace(/^#/, ""));
+  if (rawHash && rawHash !== "kaynaklar") {
+    const resolved = findModeForTabId(rawHash);
+    if (resolved.valid) {
+      if (resolved.mode) state.programMode = resolved.mode;
+      state.activeTab = rawHash;
+      return;
+    }
+  }
+
+  const validTabIds = new Set(getActiveTabs(state.programMode).map((t) => t.id));
+  state.activeTab = validTabIds.has(prefs.activeTab)
+    ? prefs.activeTab
+    : getProgramDays(state.programMode)[0]?.id || "day-1";
+}
+
 // Uygulama başlangıcı
 function bootstrap() {
+  restoreInitialNavigationState();
   registerServiceWorker();
   initDisclaimerBanner();
   renderSystemPillars();

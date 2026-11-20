@@ -549,10 +549,79 @@
           <div id="body-log-chart" class="body-log-chart"></div>
           <div id="body-log-list" class="body-log-list"></div>
         </div>
+
+        <!-- Veri Yedekleme & Geri Yükleme Paneli (JSON Dışa/İçe Aktarım) -->
+        <div class="backup-panel">
+          <div class="backup-copy">
+            <h4>Cihaz İçi Veri Yedeği</h4>
+            <p class="muted-text">
+              Profilini, set/ağırlık günlüklerini ve bel ölçümlerini JSON dosyası olarak indir veya
+              başka cihazdan geri yükle.
+            </p>
+          </div>
+          <div class="backup-actions">
+            <button type="button" id="export-backup-btn" class="btn-outline">
+              <svg
+                class="icon"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <use href="#icon-download"></use>
+              </svg>
+              <span>Yedeği İndir (JSON)</span>
+            </button>
+            <label class="btn-outline backup-import-label">
+              <svg
+                class="icon"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <use href="#icon-upload"></use>
+              </svg>
+              <span>Yedekten Yükle (JSON)</span>
+              <input type="file" id="import-backup-input" accept="application/json" hidden />
+            </label>
+            <span id="backup-status" class="muted-text" aria-live="polite"></span>
+          </div>
+        </div>
       </section>
 
-      <!-- Sekme Navigasyonu & Hızlı Arama -->
-      <section class="controls-bar" aria-label="Program Günleri ve Arama">
+      <!-- Sekme Navigasyonu, Program Modu & Hızlı Arama -->
+      <section class="controls-bar" aria-label="Program Modu, Günler ve Arama">
+        <div
+          id="program-mode-switcher"
+          class="program-mode-switcher"
+          role="group"
+          aria-label="Haftalık program modu"
+        >
+          <span class="mode-switch-label">Haftalık Plan:</span>
+          <div class="mode-switch-pills">
+            <button type="button" class="mode-switch-btn active" data-program-mode="4day">
+              4 Günlük
+            </button>
+            <button type="button" class="mode-switch-btn" data-program-mode="3day-aba">
+              3 Gün · Full-Body
+            </button>
+            <button type="button" class="mode-switch-btn" data-program-mode="3day-ulf">
+              3 Gün · Üst/Alt/Full
+            </button>
+          </div>
+        </div>
+
         <nav class="tabs-nav" id="tabs-nav" role="tablist" aria-label="Program Sekmeleri">
           <!-- Sekmeler app.js tarafından doldurulur -->
         </nav>
