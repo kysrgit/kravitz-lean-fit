@@ -16,7 +16,10 @@ import {
   escapeHtml,
   findExerciseById,
   getCoreOrCardioItem,
+  getDayProgressStats,
   getExerciseVariants,
+  loadPrefs,
+  savePrefs,
   saveSetLogEntry,
   state,
 } from "../state.js";
@@ -155,6 +158,25 @@ export function renderTabs() {
 // Medya veya dış form referans sahnesi HTML'ini üretir
 // Lisanslı yerel medya yoksa MuscleWiki kaynak sayfasına giden "Formu izle" bağlantısı gösterilir.
 
+// Aktif gün sayfasındaki bugünkü set tamamlanma çubuğunu günceller
+function updateActiveDayProgressUi() {
+  const strip = document.getElementById("day-progress-strip");
+  if (!strip) return;
+  const dayId = strip.dataset.progressDay;
+  const day = WORKOUT_DAYS.find((d) => d.id === dayId);
+  if (!day) return;
+  const prefs = loadPrefs();
+  const { doneCount, totalCount, pct } = getDayProgressStats(day, prefs.selectedVariants);
+  const textEl = document.getElementById("day-progress-text");
+  const fillEl = document.getElementById("day-progress-fill");
+  if (textEl) {
+    textEl.textContent = `Bugünkü İlerleme: ${doneCount} / ${totalCount} Set (%${pct})`;
+  }
+  if (fillEl) {
+    fillEl.style.transform = `scaleX(${(pct / 100).toFixed(3)})`;
+  }
+}
+
 export function bindCardInteractions() {
   clearPhotoTimers();
   observeVisibleStages();
@@ -169,7 +191,10 @@ export function bindCardInteractions() {
     cardEl.querySelectorAll(".alt-pill-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         const idx = Number(btn.dataset.variantIndex);
-        animateVariantChange(cardEl, () => applyVariantToCard(cardEl, variants, idx));
+        animateVariantChange(cardEl, () => {
+          applyVariantToCard(cardEl, variants, idx);
+          updateActiveDayProgressUi();
+        });
       });
     });
   });
@@ -218,18 +243,22 @@ export function bindCardInteractions() {
     });
   });
 
-  // Set günlüğü (kg / tekrar) canlı kayıt
+  // Set günlüğü (kg / tekrar / tamamlandı) canlı kayıt ve otomatik dinlenme sayacı
   document.querySelectorAll("[data-set-log-row]").forEach((rowEl) => {
     const exId = rowEl.dataset.logEx;
     const setNum = rowEl.dataset.logSet;
     const kgInput = rowEl.querySelector('[data-log-field="kg"]');
     const repsInput = rowEl.querySelector('[data-log-field="reps"]');
+    const doneBtn = rowEl.querySelector("[data-set-done-btn]");
     const badgeEl = rowEl.querySelector("[data-set-prev]");
 
-    const persistRow = () => {
+    const persistRow = (explicitDone = undefined) => {
+      const logKey = rowEl.dataset.logKey || exId;
       const kgVal = kgInput ? kgInput.value.trim() : "";
       const repsVal = repsInput ? repsInput.value.trim() : "";
-      saveSetLogEntry(exId, setNum, kgVal, repsVal);
+      const doneState =
+        explicitDone === undefined ? doneBtn?.getAttribute("aria-pressed") === "true" : explicitDone;
+      saveSetLogEntry(logKey, setNum, kgVal, repsVal, doneState);
       if (badgeEl && (kgVal !== "" || repsVal !== "")) {
         badgeEl.textContent = `Kaydedildi: ${kgVal || "-"} kg × ${repsVal || "-"} tek.`;
       }
@@ -237,14 +266,37 @@ export function bindCardInteractions() {
 
     // Mobilde odak kaybetmeden (blur olmadan) anlık yerel kayıt sağla
     if (kgInput) {
-      kgInput.addEventListener("input", persistRow);
-      kgInput.addEventListener("change", persistRow);
+      kgInput.addEventListener("input", () => persistRow());
+      kgInput.addEventListener("change", () => persistRow());
     }
     if (repsInput) {
-      repsInput.addEventListener("input", persistRow);
-      repsInput.addEventListener("change", persistRow);
+      repsInput.addEventListener("input", () => persistRow());
+      repsInput.addEventListener("change", () => persistRow());
+    }
+    if (doneBtn) {
+      doneBtn.addEventListener("click", () => {
+        const nextDone = doneBtn.getAttribute("aria-pressed") !== "true";
+        doneBtn.setAttribute("aria-pressed", String(nextDone));
+        rowEl.closest(".pyramid-step")?.classList.toggle("is-done", nextDone);
+        persistRow(nextDone);
+        updateActiveDayProgressUi();
+        if (nextDone && loadPrefs().autoRestTimer !== false) {
+          const secs = Number(rowEl.dataset.restSeconds) || 90;
+          const cardTitle =
+            rowEl.closest(".exercise-card")?.querySelector(".exercise-title")?.textContent?.trim() ||
+            "Set";
+          startRestTimer(secs, `${cardTitle} · ${setNum}. Set Dinlenme`);
+        }
+      });
     }
   });
+
+  const autoTimerToggle = document.getElementById("auto-rest-timer-toggle");
+  if (autoTimerToggle) {
+    autoTimerToggle.addEventListener("change", () => {
+      savePrefs({ autoRestTimer: autoTimerToggle.checked });
+    });
+  }
 
   // Kart üzerindeki dinlenme geri sayım butonları
   document.querySelectorAll("[data-start-timer]").forEach((btn) => {

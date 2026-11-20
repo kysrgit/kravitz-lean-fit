@@ -608,6 +608,40 @@
     border-color: var(--volt);
   }
 
+  .set-done-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: var(--radius-cut);
+    border: 1px solid var(--line);
+    background: var(--void);
+    color: var(--text-2);
+    cursor: pointer;
+    transition:
+      border-color var(--dur-micro) var(--ease-out),
+      background-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out);
+  }
+
+  .set-done-btn:hover {
+    border-color: var(--volt);
+    color: var(--volt);
+  }
+
+  .set-done-btn[aria-pressed="true"] {
+    border-color: var(--volt);
+    background: var(--volt);
+    color: var(--text-on-accent);
+  }
+
+  .pyramid-step.is-done {
+    border-color: var(--volt-border);
+    background: color-mix(in oklch, var(--volt) 8%, var(--stage-1));
+  }
+
   /* Teknik Form İpuçları */
   .tips-list {
     margin: 0;

@@ -5,10 +5,26 @@
  */
 
 import { CORE_LIBRARY, getExerciseMedia } from "../../data.js";
-import { escapeHtml, getExerciseSetHistory, getExerciseVariants } from "../state.js";
+import {
+  escapeHtml,
+  getExerciseLogKey,
+  getExerciseSetHistory,
+  getExerciseVariants,
+  savePrefs,
+} from "../state.js";
 import { createMediaStageHtml, observeVisibleStages } from "../media.js";
 import { openMediaModal } from "../modal.js";
 import { lucideIcon } from "./icons.js";
+
+function formatSetPrevBadge(prevSet, todaySet) {
+  if (prevSet && (prevSet.kg !== "" || prevSet.reps !== "")) {
+    return `Önceki: ${prevSet.kg !== "" ? `${prevSet.kg} kg` : "-"} × ${prevSet.reps !== "" ? `${prevSet.reps} tek.` : "-"}`;
+  }
+  if (todaySet && (todaySet.kg !== "" || todaySet.reps !== "")) {
+    return `Bugün: ${todaySet.kg !== "" ? `${todaySet.kg} kg` : "-"} × ${todaySet.reps !== "" ? `${todaySet.reps} tek.` : "-"}`;
+  }
+  return "Önceki: Henüz kayıt yok";
+}
 
 export function createAlternativesBoxHtml(variants, activeIndex = 0) {
   if (!variants || variants.length <= 1) return "";
@@ -55,7 +71,8 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
     restSeconds >= 120
       ? `${restSeconds} sn (2-3 dk · Bileşik)`
       : `${restSeconds} sn (60-90 sn · İzolasyon)`;
-  const { todaySession, previousSession } = getExerciseSetHistory(exercise.id);
+  const activeLogKey = getExerciseLogKey(exercise.id, activeVariant.index, variants);
+  const { todaySession, previousSession } = getExerciseSetHistory(activeLogKey);
 
   const pyramidHtml = exercise.pyramidSets
     .map((step, index) => {
@@ -67,15 +84,11 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
       const phaseBadgeText = step.isWarmup ? "ISINMA" : "ÇALIŞMA";
       const todaySet = todaySession?.sets?.[String(step.set)] || null;
       const prevSet = previousSession?.sets?.[String(step.set)] || null;
-      const prevBadgeText =
-        prevSet && (prevSet.kg !== "" || prevSet.reps !== "")
-          ? `Önceki: ${prevSet.kg !== "" ? `${prevSet.kg} kg` : "-"} × ${prevSet.reps !== "" ? `${prevSet.reps} tek.` : "-"}`
-          : todaySet && (todaySet.kg !== "" || todaySet.reps !== "")
-            ? `Bugün: ${todaySet.kg !== "" ? `${todaySet.kg} kg` : "-"} × ${todaySet.reps !== "" ? `${todaySet.reps} tek.` : "-"}`
-            : "Önceki: Henüz kayıt yok";
+      const isDone = Boolean(todaySet?.done);
+      const prevBadgeText = formatSetPrevBadge(prevSet, todaySet);
 
       return `
-        <div class="pyramid-step ${step.isWarmup ? "is-warmup" : ""}">
+        <div class="pyramid-step ${step.isWarmup ? "is-warmup" : ""} ${isDone ? "is-done" : ""}">
           <div class="pyramid-step-main">
             <div class="set-head-group">
               <span class="set-phase-badge ${step.isWarmup ? "is-warmup" : "is-work"}">${phaseBadgeText}</span>
@@ -89,7 +102,14 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
             </div>
             <span class="set-reps tabular">${escapeHtml(step.reps)}</span>
           </div>
-          <div class="set-log-controls" data-set-log-row data-log-ex="${escapeHtml(exercise.id)}" data-log-set="${escapeHtml(step.set)}">
+          <div
+            class="set-log-controls"
+            data-set-log-row
+            data-log-ex="${escapeHtml(exercise.id)}"
+            data-log-key="${escapeHtml(activeLogKey)}"
+            data-log-set="${escapeHtml(step.set)}"
+            data-rest-seconds="${escapeHtml(restSeconds)}"
+          >
             <span class="set-prev-badge" data-set-prev>${escapeHtml(prevBadgeText)}</span>
             <div class="set-log-inputs">
               <label class="set-log-field">
@@ -100,7 +120,7 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
                   max="500"
                   step="0.5"
                   inputmode="decimal"
-                  aria-label="${escapeHtml(exercise.name)} ${escapeHtml(step.set)}. set kg"
+                  aria-label="${escapeHtml(activeVariant.name)} ${escapeHtml(step.set)}. set kg"
                   data-log-field="kg"
                   value="${escapeHtml(todaySet?.kg ?? "")}"
                 />
@@ -113,11 +133,21 @@ export function createExerciseCardHtml(exercise, badgeText, initialVariantIndex 
                   max="100"
                   step="1"
                   inputmode="numeric"
-                  aria-label="${escapeHtml(exercise.name)} ${escapeHtml(step.set)}. set tekrar"
+                  aria-label="${escapeHtml(activeVariant.name)} ${escapeHtml(step.set)}. set tekrar"
                   data-log-field="reps"
                   value="${escapeHtml(todaySet?.reps ?? "")}"
                 />
               </label>
+              <button
+                type="button"
+                class="set-done-btn"
+                data-set-done-btn
+                aria-pressed="${isDone}"
+                aria-label="${escapeHtml(activeVariant.name)} ${escapeHtml(step.set)}. seti tamamlandı olarak işaretle"
+                title="Seti tamamlandı olarak işaretle"
+              >
+                ${lucideIcon("check", { size: 16 })}
+              </button>
             </div>
           </div>
         </div>
@@ -478,6 +508,38 @@ export function applyVariantToCard(cardEl, variants, variantIndex) {
   const timerBtn = cardEl.querySelector(".start-rest-timer-btn");
   if (timerBtn) {
     timerBtn.dataset.timerLabel = `${variant.name} Dinlenme`;
+  }
+
+  // Seçili varyantı kalıcı tercihlere yaz ve set kayıt satırlarını yeni varyanta geçir
+  if (itemId) {
+    savePrefs({ selectedVariants: { [itemId]: variant.index } });
+  }
+  if (!isCore && itemId) {
+    const nextLogKey = getExerciseLogKey(itemId, variant.index, variants);
+    const { todaySession, previousSession } = getExerciseSetHistory(nextLogKey);
+    cardEl.querySelectorAll("[data-set-log-row]").forEach((rowEl) => {
+      const setNum = String(rowEl.dataset.logSet || "");
+      rowEl.dataset.logKey = nextLogKey;
+      const todaySet = todaySession?.sets?.[setNum] || null;
+      const prevSet = previousSession?.sets?.[setNum] || null;
+      const kgInput = rowEl.querySelector('[data-log-field="kg"]');
+      const repsInput = rowEl.querySelector('[data-log-field="reps"]');
+      const doneBtn = rowEl.querySelector("[data-set-done-btn]");
+      const prevBadge = rowEl.querySelector("[data-set-prev]");
+      if (kgInput) kgInput.value = todaySet?.kg ?? "";
+      if (repsInput) repsInput.value = todaySet?.reps ?? "";
+      if (doneBtn) {
+        doneBtn.setAttribute("aria-pressed", String(Boolean(todaySet?.done)));
+        doneBtn.setAttribute(
+          "aria-label",
+          `${variant.name} ${setNum}. seti tamamlandı olarak işaretle`
+        );
+      }
+      rowEl.closest(".pyramid-step")?.classList.toggle("is-done", Boolean(todaySet?.done));
+      if (prevBadge) {
+        prevBadge.textContent = formatSetPrevBadge(prevSet, todaySet);
+      }
+    });
   }
 
   // Başlık, etiket ve ipuçlarını güncelle

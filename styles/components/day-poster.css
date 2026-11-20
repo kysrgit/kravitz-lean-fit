@@ -135,6 +135,79 @@
     gap: 4px;
   }
 
+  /* Gün içi tamamlanma ilerleme çubuğu ve otomatik sayaç anahtarı */
+  .day-progress-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    background: var(--stage-1);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--volt);
+    border-radius: var(--radius-sharp);
+  }
+
+  .day-progress-main {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1 1 260px;
+    min-width: 0;
+  }
+
+  .day-progress-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .day-progress-text {
+    font-size: var(--fs-12);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--volt);
+  }
+
+  .day-progress-track {
+    width: 100%;
+    height: 6px;
+    background: var(--void);
+    border: 1px solid var(--line-soft);
+    overflow: hidden;
+  }
+
+  .day-progress-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--day-accent), var(--volt));
+    transform-origin: left center;
+    transition: transform var(--dur-transition) var(--ease-out);
+  }
+
+  .auto-timer-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    font-size: var(--fs-12);
+    font-weight: 600;
+    color: var(--text-1);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .auto-timer-toggle input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--volt);
+    cursor: pointer;
+  }
+
   /* Gün içi görünüm modu seçici */
   .view-mode-bar {
     display: flex;

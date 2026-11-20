@@ -18,6 +18,56 @@ export const DISCLAIMER_ACK_KEY = "klf:v1:disclaimer_ack";
 export const WORKOUT_LOGS_STORAGE_KEY = "klf:v1:workout_logs";
 export const TIMER_STORAGE_KEY = "klf:v1:timer";
 export const BODY_LOGS_STORAGE_KEY = "klf:v1:body_logs";
+export const PREFS_STORAGE_KEY = "klf:v1:prefs";
+
+export const DEFAULT_PREFS = {
+  activeTab: "day-1",
+  viewMode: "both",
+  programMode: "4day",
+  selectedVariants: {},
+  autoRestTimer: true,
+};
+
+// Kullanıcı tercihlerini (aktif sekme, görünüm modu, seçili alternatifler) localStorage'dan okur
+export function loadPrefs() {
+  try {
+    const raw = window.localStorage.getItem(PREFS_STORAGE_KEY);
+    if (!raw) return { ...DEFAULT_PREFS, selectedVariants: {} };
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") {
+      return { ...DEFAULT_PREFS, selectedVariants: {} };
+    }
+    return {
+      ...DEFAULT_PREFS,
+      ...parsed,
+      selectedVariants:
+        parsed.selectedVariants && typeof parsed.selectedVariants === "object"
+          ? { ...parsed.selectedVariants }
+          : {},
+    };
+  } catch {
+    return { ...DEFAULT_PREFS, selectedVariants: {} };
+  }
+}
+
+// Kullanıcı tercihlerini güvenli biçimde birleştirip localStorage'a kaydeder
+export function savePrefs(patch) {
+  if (!patch || typeof patch !== "object") return loadPrefs();
+  const current = loadPrefs();
+  const next = {
+    ...current,
+    ...patch,
+    selectedVariants: patch.selectedVariants
+      ? { ...current.selectedVariants, ...patch.selectedVariants }
+      : current.selectedVariants,
+  };
+  try {
+    window.localStorage.setItem(PREFS_STORAGE_KEY, JSON.stringify(next));
+  } catch {
+    // Depolama erişilemiyorsa sessizce atla
+  }
+  return next;
+}
 
 // Uygulama durumu
 export const state = {
@@ -111,6 +161,7 @@ export function getExerciseVariants(item, kind) {
   if (kind === "core") {
     const primary = {
       index: 0,
+      variantId: item.id,
       pillLabel: "Ana Core Hareketi",
       isAlternative: false,
       name: item.name,
@@ -126,6 +177,7 @@ export function getExerciseVariants(item, kind) {
 
     const alts = (item.alternatives || []).map((alt, i) => ({
       index: i + 1,
+      variantId: alt.id,
       pillLabel: `Alt ${i + 1}: ${alt.name}`,
       isAlternative: true,
       name: alt.name,
@@ -144,6 +196,7 @@ export function getExerciseVariants(item, kind) {
 
   const primary = {
     index: 0,
+    variantId: item.id,
     pillLabel: "Ana Hareket",
     isAlternative: false,
     name: item.name,
@@ -163,6 +216,7 @@ export function getExerciseVariants(item, kind) {
       : item.equipment;
     return {
       index: i + 1,
+      variantId: alt.id,
       pillLabel: `Alt ${i + 1}: ${alt.name}`,
       isAlternative: true,
       name: alt.name,
@@ -178,6 +232,15 @@ export function getExerciseVariants(item, kind) {
   });
 
   return [primary, ...alts];
+}
+
+// Ana hareket ile seçili alternatifin ağırlık günlüklerini ayırmak için kararlı kayıt anahtarı döndürür
+export function getExerciseLogKey(exerciseId, variantIndex = 0, variants = []) {
+  const variant = variants[variantIndex] || variants[0];
+  if (!variant || variant.index === 0 || !variant.variantId) {
+    return exerciseId;
+  }
+  return `${exerciseId}__${variant.variantId}`;
 }
 
 // Bilimsel kaynaklar ve basın uyarlama notları bölümünü üretir
@@ -203,11 +266,11 @@ export function loadWorkoutLogs() {
   }
 }
 
-// Belirli hareket ve set için ağırlık/tekrar kaydını localStorage'a kaydeder
-export function saveSetLogEntry(exerciseId, setNum, kgVal, repsVal) {
+// Belirli hareket/varyant anahtarı ve set için ağırlık/tekrar/tamamlandı kaydını localStorage'a kaydeder
+export function saveSetLogEntry(logKey, setNum, kgVal, repsVal, done = undefined) {
   const logs = loadWorkoutLogs();
   const today = getTodayIsoDate();
-  const entry = logs[exerciseId] || { sessions: [] };
+  const entry = logs[logKey] || { sessions: [] };
   const sessions = Array.isArray(entry.sessions) ? [...entry.sessions] : [];
 
   let todaySession = sessions.find((s) => s.date === today);
@@ -215,19 +278,21 @@ export function saveSetLogEntry(exerciseId, setNum, kgVal, repsVal) {
     todaySession = { date: today, sets: {} };
     sessions.push(todaySession);
     sessions.sort((a, b) => String(a.date).localeCompare(String(b.date)));
-    // En fazla son 12 seansı sakla
-    if (sessions.length > 12) {
-      sessions.splice(0, sessions.length - 12);
+    // En fazla son 52 seansı sakla
+    if (sessions.length > 52) {
+      sessions.splice(0, sessions.length - 52);
     }
   }
 
   todaySession.sets = todaySession.sets || {};
+  const existingSet = todaySession.sets[String(setNum)] || {};
   todaySession.sets[String(setNum)] = {
     kg: kgVal === "" ? "" : Number(kgVal),
     reps: repsVal === "" ? "" : Number(repsVal),
+    done: done === undefined ? Boolean(existingSet.done) : Boolean(done),
   };
 
-  logs[exerciseId] = { sessions };
+  logs[logKey] = { sessions };
   try {
     window.localStorage.setItem(WORKOUT_LOGS_STORAGE_KEY, JSON.stringify(logs));
   } catch {
@@ -235,10 +300,10 @@ export function saveSetLogEntry(exerciseId, setNum, kgVal, repsVal) {
   }
 }
 
-// Hareketin bugünkü ve bir önceki seanstaki set değerlerini döndürür
-export function getExerciseSetHistory(exerciseId) {
+// Hareketin/varyantın bugünkü ve bir önceki seanstaki set değerlerini döndürür
+export function getExerciseSetHistory(logKey) {
   const logs = loadWorkoutLogs();
-  const entry = logs[exerciseId];
+  const entry = logs[logKey];
   const sessions = Array.isArray(entry?.sessions) ? entry.sessions : [];
   const today = getTodayIsoDate();
   const todaySession = sessions.find((s) => s.date === today) || null;
@@ -246,6 +311,26 @@ export function getExerciseSetHistory(exerciseId) {
   const previousSession =
     previousSessions.length > 0 ? previousSessions[previousSessions.length - 1] : null;
   return { todaySession, previousSession };
+}
+
+// Seçilen antrenman günündeki bugünkü set tamamlanma istatistiklerini hesaplar
+export function getDayProgressStats(day, selectedVariants = {}) {
+  let totalCount = 0;
+  let doneCount = 0;
+  for (const ex of day?.exercises || []) {
+    const variants = getExerciseVariants(ex, "exercise");
+    const vIdx = Number(selectedVariants?.[ex.id] || 0);
+    const logKey = getExerciseLogKey(ex.id, vIdx, variants);
+    const { todaySession } = getExerciseSetHistory(logKey);
+    for (const step of ex.pyramidSets || []) {
+      totalCount += 1;
+      if (todaySession?.sets?.[String(step.set)]?.done) {
+        doneCount += 1;
+      }
+    }
+  }
+  const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+  return { doneCount, totalCount, pct };
 }
 
 // Haftalık bel & kilo kayıtlarını okur

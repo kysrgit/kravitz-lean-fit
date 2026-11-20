@@ -21,7 +21,9 @@ import {
   escapeHtml,
   findMatchingVariantIndex,
   getActiveProfileTargets,
+  getDayProgressStats,
   loadBodyLogs,
+  loadPrefs,
   saveBodyLogs,
   scaleMealPlanForProfile,
   state,
@@ -351,6 +353,26 @@ export function createCardioFinisherSectionHtml() {
 // Seçilen antrenman günü için okunaklı ve etkileşimli tablo özeti üretir
 
 export function renderWorkoutDay(day) {
+  const prefs = loadPrefs();
+  const progress = getDayProgressStats(day, prefs.selectedVariants);
+
+  const progressStripHtml = `
+    <div id="day-progress-strip" class="day-progress-strip" data-progress-day="${escapeHtml(day.id)}">
+      <div class="day-progress-main">
+        <div class="day-progress-head">
+          <span id="day-progress-text" class="day-progress-text tabular">Bugünkü İlerleme: ${progress.doneCount} / ${progress.totalCount} Set (%${progress.pct})</span>
+        </div>
+        <div class="day-progress-track" aria-hidden="true">
+          <div id="day-progress-fill" class="day-progress-fill" style="transform: scaleX(${(progress.pct / 100).toFixed(3)})"></div>
+        </div>
+      </div>
+      <label class="auto-timer-toggle">
+        <input type="checkbox" id="auto-rest-timer-toggle" ${prefs.autoRestTimer !== false ? "checked" : ""} />
+        <span>Set bitince sayacı başlat</span>
+      </label>
+    </div>
+  `;
+
   const viewModeBarHtml = `
     <div class="view-mode-bar" role="group" aria-label="Görünüm modu seçici">
       <span class="view-mode-label">Görünüm Modu:</span>
@@ -389,7 +411,11 @@ export function renderWorkoutDay(day) {
     state.viewMode !== "table-only"
       ? `<div class="exercises-grid">${day.exercises
           .map((exercise) =>
-            createExerciseCardHtml(exercise, `${day.tabLabel} · Hareket ${exercise.order}`)
+            createExerciseCardHtml(
+              exercise,
+              `${day.tabLabel} · Hareket ${exercise.order}`,
+              Number(prefs.selectedVariants?.[exercise.id] || 0)
+            )
           )
           .join("")}</div>`
       : "";
@@ -414,6 +440,7 @@ export function renderWorkoutDay(day) {
       </div>
     </div>
     ${createWarmupBannerHtml()}
+    ${progressStripHtml}
     ${viewModeBarHtml}
     ${tableHtml}
     ${cardsSectionHtml}
