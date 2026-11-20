@@ -7,6 +7,8 @@
   "scripts": {
     "lint": "eslint .",
     "validate": "node scripts/validate.mjs",
+    "sw:stamp": "node scripts/stamp-sw.mjs",
+    "sw:check": "node scripts/stamp-sw.mjs --check",
     "format:check": "prettier --check index.html app.js data.js sw.js src js scripts styles styles.css manifest.webmanifest"
   },
   "devDependencies": {

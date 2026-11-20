@@ -33,3 +33,6 @@ jobs:
 
       - name: Veri ve kural doğrulaması (validate.mjs)
         run: npm run validate
+
+      - name: Service Worker önbellek sürüm kontrolü
+        run: npm run sw:check

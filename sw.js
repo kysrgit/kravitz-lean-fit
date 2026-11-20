@@ -5,8 +5,9 @@
  * üçüncü taraf veya lisanssız medya dosyalarını kesinlikle önbelleğe almaz.
  */
 
-const SHELL_CACHE = "klf-shell-d97ab686";
-const DATA_CACHE = "klf-data-d97ab686";
+const SHELL_CACHE = "klf-shell-9e18fde0";
+const DATA_CACHE = "klf-data-9e18fde0";
+const MEDIA_CACHE = "klf-media-v1";
 
 const APP_SHELL_URLS = [
   "./",
@@ -43,11 +44,15 @@ const APP_SHELL_URLS = [
   "./assets/fonts/big-shoulders-display-latin-ext.woff2",
   "./manifest.webmanifest",
   "./icons/icon.svg",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png",
+  "./icons/apple-touch-icon.png",
 ];
 
 // Üçüncü taraf veya lisanssız medya yollarını tespit eder (önbelleğe alınmaz)
 function isUnlicensedOrMediaRequest(url) {
   if (url.origin !== self.location.origin) return true;
+  if (url.pathname.includes("/icons/")) return false;
   return (
     /\.(mp4|webm|mov|avi|mkv|jpg|jpeg|png|gif)$/i.test(url.pathname) ||
     url.pathname.includes("/assets/videos") ||
@@ -60,12 +65,19 @@ self.addEventListener("install", (event) => {
     Promise.all([
       caches.open(SHELL_CACHE).then((cache) => cache.addAll(APP_SHELL_URLS)),
       caches.open(DATA_CACHE).then((cache) => cache.add("./data.js")),
-    ]).then(() => self.skipWaiting())
+    ])
   );
 });
 
+// Kullanıcının güncelleme banner'ından onayladığı yeni SW sürümünü etkinleştirir
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener("activate", (event) => {
-  const validCaches = new Set([SHELL_CACHE, DATA_CACHE]);
+  const validCaches = new Set([SHELL_CACHE, DATA_CACHE, MEDIA_CACHE]);
   event.waitUntil(
     caches
       .keys()
@@ -97,7 +109,7 @@ self.addEventListener("fetch", (event) => {
             }
             return response;
           })
-          .catch(() => cached);
+          .catch(() => cached || new Response("", { status: 503, statusText: "Offline" }));
         return cached || networkPromise;
       })
     );
@@ -107,7 +119,7 @@ self.addEventListener("fetch", (event) => {
   // Egzersiz fotoğrafları (/assets/exercises/*.webp) için runtime cache-first (en fazla 120 dosya LRU)
   if (url.pathname.includes("/assets/exercises/")) {
     event.respondWith(
-      caches.open("klf-media-v1").then(async (cache) => {
+      caches.open(MEDIA_CACHE).then(async (cache) => {
         const cached = await cache.match(request);
         if (cached) return cached;
         try {
@@ -121,14 +133,14 @@ self.addEventListener("fetch", (event) => {
           }
           return response;
         } catch {
-          return undefined;
+          return new Response("", { status: 503, statusText: "Offline" });
         }
       })
     );
     return;
   }
 
-  // Uygulama kabuğu (index, styles, js, manifest, svg, yerel fontlar) için cache-first
+  // Uygulama kabuğu (index, styles, js, manifest, svg, png ikonlar, yerel fontlar) için cache-first
   event.respondWith(
     caches.open(SHELL_CACHE).then(async (cache) => {
       const cached = await cache.match(request);
@@ -142,9 +154,10 @@ self.addEventListener("fetch", (event) => {
         return response;
       } catch {
         if (request.mode === "navigate") {
-          return cache.match("./index.html");
+          const fallback = await cache.match("./index.html");
+          if (fallback) return fallback;
         }
-        return undefined;
+        return new Response("", { status: 503, statusText: "Offline" });
       }
     })
   );

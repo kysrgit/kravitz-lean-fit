@@ -190,9 +190,9 @@ function showSwUpdateBanner(waitingWorker) {
   bar.className = "disclaimer-banner";
   bar.setAttribute("role", "status");
   bar.innerHTML = `<div class="disclaimer-copy"><strong>Yeni sürüm hazır</strong> — Güncel içeriği görmek için yenileyin.</div><button type="button" class="disclaimer-btn">Yenile</button>`;
-  bar.querySelector("button")?.addEventListener("click", () => {
+  bar.querySelector("button")?.addEventListener("click", (e) => {
+    e.currentTarget.disabled = true;
     waitingWorker.postMessage({ type: "SKIP_WAITING" });
-    window.location.reload();
   });
   document.querySelector("main")?.prepend(bar);
 }
@@ -201,6 +201,14 @@ function showSwUpdateBanner(waitingWorker) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   try {
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
+
     window.addEventListener("load", () => {
       navigator.serviceWorker
         .register("./sw.js")

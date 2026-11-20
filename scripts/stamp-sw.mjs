@@ -15,9 +15,10 @@ const swText = fs.readFileSync(swPath, "utf8");
 
 const listMatch = swText.match(/const APP_SHELL_URLS\s*=\s*\[([\s\S]*?)\];/);
 const urls = listMatch ? [...listMatch[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]) : [];
+const hashTargets = [...new Set([...urls, "./data.js"])];
 
 const hash = crypto.createHash("sha256");
-for (const entry of urls) {
+for (const entry of hashTargets) {
   const rel = entry === "./" ? "index.html" : entry.replace(/^\.\//, "");
   const full = path.join(rootDir, rel);
   if (fs.existsSync(full) && fs.statSync(full).isFile()) {
